@@ -58,12 +58,12 @@ export default function Home() {
             </Link>
           </div>
         </div> */}
-        {/* <div className="flex flex-col items-center gap-2">
+        <div className="flex flex-col items-center gap-2">
           <p className="text-2xl text-white">
             {hello.data ? hello.data.greeting : "Loading tRPC query..."}
           </p>
           <AuthShowcase />
-        </div> */}
+        </div>
       </main>
     </>
   );
