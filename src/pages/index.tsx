@@ -2,6 +2,7 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import Head from "next/head";
 import Image from "next/image";
 import { api } from "~/utils/api";
+import { UploadButton } from "~/utils/uploadthing";
 
 export default function Home() {
   const hello = api.post.hello.useQuery({ text: "from tRPC" });
@@ -35,6 +36,18 @@ export default function Home() {
           </p>
           <AuthShowcase />
         </div>
+        <UploadButton
+          endpoint="imageUpload"
+          onClientUploadComplete={(res) => {
+            // Do something with the response
+            console.log("Files: ", res);
+            alert("Upload Completed");
+          }}
+          onUploadError={(error: Error) => {
+            // Do something with the error.
+            alert(`ERROR! ${error.message}`);
+          }}
+        />
       </main>
     </>
   );
