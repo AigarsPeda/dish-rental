@@ -1,6 +1,5 @@
 import Image from "next/image";
 import { type FC } from "react";
-import Stars from "~/components/Stars/Stars";
 
 const Card: FC = () => {
   return (

@@ -3,7 +3,8 @@ import Head from "next/head";
 import Image from "next/image";
 import { api } from "~/utils/api";
 import { UploadButton } from "~/utils/uploadthing";
-import Card from "../components/Card/Card";
+import Card from "~/components/Card/Card";
+import ProfileDropdown from "~/components/ProfileDropdown/ProfileDropdown";
 
 export default function Home() {
   const hello = api.post.hello.useQuery({ text: "from tRPC" });
@@ -40,7 +41,8 @@ export default function Home() {
             </p>
           </div>
           <div>
-            <LoginLogOutButton />
+            <ProfileDropdown />
+            {/* <LoginLogOutButton /> */}
             {/* <button
                 className="rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20"
                 // onClick={hello.revalidate}
@@ -144,7 +146,7 @@ const LoginLogOutButton = () => {
         className="px-10 py-2 font-semibold text-gray-900 no-underline transition hover:bg-white/20"
         onClick={sessionData ? () => void signOut() : () => void signIn()}
       >
-        {sessionData ? "Sign out" : "Sign in"}
+        {sessionData ? "Izlogoties " : "Ielogoties"}
       </button>
     </div>
   );
