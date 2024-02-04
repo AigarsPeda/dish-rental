@@ -1,13 +1,11 @@
 import { z } from "zod";
-
 import {
   createTRPCRouter,
   protectedProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
 import { posts } from "~/server/db/schema";
-import { env } from "../../../env";
-import { utapi } from "../../uploadthing";
+import { utapi } from "~/server/uploadthing";
 
 export const postRouter = createTRPCRouter({
   hello: publicProcedure
