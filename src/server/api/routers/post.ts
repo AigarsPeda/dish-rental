@@ -6,6 +6,8 @@ import {
   publicProcedure,
 } from "~/server/api/trpc";
 import { posts } from "~/server/db/schema";
+import { env } from "../../../env";
+import { utapi } from "../../uploadthing";
 
 export const postRouter = createTRPCRouter({
   hello: publicProcedure
@@ -37,4 +39,19 @@ export const postRouter = createTRPCRouter({
   getSecretMessage: protectedProcedure.query(() => {
     return "you can now see this secret message!";
   }),
+
+  deleteImage: protectedProcedure
+    .input(z.string())
+    .mutation(async ({ input }) => {
+      await utapi.deleteFiles(input);
+      return `deleted image: ${input}`;
+    }),
 });
+
+// export function generateUploadThingURL(path: `/${string}`) {
+//   let host = "https://uploadthing.com";
+//   if (process.env.CUSTOM_INFRA_URL) {
+//     host = process.env.CUSTOM_INFRA_URL;
+//   }
+//   return `${host}${path}`;
+// }

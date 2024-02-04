@@ -1,4 +1,5 @@
 import { createRouteHandler } from "uploadthing/next-legacy";
+import { UTApi } from "uploadthing/server";
 
 import { uploadRouter } from "~/server/uploadthing";
 
@@ -7,3 +8,6 @@ const handler = createRouteHandler({
 });
 
 export default handler;
+
+// url: "https://utfs.io/f/2f766643-edc8-41f5-9c20-e8bb2ab7ca70-1vuq0w.png"
+// key: "2f766643-edc8-41f5-9c20-e8bb2ab7ca70-1vuq0w.png"

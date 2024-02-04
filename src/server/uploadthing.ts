@@ -2,6 +2,9 @@
 
 import { createUploadthing } from "uploadthing/next";
 import type { FileRouter } from "uploadthing/next";
+import { UTApi } from "uploadthing/server";
+
+export const utapi = new UTApi();
 
 const f = createUploadthing({
   /**
@@ -38,6 +41,7 @@ export const uploadRouter = {
     //   },
     // })
     .middleware(({ req }) => {
+      console.log("middleware", req);
       // const { userId } = getAuth(req);
 
       const userId = "123";

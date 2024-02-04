@@ -7,6 +7,8 @@ import { UploadButton } from "~/utils/uploadthing";
 export default function Home() {
   const hello = api.post.hello.useQuery({ text: "from tRPC" });
 
+  const { mutate } = api.post.deleteImage.useMutation();
+
   return (
     <>
       <Head>
@@ -41,6 +43,7 @@ export default function Home() {
           onClientUploadComplete={(res) => {
             // Do something with the response
             console.log("Files: ", res);
+            // TODO: save url to db with id of the user
             alert("Upload Completed");
           }}
           onUploadError={(error: Error) => {
@@ -48,6 +51,16 @@ export default function Home() {
             alert(`ERROR! ${error.message}`);
           }}
         />
+        <button
+          onClick={() =>
+            // deleteFiles("4867186a-23e9-45e1-bbde-517f1865ed95-hk0kl7.png")
+            // mutate("4867186a-23e9-45e1-bbde-517f1865ed95-hk0kl7.png")
+            // deleteValue()
+            mutate("2f766643-edc8-41f5-9c20-e8bb2ab7ca70-1vuq0w.png")
+          }
+        >
+          Delete image
+        </button>
       </main>
     </>
   );
