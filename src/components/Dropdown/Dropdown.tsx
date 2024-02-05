@@ -1,16 +1,22 @@
-import { useRef, useState, type FC } from "react";
+import { useRef, type FC } from "react";
 import useDelayUnmount from "~/hooks/useDelayUnmount";
 import useOnClickOutside from "~/hooks/useOnClickOutside";
 import classNames from "~/utils/classNames";
 
 interface DropdownProps {
-  title: string;
+  title: string | JSX.Element;
   children: JSX.Element | JSX.Element[];
+  isDropdownOpen: boolean;
+  setIsDropdownOpen: (value: boolean) => void;
 }
 
-const Dropdown: FC<DropdownProps> = ({ title, children }) => {
+const Dropdown: FC<DropdownProps> = ({
+  title,
+  children,
+  isDropdownOpen,
+  setIsDropdownOpen,
+}) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   useOnClickOutside(dropdownRef, () => setIsDropdownOpen(false));
   const { shouldRender, isAnimation } = useDelayUnmount(isDropdownOpen, 100);
 
@@ -19,14 +25,13 @@ const Dropdown: FC<DropdownProps> = ({ title, children }) => {
       <div>
         <button
           type="button"
-          className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+          className="inline-flex w-full items-center justify-center gap-x-1.5 rounded-md bg-gray-800 px-3 py-2 text-sm font-semibold text-gray-50 shadow-sm ring-1 ring-inset ring-gray-800 hover:bg-gray-800"
           id="menu-button"
           aria-expanded="true"
           aria-haspopup="true"
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
         >
           {title}
-
           <svg
             className="-mr-1 h-5 w-5 text-gray-400"
             viewBox="0 0 20 20"
@@ -34,9 +39,9 @@ const Dropdown: FC<DropdownProps> = ({ title, children }) => {
             aria-hidden="true"
           >
             <path
-              fill-rule="evenodd"
+              fillRule="evenodd"
               d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-              clip-rule="evenodd"
+              clipRule="evenodd"
             />
           </svg>
         </button>

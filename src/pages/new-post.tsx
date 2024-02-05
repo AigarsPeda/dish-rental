@@ -8,7 +8,7 @@ import ProfileDropdown from "~/components/ProfileDropdown/ProfileDropdown";
 import PageHead from "~/components/PageHead/PageHead";
 import { type NextPage } from "next";
 
-const Home: NextPage = () => {
+const NewPost: NextPage = () => {
   const hello = api.post.hello.useQuery({ text: "from tRPC" });
 
   const { mutate } = api.post.deleteImage.useMutation();
@@ -24,70 +24,20 @@ const Home: NextPage = () => {
   return (
     <>
       <PageHead
-        title="Trauku noma"
+        title="Trauku noma | Izveidot jaunu sludinājumu"
         descriptionShort="Nomā vai iznomā traukus"
         descriptionLong="Nomā vai iznomā traukus"
       />
       <main className="min-h-screen bg-gray-100 bg-gradient-to-b">
-        <div className="flex w-full items-center justify-center pt-4">
-          {/* <Card /> */}
-          <div className="grid w-full grid-cols-[repeat(auto-fit,minmax(310px,1fr))] gap-5 px-4">
-            {createArray(10).map((i) => (
-              <Card key={i} />
-            ))}
-          </div>
-        </div>
-        {/* <Card /> */}
-        {/* <div className="flex flex-col items-center justify-center gap-4">
-          <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
-            Dish rental
-          </h1>
-          <h2 className="text-2xl text-white">
-            Rent your dishes and make money
-          </h2>
-          <Image
-            src="/images/dish_rent.png"
-            alt="dish-rental"
-            width={500}
-            height={500}
-          />
-        </div> */}
-
-        {/* <div className="flex flex-col items-center gap-2">
-          <p className="text-3xl text-white">
-            {hello.data ? hello.data.greeting : "Loading tRPC query..."}
-          </p>
-          <AuthShowcase />
-        </div>
-        <UploadButton
-          endpoint="imageUpload"
-          onClientUploadComplete={(res) => {
-            // Do something with the response
-            console.log("Files: ", res);
-            // TODO: save url to db with id of the user
-            alert("Upload Completed");
-          }}
-          onUploadError={(error: Error) => {
-            // Do something with the error.
-            alert(`ERROR! ${error.message}`);
-          }}
-        />
-        <button
-          onClick={() =>
-            // deleteFiles("4867186a-23e9-45e1-bbde-517f1865ed95-hk0kl7.png")
-            // mutate("4867186a-23e9-45e1-bbde-517f1865ed95-hk0kl7.png")
-            // deleteValue()
-            mutate("2f766643-edc8-41f5-9c20-e8bb2ab7ca70-1vuq0w.png")
-          }
-        >
-          Delete image
-        </button> */}
+        <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
+          Izveidot jaunu sludinājumu
+        </h1>
       </main>
     </>
   );
 };
 
-export default Home;
+export default NewPost;
 
 function AuthShowcase() {
   const { data: sessionData } = useSession();

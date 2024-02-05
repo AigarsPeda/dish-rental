@@ -1,14 +1,17 @@
 import { signIn, signOut, useSession } from "next-auth/react";
-import { type FC } from "react";
+import Link from "next/link";
+import { useState, type FC } from "react";
 import Dropdown from "~/components/Dropdown/Dropdown";
+import ProfileAvatar from "~/components/ProfileDropdown/ProfileAvatar";
 
 const ProfileDropdown: FC = () => {
   const { data: sessionData } = useSession();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   if (!sessionData) {
     return (
       <button
-        className="block w-full px-4 py-2 text-left text-sm font-semibold text-gray-700"
+        className="block w-full px-4 py-2 text-left text-sm font-semibold text-gray-50"
         onClick={() => void signIn()}
       >
         Ielogoties
@@ -18,16 +21,37 @@ const ProfileDropdown: FC = () => {
 
   return (
     <>
-      <Dropdown title={sessionData.user?.name ?? ""}>
-        <a
-          href="#"
-          className="block px-4 py-2 text-sm text-gray-700"
-          role="menuitem"
+      <Dropdown
+        isDropdownOpen={isDropdownOpen}
+        setIsDropdownOpen={setIsDropdownOpen}
+        title={
+          <ProfileAvatar
+            src={sessionData.user?.image}
+            name={sessionData.user?.name ?? "n/a"}
+          />
+        }
+      >
+        <Link
           tabIndex={-1}
+          role="menuitem"
           id="menu-item-0"
+          href="/new-post"
+          onClick={() => setIsDropdownOpen(false)}
+          className="block px-4 py-2 text-sm text-gray-700"
         >
-          Mans profils
-        </a>
+          Jauns sludinājums
+        </Link>
+        <Link
+          tabIndex={-1}
+          role="menuitem"
+          id="menu-item-0"
+          href="/my-posts"
+          onClick={() => setIsDropdownOpen(false)}
+          className="block px-4 py-2 text-sm text-gray-700"
+        >
+          Mani sludinājumi
+        </Link>
+
         <button
           className="block w-full px-4 py-2 text-left text-sm font-semibold text-gray-700"
           role="menuitem"
