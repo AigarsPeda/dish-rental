@@ -1,11 +1,11 @@
-import { useRef, type FC } from "react";
+import { useRef, type FC, type ReactNode } from "react";
 import useDelayUnmount from "~/hooks/useDelayUnmount";
 import useOnClickOutside from "~/hooks/useOnClickOutside";
 import classNames from "~/utils/classNames";
 
 interface DropdownProps {
-  title: string | JSX.Element;
-  children: JSX.Element | JSX.Element[];
+  title: string | ReactNode;
+  children: ReactNode;
   isDropdownOpen: boolean;
   setIsDropdownOpen: (value: boolean) => void;
 }
@@ -62,44 +62,6 @@ const Dropdown: FC<DropdownProps> = ({
         >
           <div className="py-1" role="none">
             {children}
-            {/* <a
-              href="#"
-              className="block px-4 py-2 text-sm text-gray-700"
-              role="menuitem"
-              tabIndex={-1}
-              id="menu-item-0"
-            >
-              Account settings
-            </a>
-            <a
-              href="#"
-              className="block px-4 py-2 text-sm text-gray-700"
-              role="menuitem"
-              tabIndex={-1}
-              id="menu-item-1"
-            >
-              Support
-            </a>
-            <a
-              href="#"
-              className="block px-4 py-2 text-sm text-gray-700"
-              role="menuitem"
-              tabIndex={-1}
-              id="menu-item-2"
-            >
-              License
-            </a>
-            <form method="POST" action="#" role="none">
-              <button
-                type="submit"
-                className="block w-full px-4 py-2 text-left text-sm text-gray-700"
-                role="menuitem"
-                tabIndex={-1}
-                id="menu-item-3"
-              >
-                Sign out
-              </button>
-            </form> */}
           </div>
         </div>
       )}

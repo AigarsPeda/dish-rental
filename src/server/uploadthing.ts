@@ -1,8 +1,7 @@
-// import { getAuth } from "@clerk/nextjs/server";
-
-import { createUploadthing } from "uploadthing/next";
-import type { FileRouter } from "uploadthing/next";
-import { UTApi } from "uploadthing/server";
+import { type GetServerSidePropsContext } from "next";
+import { createUploadthing, type FileRouter } from "uploadthing/next";
+import { UTApi, UploadThingError } from "uploadthing/server";
+import { getServerAuthSession } from "~/server/auth";
 
 export const utapi = new UTApi();
 
@@ -27,30 +26,23 @@ export const uploadRouter = {
   imageUpload: f({
     // key determines allowed file types
     image: {
-      maxFileSize: "4MB",
+      maxFileSize: "2MB",
       maxFileCount: 4,
     },
   })
-    // videoAndImage: f({
-    //   image: {
-    //     maxFileSize: "4MB",
-    //     maxFileCount: 4,
-    //   },
-    //   video: {
-    //     maxFileSize: "16MB",
-    //   },
-    // })
-    .middleware(({ req }) => {
-      console.log("middleware", req);
-      // const { userId } = getAuth(req);
+    .middleware(async ({ req, res }) => {
+      const request = req as unknown as GetServerSidePropsContext["req"];
+      const response = res as unknown as GetServerSidePropsContext["res"];
 
-      const userId = "123";
+      const session = await getServerAuthSession({
+        req: request,
+        res: response,
+      });
 
-      if (!userId) {
-        throw new Error("Please sign in");
-      }
+      if (!session?.user.id)
+        throw new UploadThingError("Please sign in, No user ID");
 
-      return { userId };
+      return { userId: session?.user.id };
     })
     .onUploadComplete(({ file, metadata }) => {
       metadata;
