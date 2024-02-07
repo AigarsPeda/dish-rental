@@ -1,23 +1,18 @@
 import { type NextPage } from "next";
 import { useSession } from "next-auth/react";
+import { useState } from "react";
 import PageHead from "~/components/PageHead/PageHead";
+import SignInModal from "~/components/SignInModal/SignInModal";
 import { api } from "~/utils/api";
-import { UploadDropzone } from "~/utils/uploadthing";
 import classNames from "~/utils/classNames";
+import { UploadDropzone } from "~/utils/uploadthing";
 
 const NewPost: NextPage = () => {
   const { data: sessionData } = useSession();
+  const [isNeedToSignIn, setIsNeedToSignIn] = useState(false);
   const hello = api.post.hello.useQuery({ text: "from tRPC" });
 
   const { mutate } = api.post.deleteImage.useMutation();
-
-  const createArray = (length: number) => {
-    const arr = [];
-    for (let i = 0; i < length; i++) {
-      arr.push(i);
-    }
-    return arr;
-  };
 
   return (
     <>
@@ -115,7 +110,6 @@ const NewPost: NextPage = () => {
                       Produkta attēli
                     </label>
                     <div className="">
-                      {/* <div className="text-center"> */}
                       <UploadDropzone
                         endpoint="imageUpload"
                         onClientUploadComplete={(res) => {
@@ -125,12 +119,14 @@ const NewPost: NextPage = () => {
                           alert("Upload Completed");
                         }}
                         onUploadError={(error: Error) => {
-                          // Do something with the error.
+                          if (error.message === "Please sign in, No user ID") {
+                            setIsNeedToSignIn(true);
+                          }
                           console.error("Error: ", error);
-                          alert(`ERROR! ${error.message}`);
                         }}
                         content={{
                           button: "Pievienot attēlu",
+                          allowedContent: "Attēli līdz 2MB, maksimums 4 attēli",
                           label:
                             "Izvēlieties attēlu vai velciet un nometiet šeit",
                         }}
@@ -151,6 +147,11 @@ const NewPost: NextPage = () => {
                   </div>
                 </div>
               </div>
+
+              <SignInModal
+                isNeedToSignIn={isNeedToSignIn}
+                setIsNeedToSignIn={setIsNeedToSignIn}
+              />
 
               {/* <div className="border-b border-gray-900/10 pb-12">
                 <h2 className="text-base font-semibold leading-7 text-gray-900">

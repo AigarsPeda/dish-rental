@@ -7,6 +7,7 @@ import Card from "~/components/Card/Card";
 import ProfileDropdown from "~/components/ProfileDropdown/ProfileDropdown";
 import PageHead from "~/components/PageHead/PageHead";
 import { type NextPage } from "next";
+import { useDropzone } from "@uploadthing/react";
 
 const Home: NextPage = () => {
   const hello = api.post.hello.useQuery({ text: "from tRPC" });
