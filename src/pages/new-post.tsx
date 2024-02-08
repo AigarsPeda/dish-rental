@@ -6,6 +6,7 @@ import SignInModal from "~/components/SignInModal/SignInModal";
 import { api } from "~/utils/api";
 import classNames from "~/utils/classNames";
 import { UploadDropzone } from "~/utils/uploadthing";
+import DropZone from "~/components/DropZone/DropZone";
 
 const NewPost: NextPage = () => {
   const { data: sessionData } = useSession();
@@ -109,7 +110,12 @@ const NewPost: NextPage = () => {
                     >
                       Produkta attēli
                     </label>
-                    <div className="">
+                    <DropZone
+                      handleSignIn={() => {
+                        setIsNeedToSignIn(true);
+                      }}
+                    />
+                    {/* <div className="">
                       <UploadDropzone
                         endpoint="imageUpload"
                         onClientUploadComplete={(res) => {
@@ -143,7 +149,7 @@ const NewPost: NextPage = () => {
                           ),
                         }}
                       />
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               </div>
