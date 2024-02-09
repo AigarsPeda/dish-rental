@@ -131,12 +131,12 @@ const DropZone: FC<DropZoneProps> = ({ handleSignIn }) => {
                   if (inputStatus === "Loading") return;
 
                   if (!sessionData) {
-                    handleSignIn();
+                    void handleSignIn();
                     return;
                   }
 
-                  setInputStatus("Loading");
-                  startUpload(files);
+                  void setInputStatus("Loading");
+                  void startUpload(files);
                 }}
               >
                 {inputStatus === "Idle" && `Upload ${files.length} files`}
