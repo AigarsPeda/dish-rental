@@ -1,6 +1,12 @@
 import { useSession } from "next-auth/react";
-import { useState, type FC } from "react";
+import { useEffect, useState, type FC } from "react";
+import Spinner from "src/components/Spinner/Spinner";
 import { useUploadThing } from "~/utils/uploadthing";
+
+const TWO_MB = 2 * 1024 * 1024;
+
+type InputStatus = "Idle" | "Loading" | "Error" | "Success";
+type FileErrorType = "fileSize" | "fileType" | "Something went wrong" | null;
 
 interface DropZoneProps {
   handleSignIn: () => void;
@@ -9,19 +15,49 @@ interface DropZoneProps {
 const DropZone: FC<DropZoneProps> = ({ handleSignIn }) => {
   const { data: sessionData } = useSession();
   const [files, setFiles] = useState<File[]>([]);
+  const [fileError, setFileError] = useState<FileErrorType>(null);
+  const [inputStatus, setInputStatus] = useState<InputStatus>("Idle");
 
   const { startUpload, permittedFileInfo } = useUploadThing("imageUpload", {
     onClientUploadComplete: () => {
       setFiles([]);
-      alert("uploaded successfully!");
+      setInputStatus("Success");
     },
     onUploadError: () => {
-      alert("error occurred while uploading");
+      setInputStatus("Error");
+      setFileError("Something went wrong");
     },
     onUploadBegin: () => {
-      alert("upload has begun");
+      setInputStatus("Loading");
     },
   });
+
+  const checkFiles = (files: File[]) => {
+    for (const file of files) {
+      // check if the file is larger than 2MB
+      if (file.size > TWO_MB) {
+        setFileError("fileSize");
+        return;
+      }
+
+      // check if the file is a jpg
+      if (file.type !== "image/jpeg") {
+        setFileError("fileType");
+        return;
+      }
+
+      setFileError(null);
+    }
+  };
+
+  useEffect(() => {
+    if (inputStatus === "Success") {
+      const timeout = setTimeout(() => {
+        setInputStatus("Idle");
+      }, 3000);
+      return () => clearTimeout(timeout);
+    }
+  }, [inputStatus]);
 
   return (
     <div className="col-span-full">
@@ -45,59 +81,94 @@ const DropZone: FC<DropZoneProps> = ({ handleSignIn }) => {
               clipRule="evenodd"
             />
           </svg>
+
           <div className="mt-4 flex text-sm leading-6 text-gray-600">
             <label
               htmlFor="file-upload"
-              className="cursor-pointer rounded-md bg-white px-2 font-semibold text-gray-900 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
+              className="w-32 cursor-pointer rounded-md bg-white px-2 font-semibold text-gray-900 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
             >
-              <span>Upload a file</span>
+              {inputStatus !== "Loading" ? (
+                <span>Upload a file</span>
+              ) : (
+                <span>Uploading...</span>
+              )}
 
               <input
                 multiple
                 type="file"
                 id="file-upload"
                 name="file-upload"
-                onDrag={(e) => {
-                  e.preventDefault();
-                }}
+                disabled={inputStatus === "Loading"}
                 onDrop={(e) => {
                   e.preventDefault();
-                  if (!sessionData) {
-                    handleSignIn();
-                    return;
-                  }
-                  setFiles(Array.from(e.dataTransfer.files));
-                }}
-                onClick={(e) => {
-                  if (!sessionData) {
-                    e.preventDefault();
-                    handleSignIn();
-                    return;
-                  }
+                  const fileArray = Array.from(e.dataTransfer.files);
+                  checkFiles(fileArray);
+                  setFiles(fileArray);
                 }}
                 className="absolute bottom-0 left-0 right-0 top-0 h-full w-full bg-transparent  opacity-0 "
                 onChange={(e) => {
                   if (e.target.files) {
-                    setFiles(Array.from(e.target.files));
+                    const fileArray = Array.from(e.target.files);
+                    checkFiles(fileArray);
+                    setFiles(fileArray);
                   }
                 }}
               />
             </label>
 
-            <p className="pl-1">or drag and drop</p>
+            {inputStatus !== "Loading" ? (
+              <p className="pl-1">or drag and drop</p>
+            ) : null}
           </div>
-          <div className="py-2">
-            {files.length > 0 && (
+
+          <div className="flex items-center justify-center py-2">
+            {!fileError && files.length > 0 && (
               <button
                 type="button"
-                className="rounded-md bg-gray-900 px-4 py-2 text-sm text-gray-50 "
-                onClick={() => startUpload(files)}
+                disabled={inputStatus === "Loading"}
+                className="relative z-50 flex w-32 items-center justify-center rounded-md bg-gray-900 px-4 py-2 text-sm text-gray-50"
+                onClick={() => {
+                  if (inputStatus === "Loading") return;
+
+                  if (!sessionData) {
+                    handleSignIn();
+                    return;
+                  }
+
+                  setInputStatus("Loading");
+                  startUpload(files);
+                }}
               >
-                Upload {files.length} files
+                {inputStatus === "Idle" && `Upload ${files.length} files`}
+                {inputStatus === "Loading" && <Spinner size="sm" />}
               </button>
             )}
+
+            {inputStatus === "Success" && (
+              <div className="relative z-50 flex w-32 items-center justify-center rounded-md bg-gray-900 px-4 py-2 text-sm text-green-300">
+                <p>Success</p>{" "}
+              </div>
+            )}
+
+            {fileError === "fileSize" && (
+              <p className="text-xs leading-5 text-red-600">
+                File size is too large
+              </p>
+            )}
+
+            {fileError === "fileType" && (
+              <p className="text-xs leading-5 text-red-600">
+                File type is not supported
+              </p>
+            )}
+
+            {fileError === "Something went wrong" && (
+              <p className="text-xs leading-5 text-red-600">
+                Something went wrong
+              </p>
+            )}
           </div>
-          <p className="text-xs leading-5 text-gray-600">PNG, JPG up to 2MB</p>
+          <p className="text-xs leading-5 text-gray-600">JPG up to 2MB</p>
         </div>
       </div>
     </div>

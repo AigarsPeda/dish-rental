@@ -115,41 +115,6 @@ const NewPost: NextPage = () => {
                         setIsNeedToSignIn(true);
                       }}
                     />
-                    {/* <div className="">
-                      <UploadDropzone
-                        endpoint="imageUpload"
-                        onClientUploadComplete={(res) => {
-                          // Do something with the response
-                          console.log("Files: ", res);
-                          // TODO: save url to db with id of the user
-                          alert("Upload Completed");
-                        }}
-                        onUploadError={(error: Error) => {
-                          if (error.message === "Please sign in, No user ID") {
-                            setIsNeedToSignIn(true);
-                          }
-                          console.error("Error: ", error);
-                        }}
-                        content={{
-                          button: "Pievienot attēlu",
-                          allowedContent: "Attēli līdz 2MB, maksimums 4 attēli",
-                          label:
-                            "Izvēlieties attēlu vai velciet un nometiet šeit",
-                        }}
-                        appearance={{
-                          label: classNames(
-                            sessionData ? "text-gray-900" : "text-gray-500",
-                            "block text-sm font-medium leading-6",
-                          ),
-                          button: classNames(
-                            sessionData
-                              ? "bg-gray-900 text-gray-50 hover:bg-gray-600"
-                              : "bg-gray-500",
-                            "rounded-md px-2.5 py-1.5 text-sm font-semibold shadow-sm ring-1 ring-inset ring-gray-300",
-                          ),
-                        }}
-                      />
-                    </div> */}
                   </div>
                 </div>
               </div>
