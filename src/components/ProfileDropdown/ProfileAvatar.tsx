@@ -1,4 +1,6 @@
+import Image from "next/image";
 import { type FC } from "react";
+import ImageLoader from "~/utils/ImageLoader";
 
 interface ProfileAvatarProps {
   name: string;
@@ -9,7 +11,14 @@ const ProfileAvatar: FC<ProfileAvatarProps> = ({ src, name }) => {
   return (
     <>
       {src ? (
-        <img className="h-7 w-7 rounded-full" src={src} alt={name} />
+        <Image
+          src={src}
+          alt={name}
+          width={28}
+          height={28}
+          loader={ImageLoader}
+          className="h-7 w-7 rounded-full"
+        />
       ) : (
         name
       )}
