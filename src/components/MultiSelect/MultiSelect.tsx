@@ -23,9 +23,8 @@ const MultiSelect: FC = () => {
 
   return (
     <div className="relative" ref={dropdownRef}>
-      <button
-        type="button"
-        className="flex h-10 w-full items-center justify-start gap-x-1.5 rounded-md bg-gray-100 px-0.5  py-2 text-sm font-semibold text-gray-800 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-100 focus:ring-gray-800"
+      <div
+        className="flex min-h-10 w-full flex-wrap items-center justify-start gap-x-1.5 rounded-md bg-gray-100 px-0.5 py-2  text-sm font-semibold text-gray-800 shadow-sm ring-1 ring-inset ring-gray-300 hover:cursor-pointer hover:bg-gray-100 focus:ring-gray-800"
         id="menu-button"
         aria-expanded="true"
         aria-haspopup="true"
@@ -54,7 +53,7 @@ const MultiSelect: FC = () => {
             "absolute right-4 top-1/2 -translate-y-1/2  transform  text-gray-800 transition-all",
           )}
         />
-      </button>
+      </div>
       {/* </div> */}
       {shouldRender && (
         <div
