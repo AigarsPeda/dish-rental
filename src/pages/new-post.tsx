@@ -7,6 +7,7 @@ import { api } from "~/utils/api";
 import classNames from "~/utils/classNames";
 import { UploadDropzone } from "~/utils/uploadthing";
 import DropZone from "~/components/DropZone/DropZone";
+import MultiSelect from "../components/MultiSelect/MultiSelect";
 
 const NewPost: NextPage = () => {
   const { data: sessionData } = useSession();
@@ -39,6 +40,13 @@ const NewPost: NextPage = () => {
                   <div className="sm:col-span-6">
                     <label
                       htmlFor="first-name"
+                      className="mb-2 block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Produkta kategorija
+                    </label>
+                    <MultiSelect />
+                    {/* <label
+                      htmlFor="first-name"
                       className="block text-sm font-medium leading-6 text-gray-900"
                     >
                       Produkta kategorija
@@ -51,7 +59,7 @@ const NewPost: NextPage = () => {
                         autoComplete="given-name"
                         className="block w-full rounded-md border-0 bg-transparent py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                       />
-                    </div>
+                    </div> */}
                   </div>
 
                   <div className="col-span-full">
