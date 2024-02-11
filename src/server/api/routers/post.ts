@@ -6,6 +6,7 @@ import {
 } from "~/server/api/trpc";
 import { posts } from "~/server/db/schema";
 import { utapi } from "~/server/uploadthing";
+import { NewPostSchema } from "~/types/post.schema";
 
 export const postRouter = createTRPCRouter({
   hello: publicProcedure
@@ -16,16 +17,32 @@ export const postRouter = createTRPCRouter({
       };
     }),
 
-  create: protectedProcedure
-    .input(z.object({ name: z.string().min(1) }))
-    .mutation(async ({ ctx, input }) => {
-      // simulate a slow db call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+  // type ImageDataType = {
+  //   key: string;
+  //   name: string;
+  //   serverData: unknown;
+  //   size: number;
+  //   url: string;
+  // };
 
-      await ctx.db.insert(posts).values({
-        name: input.name,
-        createdById: ctx.session.user.id,
-      });
+  // type NewPostType = {
+  //   categories: string[];
+  //   description: string;
+  //   imagesData: ImageDataType[];
+  //   name: string;
+  // };
+
+  create: protectedProcedure
+    .input(NewPostSchema)
+    .mutation(async ({ ctx, input }) => {
+      console.log("creating post >>>>>", input);
+      // simulate a slow db call
+      // await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // await ctx.db.insert(posts).values({
+      //   name: input.name,
+      //   createdById: ctx.session.user.id,
+      // });
     }),
 
   getLatest: publicProcedure.query(({ ctx }) => {

@@ -5,6 +5,7 @@ import DropZone from "~/components/DropZone/DropZone";
 import MultiSelect from "~/components/MultiSelect/MultiSelect";
 import PageHead from "~/components/PageHead/PageHead";
 import SignInModal from "~/components/SignInModal/SignInModal";
+import Spinner from "~/components/Spinner/Spinner";
 import useImageUploadThing from "~/hooks/useImageUploadThing";
 import { api } from "~/utils/api";
 
@@ -30,8 +31,13 @@ type FormStateType = {
 
 const NewPost: NextPage = () => {
   const { data: sessionData } = useSession();
+  const [isFormLoading, setIsFormLoading] = useState(false);
   const [isNeedToSignIn, setIsNeedToSignIn] = useState(false);
-  const hello = api.post.hello.useQuery({ text: "from tRPC" });
+  const { mutate } = api.post.create.useMutation({
+    onSuccess: () => {
+      setIsFormLoading(false);
+    },
+  });
 
   const { response, fileError, checkFiles, inputStatus, handelStartUpload } =
     useImageUploadThing();
@@ -43,7 +49,7 @@ const NewPost: NextPage = () => {
     selectedCategories: ["Trauki"],
   });
 
-  const { mutate } = api.post.deleteImage.useMutation();
+  // const { mutate } = api.post.deleteImage.useMutation();
 
   useEffect(() => {
     if (response.length === 0) return;
@@ -54,8 +60,16 @@ const NewPost: NextPage = () => {
       images: [],
     }));
 
-    const imageKeys = response.map((image) => image.key);
-    console.log("imageKeys", imageKeys);
+    console.log("response", response);
+
+    void mutate({
+      name: formsSate.name,
+      imagesData: response,
+      description: formsSate.description,
+      categories: formsSate.selectedCategories,
+    });
+
+    // console.log("newPost", newPost);
     // void mutate({ keys: imageKeys });
   }, [response]);
 
@@ -72,7 +86,17 @@ const NewPost: NextPage = () => {
             className="mx-auto mt-4 max-w-xl px-2"
             onSubmit={(e) => {
               e.preventDefault();
-              console.log("submit", formsSate);
+              if (inputStatus === "Loading" || isFormLoading) return;
+
+              if (!sessionData) {
+                void setIsNeedToSignIn(true);
+                return;
+              }
+
+              setIsFormLoading(true);
+
+              // void setInputStatus("Loading");
+              void handelStartUpload(formsSate.images);
             }}
           >
             <div className="space-y-12">
@@ -171,20 +195,6 @@ const NewPost: NextPage = () => {
                           images: fileArray,
                         }));
                       }}
-                      // handleSignIn={() => {
-                      //   setIsNeedToSignIn(true);
-                      // }}
-                      handleStartUpload={() => {
-                        if (inputStatus === "Loading") return;
-
-                        if (!sessionData) {
-                          void setIsNeedToSignIn(true);
-                          return;
-                        }
-
-                        // void setInputStatus("Loading");
-                        void handelStartUpload(formsSate.images);
-                      }}
                     />
                   </div>
                 </div>
@@ -199,15 +209,25 @@ const NewPost: NextPage = () => {
             <div className="mt-6 flex items-center justify-end gap-x-6">
               <button
                 type="button"
+                disabled={isFormLoading}
                 className="text-sm font-semibold leading-6 text-gray-900"
+                onClick={() => {
+                  setFormsState({
+                    name: "",
+                    images: [],
+                    description: "",
+                    selectedCategories: ["Trauki"],
+                  });
+                }}
               >
                 Atcelt
               </button>
               <button
                 type="submit"
-                className="rounded-md bg-gray-900 px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600"
+                disabled={isFormLoading}
+                className="relative rounded-md  bg-gray-900 px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600"
               >
-                Publicēt
+                {isFormLoading ? <Spinner size="sm" /> : "Izveidot"}
               </button>
             </div>
           </form>

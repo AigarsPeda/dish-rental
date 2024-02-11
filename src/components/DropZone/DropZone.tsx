@@ -11,7 +11,7 @@ interface DropZoneProps {
   images: File[];
   fileError: FileErrorType;
   inputStatus: InputStatus;
-  handleStartUpload: () => void;
+  handleStartUpload?: () => void;
   checkFiles: (files: File[]) => void;
   handelFileUpload: (images: File[]) => void;
 }
@@ -85,7 +85,7 @@ const DropZone: FC<DropZoneProps> = ({
           </div>
 
           <div className="flex items-center justify-center py-2">
-            {!fileError && images.length > 0 && (
+            {!fileError && images.length > 0 && handleStartUpload && (
               <button
                 type="button"
                 onClick={handleStartUpload}
@@ -108,6 +108,28 @@ const DropZone: FC<DropZoneProps> = ({
                   </span>
                 )}
               </button>
+            )}
+
+            {!fileError && images.length > 0 && !handleStartUpload && (
+              <div
+                className={classNames(
+                  inputStatus === "Idle" && "cursor-pointer text-gray-600",
+                  inputStatus === "Loading" &&
+                    "cursor-not-allowed text-gray-600",
+                  inputStatus === "Success" &&
+                    "cursor-not-allowed text-green-300",
+                  "relative z-50 flex w-32 items-center justify-center rounded-md  px-4 py-2 text-sm ",
+                )}
+              >
+                {inputStatus === "Idle" && `Upload ${images.length} files`}
+                {inputStatus === "Loading" && <Spinner size="sm" />}
+                {inputStatus === "Success" && (
+                  <span className="flex items-center justify-center gap-2">
+                    Success
+                    <IoCheckmarkSharp />
+                  </span>
+                )}
+              </div>
             )}
 
             {fileError === "fileSize" && (

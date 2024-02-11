@@ -1,15 +1,8 @@
 import { useEffect, useState } from "react";
+import { ImageDataType } from "~/types/post.schema";
 import { useUploadThing } from "~/utils/uploadthing";
 
 const TWO_MB = 2 * 1024 * 1024;
-
-type ResType = {
-  url: string;
-  key: string;
-  name: string;
-  size: number;
-  serverData: unknown;
-};
 
 export type InputStatus = "Idle" | "Loading" | "Error" | "Success";
 export type FileErrorType =
@@ -19,12 +12,12 @@ export type FileErrorType =
   | "Something went wrong";
 
 const useImageUploadThing = () => {
-  const [response, setResponse] = useState<ResType[]>([]);
+  const [response, setResponse] = useState<ImageDataType[]>([]);
   const [fileError, setFileError] = useState<FileErrorType>(null);
   const [inputStatus, setInputStatus] = useState<InputStatus>("Idle");
 
   const { startUpload, permittedFileInfo } = useUploadThing("imageUpload", {
-    onClientUploadComplete: (res: ResType[]) => {
+    onClientUploadComplete: (res: ImageDataType[]) => {
       setResponse(res);
       setInputStatus("Success");
     },
