@@ -7,6 +7,7 @@ import PageHead from "~/components/PageHead/PageHead";
 import SignInModal from "~/components/SignInModal/SignInModal";
 import Spinner from "~/components/Spinner/Spinner";
 import useImageUploadThing from "~/hooks/useImageUploadThing";
+import useRedirect from "~/hooks/useRedirect";
 import { api } from "~/utils/api";
 
 const ALL_OPTIONS = [
@@ -30,12 +31,14 @@ type FormStateType = {
 };
 
 const NewPost: NextPage = () => {
+  const { redirectToPath } = useRedirect();
   const { data: sessionData } = useSession();
   const [isFormLoading, setIsFormLoading] = useState(false);
   const [isNeedToSignIn, setIsNeedToSignIn] = useState(false);
   const { mutate } = api.post.create.useMutation({
-    onSuccess: () => {
+    onSuccess: (result) => {
       setIsFormLoading(false);
+      redirectToPath(`/post/${result.postId}`);
     },
   });
 
@@ -49,8 +52,6 @@ const NewPost: NextPage = () => {
     selectedCategories: ["Trauki"],
   });
 
-  // const { mutate } = api.post.deleteImage.useMutation();
-
   useEffect(() => {
     if (response.length === 0) return;
 
@@ -60,17 +61,12 @@ const NewPost: NextPage = () => {
       images: [],
     }));
 
-    console.log("response", response);
-
     void mutate({
       name: formsSate.name,
       imagesData: response,
       description: formsSate.description,
       categories: formsSate.selectedCategories,
     });
-
-    // console.log("newPost", newPost);
-    // void mutate({ keys: imageKeys });
   }, [response]);
 
   return (
@@ -95,7 +91,6 @@ const NewPost: NextPage = () => {
 
               setIsFormLoading(true);
 
-              // void setInputStatus("Loading");
               void handelStartUpload(formsSate.images);
             }}
           >

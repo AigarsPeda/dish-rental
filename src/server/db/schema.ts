@@ -31,10 +31,33 @@ export const posts = createTable(
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
     updatedAt: timestamp("updatedAt"),
+    description: text("description"),
+    categories: text("categories"),
   },
   (example) => ({
     createdByIdIdx: index("createdById_idx").on(example.createdById),
     nameIndex: index("name_idx").on(example.name),
+  }),
+);
+
+export const images = createTable(
+  "image",
+  {
+    id: serial("id").primaryKey(),
+    url: varchar("url", { length: 255 }).notNull(),
+    key: varchar("key", { length: 255 }).notNull(),
+    name: varchar("name", { length: 255 }).notNull(),
+    // serverData: text("serverData"),
+    size: integer("size").notNull(),
+    postId: integer("postId")
+      .notNull()
+      .references(() => posts.id),
+    createdAt: timestamp("created_at")
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+  },
+  (example) => ({
+    postIdIdx: index("postId_idx").on(example.postId),
   }),
 );
 

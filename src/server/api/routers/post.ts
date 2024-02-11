@@ -4,7 +4,7 @@ import {
   protectedProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
-import { posts } from "~/server/db/schema";
+import { posts, images } from "~/server/db/schema";
 import { utapi } from "~/server/uploadthing";
 import { NewPostSchema } from "~/types/post.schema";
 
@@ -17,32 +17,40 @@ export const postRouter = createTRPCRouter({
       };
     }),
 
-  // type ImageDataType = {
-  //   key: string;
-  //   name: string;
-  //   serverData: unknown;
-  //   size: number;
-  //   url: string;
-  // };
-
-  // type NewPostType = {
-  //   categories: string[];
-  //   description: string;
-  //   imagesData: ImageDataType[];
-  //   name: string;
-  // };
-
   create: protectedProcedure
     .input(NewPostSchema)
     .mutation(async ({ ctx, input }) => {
-      console.log("creating post >>>>>", input);
-      // simulate a slow db call
-      // await new Promise((resolve) => setTimeout(resolve, 1000));
+      const ids = await ctx.db
+        .insert(posts)
+        .values({
+          name: input.name,
+          description: input.description,
+          createdById: ctx.session.user.id,
+          categories: input.categories.join(","),
+        })
+        .returning({ id: posts.id });
 
-      // await ctx.db.insert(posts).values({
-      //   name: input.name,
-      //   createdById: ctx.session.user.id,
-      // });
+      const postId = ids[0]?.id;
+
+      if (!postId) {
+        throw new Error("failed to create post");
+      }
+
+      await ctx.db.insert(images).values(
+        input.imagesData.map((image) => {
+          return {
+            postId: postId,
+            url: image.url,
+            key: image.key,
+            name: image.name,
+            size: image.size,
+          };
+        }),
+      );
+
+      return {
+        postId,
+      };
     }),
 
   getLatest: publicProcedure.query(({ ctx }) => {
