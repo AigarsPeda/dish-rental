@@ -29,19 +29,19 @@ const MultiSelect: FC<MultiSelectProps> = ({
         aria-haspopup="true"
         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
       >
-        <div className=" flex flex-wrap">
+        <div className="flex flex-wrap">
           {selected.map((item) => (
             <button
               key={item}
               type="button"
-              className="group relative rounded px-6 py-2 text-gray-800  transition-all hover:bg-gray-200"
+              className="group relative my-0.5 rounded px-2 py-2 text-gray-800  transition-all hover:bg-gray-200"
               onClick={(e) => {
                 e.stopPropagation();
                 setSelected(selected.filter((i) => i !== item));
               }}
             >
               {item}
-              <span className="absolute right-1 top-1 text-red-500 opacity-0 group-hover:opacity-100 ">
+              <span className="absolute right-0 top-0 text-red-500 opacity-0 group-hover:opacity-100 ">
                 <IoClose />
               </span>
             </button>

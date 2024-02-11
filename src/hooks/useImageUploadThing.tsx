@@ -3,20 +3,29 @@ import { useUploadThing } from "~/utils/uploadthing";
 
 const TWO_MB = 2 * 1024 * 1024;
 
+type ResType = {
+  url: string;
+  key: string;
+  name: string;
+  size: number;
+  serverData: unknown;
+};
+
 export type InputStatus = "Idle" | "Loading" | "Error" | "Success";
 export type FileErrorType =
+  | null
   | "fileSize"
   | "fileType"
-  | "Something went wrong"
-  | null;
+  | "Something went wrong";
 
 const useImageUploadThing = () => {
+  const [response, setResponse] = useState<ResType[]>([]);
   const [fileError, setFileError] = useState<FileErrorType>(null);
   const [inputStatus, setInputStatus] = useState<InputStatus>("Idle");
 
   const { startUpload, permittedFileInfo } = useUploadThing("imageUpload", {
-    onClientUploadComplete: () => {
-      // handelFileUpload([]);
+    onClientUploadComplete: (res: ResType[]) => {
+      setResponse(res);
       setInputStatus("Success");
     },
     onUploadError: () => {
@@ -36,8 +45,11 @@ const useImageUploadThing = () => {
         return;
       }
 
-      // check if the file is a jpg
-      if (file.type !== "image/jpeg") {
+      if (
+        file.type !== "image/jpeg" &&
+        file.type !== "image/png" &&
+        file.type !== "image/webp"
+      ) {
         setFileError("fileType");
         return;
       }
@@ -63,6 +75,7 @@ const useImageUploadThing = () => {
   }, [inputStatus]);
 
   return {
+    response,
     fileError,
     checkFiles,
     inputStatus,

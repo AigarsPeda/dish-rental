@@ -1,6 +1,6 @@
 import { type NextPage } from "next";
 import { useSession } from "next-auth/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DropZone from "~/components/DropZone/DropZone";
 import MultiSelect from "~/components/MultiSelect/MultiSelect";
 import PageHead from "~/components/PageHead/PageHead";
@@ -33,7 +33,7 @@ const NewPost: NextPage = () => {
   const [isNeedToSignIn, setIsNeedToSignIn] = useState(false);
   const hello = api.post.hello.useQuery({ text: "from tRPC" });
 
-  const { checkFiles, fileError, inputStatus, handelStartUpload } =
+  const { response, fileError, checkFiles, inputStatus, handelStartUpload } =
     useImageUploadThing();
 
   const [formsSate, setFormsState] = useState<FormStateType>({
@@ -45,6 +45,20 @@ const NewPost: NextPage = () => {
 
   const { mutate } = api.post.deleteImage.useMutation();
 
+  useEffect(() => {
+    if (response.length === 0) return;
+
+    // reset the form state for images
+    setFormsState((prev) => ({
+      ...prev,
+      images: [],
+    }));
+
+    const imageKeys = response.map((image) => image.key);
+    console.log("imageKeys", imageKeys);
+    // void mutate({ keys: imageKeys });
+  }, [response]);
+
   return (
     <>
       <PageHead
@@ -52,10 +66,15 @@ const NewPost: NextPage = () => {
         descriptionShort="Nomā vai iznomā traukus"
         descriptionLong="Nomā vai iznomā traukus"
       />
-      {console.log("formsSate", formsSate)}
       <main className="min-h-screen bg-gray-100 bg-gradient-to-b">
-        <div className="flex w-full  items-center justify-center text-center">
-          <form className="mx-auto mt-4 max-w-xl px-2">
+        <div className="flex w-full items-center justify-center text-center">
+          <form
+            className="mx-auto mt-4 max-w-xl px-2"
+            onSubmit={(e) => {
+              e.preventDefault();
+              console.log("submit", formsSate);
+            }}
+          >
             <div className="space-y-12">
               <div className="border-b border-gray-900/10 pb-12">
                 <h2 className="text-base font-semibold leading-7 text-gray-900">
@@ -80,7 +99,7 @@ const NewPost: NextPage = () => {
                         id="product-name"
                         name="product-name"
                         autoComplete="given-name"
-                        className="block w-full rounded-md border-0 bg-transparent py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border-0 bg-transparent px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                         value={formsSate.name}
                         onChange={(e) => {
                           setFormsState((prev) => ({
@@ -125,7 +144,7 @@ const NewPost: NextPage = () => {
                         rows={3}
                         id="product-description"
                         name="product-description"
-                        className="block w-full rounded-md border-0 bg-transparent py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border-0 bg-transparent px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                         value={formsSate.description}
                         onChange={(e) => {
                           setFormsState((prev) => ({
