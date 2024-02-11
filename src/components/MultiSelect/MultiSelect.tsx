@@ -23,34 +23,36 @@ const MultiSelect: FC<MultiSelectProps> = ({
   return (
     <div className="relative" ref={dropdownRef}>
       <div
-        className="flex min-h-10 w-full flex-wrap items-center justify-start gap-x-1.5 rounded-md bg-gray-100 px-0.5 text-sm font-semibold text-gray-800 shadow-sm ring-1 ring-inset ring-gray-300 hover:cursor-pointer hover:bg-gray-100 focus:ring-gray-800"
+        className="flex min-h-10 w-full items-center justify-between gap-x-0.5 rounded-md bg-gray-100 px-0.5 text-sm font-semibold text-gray-800 shadow-sm ring-1 ring-inset ring-gray-300 hover:cursor-pointer hover:bg-gray-100 focus:ring-gray-800"
         id="menu-button"
         aria-expanded="true"
         aria-haspopup="true"
         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
       >
-        {selected.map((item) => (
-          <button
-            key={item}
-            type="button"
-            className="group relative rounded px-6 py-2 text-gray-800  transition-all hover:bg-gray-200"
-            onClick={(e) => {
-              e.stopPropagation();
-              setSelected(selected.filter((i) => i !== item));
-            }}
-          >
-            {item}
-            <span className="absolute right-1 top-1 text-red-500 opacity-0 group-hover:opacity-100 ">
-              <IoClose />
-            </span>
-          </button>
-        ))}
+        <div className=" flex flex-wrap">
+          {selected.map((item) => (
+            <button
+              key={item}
+              type="button"
+              className="group relative rounded px-6 py-2 text-gray-800  transition-all hover:bg-gray-200"
+              onClick={(e) => {
+                e.stopPropagation();
+                setSelected(selected.filter((i) => i !== item));
+              }}
+            >
+              {item}
+              <span className="absolute right-1 top-1 text-red-500 opacity-0 group-hover:opacity-100 ">
+                <IoClose />
+              </span>
+            </button>
+          ))}
+        </div>
 
         <button
           type="button"
           className={classNames(
             isDropdownOpen ? "rotate-180" : "rotate-0",
-            "absolute right-4 top-1/2 -translate-y-1/2  transform  text-gray-800 transition-all",
+            "flex h-full w-10 transform items-center justify-center text-gray-800 transition-all",
           )}
         >
           <IoChevronDownOutline />

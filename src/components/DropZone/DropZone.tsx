@@ -1,71 +1,36 @@
-import { useSession } from "next-auth/react";
-import { useEffect, useState, type FC } from "react";
+import { type FC } from "react";
 import Spinner from "src/components/Spinner/Spinner";
-import { useUploadThing } from "~/utils/uploadthing";
-
-const TWO_MB = 2 * 1024 * 1024;
-
-type InputStatus = "Idle" | "Loading" | "Error" | "Success";
-type FileErrorType = "fileSize" | "fileType" | "Something went wrong" | null;
+import { classNames } from "uploadthing/client";
+import {
+  type FileErrorType,
+  type InputStatus,
+} from "~/hooks/useImageUploadThing";
+import { IoCheckmarkSharp } from "react-icons/io5";
 
 interface DropZoneProps {
-  handleSignIn: () => void;
+  images: File[];
+  fileError: FileErrorType;
+  inputStatus: InputStatus;
+  handleStartUpload: () => void;
+  checkFiles: (files: File[]) => void;
+  handelFileUpload: (images: File[]) => void;
 }
 
-const DropZone: FC<DropZoneProps> = ({ handleSignIn }) => {
-  const { data: sessionData } = useSession();
-  const [files, setFiles] = useState<File[]>([]);
-  const [fileError, setFileError] = useState<FileErrorType>(null);
-  const [inputStatus, setInputStatus] = useState<InputStatus>("Idle");
-
-  const { startUpload, permittedFileInfo } = useUploadThing("imageUpload", {
-    onClientUploadComplete: () => {
-      setFiles([]);
-      setInputStatus("Success");
-    },
-    onUploadError: () => {
-      setInputStatus("Error");
-      setFileError("Something went wrong");
-    },
-    onUploadBegin: () => {
-      setInputStatus("Loading");
-    },
-  });
-
-  const checkFiles = (files: File[]) => {
-    for (const file of files) {
-      // check if the file is larger than 2MB
-      if (file.size > TWO_MB) {
-        setFileError("fileSize");
-        return;
-      }
-
-      // check if the file is a jpg
-      if (file.type !== "image/jpeg") {
-        setFileError("fileType");
-        return;
-      }
-
-      setFileError(null);
-    }
-  };
-
-  useEffect(() => {
-    if (inputStatus === "Success") {
-      const timeout = setTimeout(() => {
-        setInputStatus("Idle");
-      }, 3000);
-      return () => clearTimeout(timeout);
-    }
-  }, [inputStatus]);
-
+const DropZone: FC<DropZoneProps> = ({
+  images,
+  fileError,
+  inputStatus,
+  checkFiles,
+  handelFileUpload,
+  handleStartUpload,
+}) => {
   return (
     <div className="col-span-full">
       <label
         htmlFor="cover-photo"
-        className="block text-sm font-medium leading-6 text-gray-900"
+        className="block font-medium leading-6 text-gray-900"
       >
-        Cover photo
+        Produkta attēli
       </label>
       <div className="relative mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
         <div className="text-center">
@@ -87,11 +52,9 @@ const DropZone: FC<DropZoneProps> = ({ handleSignIn }) => {
               htmlFor="file-upload"
               className="w-32 cursor-pointer rounded-md bg-white px-2 font-semibold text-gray-900 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
             >
-              {inputStatus !== "Loading" ? (
-                <span>Upload a file</span>
-              ) : (
-                <span>Uploading...</span>
-              )}
+              {inputStatus !== "Loading" && <span>Upload a file</span>}
+              {inputStatus === "Loading" && <span>Uploading...</span>}
+              {/* {inputStatus === "Success" && <span>Success</span>} */}
 
               <input
                 multiple
@@ -103,14 +66,14 @@ const DropZone: FC<DropZoneProps> = ({ handleSignIn }) => {
                   e.preventDefault();
                   const fileArray = Array.from(e.dataTransfer.files);
                   checkFiles(fileArray);
-                  setFiles(fileArray);
+                  handelFileUpload(fileArray);
                 }}
                 className="absolute bottom-0 left-0 right-0 top-0 h-full w-full bg-transparent  opacity-0 "
                 onChange={(e) => {
                   if (e.target.files) {
                     const fileArray = Array.from(e.target.files);
                     checkFiles(fileArray);
-                    setFiles(fileArray);
+                    handelFileUpload(fileArray);
                   }
                 }}
               />
@@ -122,32 +85,29 @@ const DropZone: FC<DropZoneProps> = ({ handleSignIn }) => {
           </div>
 
           <div className="flex items-center justify-center py-2">
-            {!fileError && files.length > 0 && (
+            {!fileError && images.length > 0 && (
               <button
                 type="button"
+                onClick={handleStartUpload}
                 disabled={inputStatus === "Loading"}
-                className="relative z-50 flex w-32 items-center justify-center rounded-md bg-gray-900 px-4 py-2 text-sm text-gray-50"
-                onClick={() => {
-                  if (inputStatus === "Loading") return;
-
-                  if (!sessionData) {
-                    void handleSignIn();
-                    return;
-                  }
-
-                  void setInputStatus("Loading");
-                  void startUpload(files);
-                }}
+                className={classNames(
+                  inputStatus === "Idle" && "cursor-pointer text-gray-50",
+                  inputStatus === "Loading" &&
+                    "cursor-not-allowed text-gray-50",
+                  inputStatus === "Success" &&
+                    "cursor-not-allowed text-green-300",
+                  "relative z-50 flex w-32 items-center justify-center rounded-md bg-gray-900 px-4 py-2 text-sm ",
+                )}
               >
-                {inputStatus === "Idle" && `Upload ${files.length} files`}
+                {inputStatus === "Idle" && `Upload ${images.length} files`}
                 {inputStatus === "Loading" && <Spinner size="sm" />}
+                {inputStatus === "Success" && (
+                  <span className="flex items-center justify-center gap-2">
+                    Success
+                    <IoCheckmarkSharp />
+                  </span>
+                )}
               </button>
-            )}
-
-            {inputStatus === "Success" && (
-              <div className="relative z-50 flex w-32 items-center justify-center rounded-md bg-gray-900 px-4 py-2 text-sm text-green-300">
-                <p>Success</p>{" "}
-              </div>
             )}
 
             {fileError === "fileSize" && (
