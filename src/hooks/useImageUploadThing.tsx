@@ -55,7 +55,7 @@ const useImageUploadThing = () => {
     if (inputStatus === "Loading" || images.length === 0) return;
 
     setInputStatus("Loading");
-    startUpload(images);
+    void startUpload(images);
   };
 
   useEffect(() => {
