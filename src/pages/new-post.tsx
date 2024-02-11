@@ -1,18 +1,30 @@
 import { type NextPage } from "next";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
+import DropZone from "~/components/DropZone/DropZone";
+import MultiSelect from "~/components/MultiSelect/MultiSelect";
 import PageHead from "~/components/PageHead/PageHead";
 import SignInModal from "~/components/SignInModal/SignInModal";
 import { api } from "~/utils/api";
-import classNames from "~/utils/classNames";
-import { UploadDropzone } from "~/utils/uploadthing";
-import DropZone from "~/components/DropZone/DropZone";
-import MultiSelect from "../components/MultiSelect/MultiSelect";
+
+const ALL_OPTIONS = [
+  "Trauki",
+  "Galda piederumi",
+  "Gatavošana",
+  "Mēbeles un tekstils",
+  "Krūzes un glāzes",
+  "Servēšanas inventārs",
+  "Bāra inventārs",
+  "Dekorācijas galda klāšanai",
+  "Apgaismojums",
+  "Cits",
+];
 
 const NewPost: NextPage = () => {
   const { data: sessionData } = useSession();
   const [isNeedToSignIn, setIsNeedToSignIn] = useState(false);
   const hello = api.post.hello.useQuery({ text: "from tRPC" });
+  const [selected, setSelected] = useState(["Trauki"]);
 
   const { mutate } = api.post.deleteImage.useMutation();
 
@@ -40,16 +52,9 @@ const NewPost: NextPage = () => {
                   <div className="sm:col-span-6">
                     <label
                       htmlFor="first-name"
-                      className="mb-2 block text-sm font-medium leading-6 text-gray-900"
-                    >
-                      Produkta kategorija
-                    </label>
-                    <MultiSelect />
-                    {/* <label
-                      htmlFor="first-name"
                       className="block text-sm font-medium leading-6 text-gray-900"
                     >
-                      Produkta kategorija
+                      Nosaukums
                     </label>
                     <div className="mt-2">
                       <input
@@ -59,7 +64,20 @@ const NewPost: NextPage = () => {
                         autoComplete="given-name"
                         className="block w-full rounded-md border-0 bg-transparent py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                       />
-                    </div> */}
+                    </div>
+                  </div>
+                  <div className="sm:col-span-6">
+                    <label
+                      htmlFor="first-name"
+                      className="mb-2 block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Produkta kategorija
+                    </label>
+                    <MultiSelect
+                      selected={selected}
+                      options={ALL_OPTIONS}
+                      setSelected={setSelected}
+                    />
                   </div>
 
                   <div className="col-span-full">

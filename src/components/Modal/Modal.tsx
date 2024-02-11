@@ -32,8 +32,8 @@ const Modal: FC<ModalProps> = ({
         <>
           <div className="fixed bottom-0 left-0 right-0 top-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden outline-none focus:outline-none">
             <div
-              className="relative mx-auto my-6 w-auto max-w-3xl px-2"
               ref={ref}
+              className="relative mx-auto my-6 w-auto max-w-3xl px-2"
             >
               <div
                 className={classNames(

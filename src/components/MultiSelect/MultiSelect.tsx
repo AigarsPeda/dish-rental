@@ -1,30 +1,29 @@
 import { useRef, useState, type FC } from "react";
-import { IoChevronDownOutline } from "react-icons/io5";
+import { IoChevronDownOutline, IoClose } from "react-icons/io5";
 import useDelayUnmount from "~/hooks/useDelayUnmount";
 import useOnClickOutside from "~/hooks/useOnClickOutside";
 import classNames from "~/utils/classNames";
 
-const ALL_OPTIONS = [
-  "Plate",
-  "Fast Food",
-  "Dessert",
-  "Salad",
-  "Soup",
-  "Drink",
-  "Other",
-];
+interface MultiSelectProps {
+  options: string[];
+  selected: string[];
+  setSelected: (selected: string[]) => void;
+}
 
-const MultiSelect: FC = () => {
+const MultiSelect: FC<MultiSelectProps> = ({
+  options,
+  selected,
+  setSelected,
+}) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   useOnClickOutside(dropdownRef, () => setIsDropdownOpen(false));
   const { shouldRender, isAnimation } = useDelayUnmount(isDropdownOpen, 100);
-  const [selected, setSelected] = useState(["Plate", "Fast Food", "Dessert"]);
 
   return (
     <div className="relative" ref={dropdownRef}>
       <div
-        className="flex min-h-10 w-full flex-wrap items-center justify-start gap-x-1.5 rounded-md bg-gray-100 px-0.5 py-2  text-sm font-semibold text-gray-800 shadow-sm ring-1 ring-inset ring-gray-300 hover:cursor-pointer hover:bg-gray-100 focus:ring-gray-800"
+        className="flex min-h-10 w-full flex-wrap items-center justify-start gap-x-1.5 rounded-md bg-gray-100 px-0.5 text-sm font-semibold text-gray-800 shadow-sm ring-1 ring-inset ring-gray-300 hover:cursor-pointer hover:bg-gray-100 focus:ring-gray-800"
         id="menu-button"
         aria-expanded="true"
         aria-haspopup="true"
@@ -33,43 +32,45 @@ const MultiSelect: FC = () => {
         {selected.map((item) => (
           <button
             key={item}
+            type="button"
+            className="group relative rounded px-6 py-2 text-gray-800  transition-all hover:bg-gray-200"
             onClick={(e) => {
               e.stopPropagation();
               setSelected(selected.filter((i) => i !== item));
             }}
-            type="button"
-            className="group relative rounded px-6 py-2 text-gray-800  transition-all hover:bg-gray-200"
           >
             {item}
-            <span className="absolute right-1.5 top-0 text-red-500 opacity-0 group-hover:opacity-100 ">
-              x
+            <span className="absolute right-1 top-1 text-red-500 opacity-0 group-hover:opacity-100 ">
+              <IoClose />
             </span>
           </button>
         ))}
 
-        <IoChevronDownOutline
+        <button
+          type="button"
           className={classNames(
             isDropdownOpen ? "rotate-180" : "rotate-0",
             "absolute right-4 top-1/2 -translate-y-1/2  transform  text-gray-800 transition-all",
           )}
-        />
+        >
+          <IoChevronDownOutline />
+        </button>
       </div>
-      {/* </div> */}
       {shouldRender && (
         <div
+          role="menu"
+          tabIndex={-1}
+          aria-orientation="vertical"
+          aria-labelledby="menu-button"
           className={classNames(
             isAnimation
               ? "visible translate-x-0 scale-100 opacity-100"
               : "invisible scale-95 opacity-0",
             "absolute right-0 z-10 mt-2 w-full origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 transition-all duration-150 focus:outline-none",
           )}
-          role="menu"
-          aria-orientation="vertical"
-          aria-labelledby="menu-button"
-          tabIndex={-1}
         >
           <div className="py-1" role="none">
-            {ALL_OPTIONS.map((option) => (
+            {options.map((option) => (
               <button
                 key={option}
                 type="button"

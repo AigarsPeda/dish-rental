@@ -1,6 +1,6 @@
 import { type GetServerSidePropsContext } from "next";
 import { createUploadthing, type FileRouter } from "uploadthing/next";
-import { UTApi, UploadThingError } from "uploadthing/server";
+import { UploadThingError, UTApi } from "uploadthing/server";
 import { getServerAuthSession } from "~/server/auth";
 
 export const utapi = new UTApi();

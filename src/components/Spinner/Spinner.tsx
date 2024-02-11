@@ -1,4 +1,3 @@
-import { int } from "drizzle-orm/mysql-core";
 import { type FC } from "react";
 import { classNames } from "uploadthing/client";
 

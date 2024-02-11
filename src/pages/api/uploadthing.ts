@@ -7,6 +7,3 @@ const handler = createRouteHandler({
 });
 
 export default handler;
-
-// url: "https://utfs.io/f/2f766643-edc8-41f5-9c20-e8bb2ab7ca70-1vuq0w.png"
-// key: "2f766643-edc8-41f5-9c20-e8bb2ab7ca70-1vuq0w.png"

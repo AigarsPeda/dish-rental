@@ -49,14 +49,14 @@ const ProfileDropdown: FC = () => {
         )}
 
         <button
+          tabIndex={-1}
+          role="menuitem"
+          id="menu-item-3"
+          onClick={sessionData ? () => void signOut() : () => void signIn()}
           className={classNames(
             !sessionData ? "font-semibold" : "font-normal",
             "block w-full px-4 py-2 text-left text-sm text-gray-700",
           )}
-          role="menuitem"
-          tabIndex={-1}
-          id="menu-item-3"
-          onClick={sessionData ? () => void signOut() : () => void signIn()}
         >
           {sessionData ? "Izlogoties" : "Ielogoties"}
         </button>
