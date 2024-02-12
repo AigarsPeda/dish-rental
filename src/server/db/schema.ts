@@ -47,7 +47,6 @@ export const images = createTable(
     url: varchar("url", { length: 255 }).notNull(),
     key: varchar("key", { length: 255 }).notNull(),
     name: varchar("name", { length: 255 }).notNull(),
-    // serverData: text("serverData"),
     size: integer("size").notNull(),
     postId: integer("postId")
       .notNull()
@@ -60,6 +59,15 @@ export const images = createTable(
     postIdIdx: index("postId_idx").on(example.postId),
   }),
 );
+
+// one post can have many images
+export const postRelations = relations(posts, ({ many }) => ({
+  images: many(images),
+}));
+
+export const imageRelations = relations(images, ({ one }) => ({
+  post: one(posts, { fields: [images.postId], references: [posts.id] }),
+}));
 
 export const users = createTable("user", {
   id: varchar("id", { length: 255 }).notNull().primaryKey(),

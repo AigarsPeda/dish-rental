@@ -53,6 +53,19 @@ export const postRouter = createTRPCRouter({
       };
     }),
 
+  getById: publicProcedure
+    .input(z.object({ id: z.number() }))
+    .query(({ input, ctx }) => {
+      const post = ctx.db.query.posts.findFirst({
+        where: (posts, { eq }) => eq(posts.id, input.id),
+        with: {
+          images: true,
+        },
+      });
+
+      return post;
+    }),
+
   getLatest: publicProcedure.query(({ ctx }) => {
     return ctx.db.query.posts.findFirst({
       orderBy: (posts, { desc }) => [desc(posts.createdAt)],
@@ -70,11 +83,3 @@ export const postRouter = createTRPCRouter({
       return `deleted image: ${input}`;
     }),
 });
-
-// export function generateUploadThingURL(path: `/${string}`) {
-//   let host = "https://uploadthing.com";
-//   if (process.env.CUSTOM_INFRA_URL) {
-//     host = process.env.CUSTOM_INFRA_URL;
-//   }
-//   return `${host}${path}`;
-// }

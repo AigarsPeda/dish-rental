@@ -17,7 +17,7 @@ const ProfileAvatar: FC<ProfileAvatarProps> = ({ src, name }) => {
           width={28}
           height={28}
           loader={ImageLoader}
-          className="h-7 w-7 rounded-full"
+          className="h-9 w-9 rounded-full"
         />
       ) : (
         name
