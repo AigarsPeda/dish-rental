@@ -82,7 +82,7 @@ const NewPost: NextPage = () => {
             className="mx-auto mt-4 max-w-xl px-2"
             onSubmit={(e) => {
               e.preventDefault();
-              if (inputStatus === "Loading" || isFormLoading) return;
+              if (inputStatus === "Loading" ?? isFormLoading) return;
 
               if (!sessionData) {
                 void setIsNeedToSignIn(true);

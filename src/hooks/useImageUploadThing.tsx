@@ -52,7 +52,7 @@ const useImageUploadThing = () => {
   };
 
   const handelStartUpload = (images: File[]) => {
-    if (inputStatus === "Loading" || images.length === 0) return;
+    if (inputStatus === "Loading" ?? images.length === 0) return;
 
     setInputStatus("Loading");
     void startUpload(images);

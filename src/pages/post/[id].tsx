@@ -8,7 +8,7 @@ const PostPage: NextPage = () => {
   const router = useRouter();
   const [postId, setPostId] = useState<number | null>(null);
   const post = api.post.getById.useQuery(
-    { id: postId || 0 },
+    { id: postId ?? 0 },
     { enabled: Boolean(postId) },
   );
 
