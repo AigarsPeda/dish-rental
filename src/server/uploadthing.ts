@@ -45,9 +45,7 @@ export const uploadRouter = {
       return { userId: session?.user.id };
     })
     .onUploadComplete(({ file, metadata }) => {
-      metadata;
-      // ^?
-      console.log("upload completed", file);
+      console.log("upload completed", file, metadata);
     }),
 } satisfies FileRouter;
 

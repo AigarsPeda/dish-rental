@@ -69,6 +69,9 @@ const NewPost: NextPage = () => {
     });
   }, [response]);
 
+  // TODO: Price
+  // TODO: Availability
+
   return (
     <>
       <PageHead
