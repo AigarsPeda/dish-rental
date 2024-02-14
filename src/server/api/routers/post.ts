@@ -24,9 +24,11 @@ export const postRouter = createTRPCRouter({
         .insert(posts)
         .values({
           name: input.name,
+          price: input.price,
           description: input.description,
           createdById: ctx.session.user.id,
           categories: input.categories.join(","),
+          availablePieces: input.availablePieces,
         })
         .returning({ id: posts.id });
 

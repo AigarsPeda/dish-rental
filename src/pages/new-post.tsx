@@ -25,8 +25,10 @@ const ALL_OPTIONS = [
 
 type FormStateType = {
   name: string;
+  price: number;
   images: File[];
   description: string;
+  availablePieces: number;
   selectedCategories: string[];
 };
 
@@ -47,8 +49,10 @@ const NewPost: NextPage = () => {
 
   const [formsSate, setFormsState] = useState<FormStateType>({
     name: "",
+    price: 0,
     images: [],
     description: "",
+    availablePieces: 0,
     selectedCategories: ["Trauki"],
   });
 
@@ -64,8 +68,10 @@ const NewPost: NextPage = () => {
     void mutate({
       name: formsSate.name,
       imagesData: response,
+      price: formsSate.price,
       description: formsSate.description,
       categories: formsSate.selectedCategories,
+      availablePieces: formsSate.availablePieces,
     });
   }, [response]);
 
@@ -195,6 +201,65 @@ const NewPost: NextPage = () => {
                       }}
                     />
                   </div>
+                  <div className="col-span-2 col-end-5">
+                    <div className="flex items-end gap-2">
+                      <div>
+                        <label
+                          htmlFor="product-price"
+                          className="block font-medium leading-6 text-gray-900"
+                        >
+                          Pieejami
+                        </label>
+                        <input
+                          type="number"
+                          id="product-price"
+                          name="product-price"
+                          value={formsSate.availablePieces}
+                          autoComplete="given-name"
+                          className="block w-full rounded-md border-0 bg-transparent px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                          onChange={(e) => {
+                            setFormsState((prev) => ({
+                              ...prev,
+                              availablePieces: Number(e.target.value),
+                            }));
+                          }}
+                        />
+                      </div>
+                      <p className="ml-1 text-nowrap text-sm leading-6 text-gray-400">
+                        vienības
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="col-span-2 col-end-7">
+                    <div className="flex items-end gap-2">
+                      <div>
+                        <label
+                          htmlFor="product-price"
+                          className="block font-medium leading-6 text-gray-900"
+                        >
+                          Cena
+                        </label>
+                        <input
+                          type="number"
+                          id="product-price"
+                          name="product-price"
+                          value={formsSate.price}
+                          autoComplete="given-name"
+                          className="block w-full rounded-md border-0 bg-transparent px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                          onChange={(e) => {
+                            setFormsState((prev) => ({
+                              ...prev,
+                              price: Number(e.target.value),
+                            }));
+                          }}
+                        />
+                      </div>
+                      <p className="ml-1 text-nowrap text-sm leading-6 text-gray-400">
+                        € / dienā
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -212,8 +277,10 @@ const NewPost: NextPage = () => {
                 onClick={() => {
                   setFormsState({
                     name: "",
+                    price: 0,
                     images: [],
                     description: "",
+                    availablePieces: 0,
                     selectedCategories: ["Trauki"],
                   });
                 }}

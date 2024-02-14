@@ -33,9 +33,10 @@ const PostPage: NextPage = () => {
   return (
     <>
       <PageHead
-        title="Trauku noma | Mani sludinājumi"
-        descriptionShort="Nomā vai iznomā traukus"
-        descriptionLong="Nomā vai iznomā traukus"
+        image={data?.images[0]?.url}
+        title={data?.name ?? "Trauku noma | Izveidot jaunu sludinājumu"}
+        descriptionLong={data?.description ?? "Nomā vai iznomā traukus"}
+        descriptionShort={data?.description ?? "Nomā vai iznomā traukus"}
       />
       <main className="min-h-screen bg-gray-100 bg-gradient-to-b">
         <div className="p-4 md:flex">
@@ -69,10 +70,8 @@ const PostPage: NextPage = () => {
               <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">
                 {data?.name}
               </h1>
-              <div className="pt-4">
-                <p className="text-gray-700">{data?.description}</p>
-              </div>
-              <div className="mt-8 flex flex-wrap gap-2">
+
+              <div className="mt-4 flex flex-wrap gap-2">
                 {splitCategories(data?.categories ?? "").map((category) => (
                   <span
                     key={category}
@@ -82,19 +81,40 @@ const PostPage: NextPage = () => {
                   </span>
                 ))}
               </div>
-            </div>
-            <div className="mt-10 flex items-center justify-between">
-              <div className="flex items-end">
-                <h1 className="m-0 p-0 text-4xl font-bold">3.00 €</h1>
-                <span className="ml-2 text-base text-gray-400">/ dienā</span>
+
+              <div className="pt-8">
+                <p className="text-gray-700">{data?.description}</p>
               </div>
-              <button
-                onClick={() => router.back()}
-                className="flex items-center gap-2 rounded-md bg-gray-800 px-4 py-2 text-gray-50"
-              >
-                <ShoppingCartIcon size="sm" />
-                Ielikt grozā
-              </button>
+            </div>
+
+            <div>
+              <div>
+                <p className="text-gray-400">
+                  Pieejamas{" "}
+                  <span className="font-semibold text-gray-800">
+                    {" "}
+                    {data?.availablePieces}{" "}
+                  </span>{" "}
+                  vienības
+                </p>
+              </div>
+              <div className="mt-8 flex items-end justify-between">
+                <div className="flex items-end">
+                  <h1 className="m-0 p-0 text-4xl font-bold">{data?.price}</h1>
+                  <span className="ml-2 text-base text-gray-400">
+                    € / dienā
+                  </span>
+                </div>
+                <div className="flex items-end justify-between">
+                  <button
+                    onClick={() => router.back()}
+                    className="flex items-center gap-2 rounded-md bg-gray-800 px-4 py-2 text-gray-50"
+                  >
+                    <ShoppingCartIcon size="sm" />
+                    Ielikt grozā
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>

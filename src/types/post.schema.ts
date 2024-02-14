@@ -10,8 +10,10 @@ export const ImageDataSchema = z.object({
 
 export const NewPostSchema = z.object({
   name: z.string().min(1),
+  price: z.number().min(0),
   description: z.string().min(1),
   categories: z.array(z.string()),
+  availablePieces: z.number().min(0),
   imagesData: z.array(ImageDataSchema),
 });
 

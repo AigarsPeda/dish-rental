@@ -23,7 +23,9 @@ export const posts = createTable(
   "post",
   {
     id: serial("id").primaryKey(),
+    price: integer("price").notNull(),
     name: varchar("name", { length: 256 }),
+    availablePieces: integer("availablePieces").notNull(),
     createdById: varchar("createdById", { length: 255 })
       .notNull()
       .references(() => users.id),
