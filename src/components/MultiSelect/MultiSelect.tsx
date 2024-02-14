@@ -5,12 +5,14 @@ import useOnClickOutside from "~/hooks/useOnClickOutside";
 import classNames from "~/utils/classNames";
 
 interface MultiSelectProps {
+  id: string;
   options: string[];
   selected: string[];
   setSelected: (selected: string[]) => void;
 }
 
 const MultiSelect: FC<MultiSelectProps> = ({
+  id,
   options,
   selected,
   setSelected,
@@ -23,8 +25,8 @@ const MultiSelect: FC<MultiSelectProps> = ({
   return (
     <div className="relative" ref={dropdownRef}>
       <div
+        id={id}
         className="flex min-h-10 w-full items-center justify-between gap-x-0.5 rounded-md bg-gray-100 px-0.5 text-sm font-semibold text-gray-800 shadow-sm ring-1 ring-inset ring-gray-300 hover:cursor-pointer hover:bg-gray-100 focus:ring-gray-800"
-        id="menu-button"
         aria-expanded="true"
         aria-haspopup="true"
         onClick={() => setIsDropdownOpen(!isDropdownOpen)}

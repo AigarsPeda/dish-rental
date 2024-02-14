@@ -49,18 +49,17 @@ const DropZone: FC<DropZoneProps> = ({
 
           <div className="mt-4 flex text-sm leading-6 text-gray-600">
             <label
-              htmlFor="file-upload"
+              htmlFor="cover-photo"
               className="w-32 cursor-pointer rounded-md bg-white px-2 font-semibold text-gray-900 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
             >
               {inputStatus !== "Loading" && <span>Upload a file</span>}
               {inputStatus === "Loading" && <span>Uploading...</span>}
-              {/* {inputStatus === "Success" && <span>Success</span>} */}
 
               <input
                 multiple
                 type="file"
-                id="file-upload"
-                name="file-upload"
+                id="cover-photo"
+                name="cover-photo"
                 disabled={inputStatus === "Loading"}
                 onDrop={(e) => {
                   e.preventDefault();

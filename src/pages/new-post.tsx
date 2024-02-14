@@ -3,6 +3,7 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import DropZone from "~/components/DropZone/DropZone";
 import MultiSelect from "~/components/MultiSelect/MultiSelect";
+import NumberInput from "~/components/NumberInput/NumberInput";
 import PageHead from "~/components/PageHead/PageHead";
 import SignInModal from "~/components/SignInModal/SignInModal";
 import Spinner from "~/components/Spinner/Spinner";
@@ -146,6 +147,7 @@ const NewPost: NextPage = () => {
                       Produkta kategorija
                     </label>
                     <MultiSelect
+                      id="product-category"
                       selected={formsSate.selectedCategories}
                       options={ALL_OPTIONS}
                       setSelected={(strArray) => {
@@ -210,17 +212,13 @@ const NewPost: NextPage = () => {
                       Cena € / dienā
                     </label>
                     <div className="mt-2">
-                      <input
-                        type="number"
+                      <NumberInput
                         id="product-price"
-                        name="product-price"
                         value={formsSate.price}
-                        autoComplete="given-name"
-                        className="block w-full rounded-md border-0 bg-transparent px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                        onChange={(e) => {
+                        onChange={(value) => {
                           setFormsState((prev) => ({
                             ...prev,
-                            price: Number(e.target.value),
+                            price: value,
                           }));
                         }}
                       />
@@ -229,23 +227,19 @@ const NewPost: NextPage = () => {
 
                   <div className="sm:col-span-2">
                     <label
-                      htmlFor="product-price"
+                      htmlFor="product-available-pieces"
                       className="block font-medium leading-6 text-gray-900"
                     >
                       Pieejami vienības
                     </label>
                     <div className="mt-2">
-                      <input
-                        type="number"
-                        id="product-price"
-                        name="product-price"
+                      <NumberInput
+                        id="product-available-pieces"
                         value={formsSate.availablePieces}
-                        autoComplete="given-name"
-                        className="block w-full rounded-md border-0 bg-transparent px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                        onChange={(e) => {
+                        onChange={(value) => {
                           setFormsState((prev) => ({
                             ...prev,
-                            availablePieces: Number(e.target.value),
+                            availablePieces: value,
                           }));
                         }}
                       />
