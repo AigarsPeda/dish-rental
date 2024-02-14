@@ -6,6 +6,7 @@ import PageHead from "~/components/PageHead/PageHead";
 import ShoppingCartIcon from "~/components/icons/ShoppingCartIcon/ShoppingCartIcon";
 import ImageLoader from "~/utils/ImageLoader";
 import { api } from "~/utils/api";
+import NumberInput from "../../components/NumberInput/NumberInput";
 
 const PostPage: NextPage = () => {
   const router = useRouter();
@@ -88,7 +89,7 @@ const PostPage: NextPage = () => {
             </div>
 
             <div>
-              <div>
+              <div className="mt-4">
                 <p className="text-gray-400">
                   Pieejamas{" "}
                   <span className="font-semibold text-gray-800">
@@ -98,17 +99,26 @@ const PostPage: NextPage = () => {
                   vienības
                 </p>
               </div>
-              <div className="mt-8 flex items-end justify-between">
-                <div className="flex items-end">
-                  <h1 className="m-0 p-0 text-4xl font-bold">{data?.price}</h1>
+              <div className="mt-8 items-end justify-between md:flex">
+                <div className="mb-4 flex items-end md:mb-0">
+                  <h1 className="m-0 p-0 text-5xl font-bold">{data?.price}</h1>
                   <span className="ml-2 text-base text-gray-400">
                     € / dienā
                   </span>
                 </div>
-                <div className="flex items-end justify-between">
+                <div className="flex items-end justify-between gap-3">
+                  <div className="w-40">
+                    <NumberInput
+                      id="product-price"
+                      value={0}
+                      onChange={() => {
+                        console.log("changed");
+                      }}
+                    />
+                  </div>
                   <button
                     onClick={() => router.back()}
-                    className="flex items-center gap-2 rounded-md bg-gray-800 px-4 py-2 text-gray-50"
+                    className="flex h-11 items-center gap-2 rounded-md bg-gray-800 px-4 py-2 text-gray-50"
                   >
                     <ShoppingCartIcon size="sm" />
                     Ielikt grozā
