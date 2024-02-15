@@ -1,6 +1,7 @@
 import { type NextPage } from "next";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import { classNames } from "uploadthing/client";
 import DropZone from "~/components/DropZone/DropZone";
 import MultiSelect from "~/components/MultiSelect/MultiSelect";
 import NumberInput from "~/components/NumberInput/NumberInput";
@@ -8,9 +9,9 @@ import PageHead from "~/components/PageHead/PageHead";
 import SignInModal from "~/components/SignInModal/SignInModal";
 import Spinner from "~/components/Spinner/Spinner";
 import useImageUploadThing from "~/hooks/useImageUploadThing";
+import useLocalStorage from "~/hooks/useLocalStorage";
 import useRedirect from "~/hooks/useRedirect";
 import { api } from "~/utils/api";
-import useLocalStorage from "../hooks/useLocalStorage";
 
 const ALL_OPTIONS = [
   "Trauki",
@@ -28,7 +29,6 @@ const ALL_OPTIONS = [
 type FormStateType = {
   name: string;
   price: number;
-  images: File[];
   description: string;
   availablePieces: number;
   selectedCategories: string[];
@@ -37,8 +37,11 @@ type FormStateType = {
 const NewPost: NextPage = () => {
   const { redirectToPath } = useRedirect();
   const { data: sessionData } = useSession();
+
+  const [images, setImages] = useState<File[]>([]);
   const [isFormLoading, setIsFormLoading] = useState(false);
   const [isNeedToSignIn, setIsNeedToSignIn] = useState(false);
+  const [isShowErrorMessage, setIsShowErrorMessage] = useState(false);
   const { mutate } = api.post.create.useMutation({
     onSuccess: (result) => {
       setIsFormLoading(false);
@@ -54,20 +57,19 @@ const NewPost: NextPage = () => {
     {
       name: "",
       price: 0,
-      images: [],
       description: "",
       availablePieces: 0,
       selectedCategories: ["Trauki"],
     },
   );
 
+  const isImagesEmpty = images.length === 0;
+  const isFormEmpty = Object.values(formsSate).some((value) => value === "");
+
   useEffect(() => {
     if (response.length === 0) return;
 
-    setFormsState({
-      ...formsSate,
-      images: [],
-    });
+    setImages([]);
 
     void mutate({
       name: formsSate.name,
@@ -94,6 +96,11 @@ const NewPost: NextPage = () => {
             className="mx-auto mt-4 max-w-xl px-2"
             onSubmit={(e) => {
               e.preventDefault();
+              if (isFormEmpty || isImagesEmpty) {
+                setIsShowErrorMessage(true);
+                return;
+              }
+
               if (inputStatus === "Loading" ?? isFormLoading) return;
 
               if (!sessionData) {
@@ -102,8 +109,7 @@ const NewPost: NextPage = () => {
               }
 
               setIsFormLoading(true);
-
-              void handelStartUpload(formsSate.images);
+              void handelStartUpload(images);
             }}
           >
             <div className="space-y-12">
@@ -157,10 +163,6 @@ const NewPost: NextPage = () => {
                       selected={formsSate.selectedCategories}
                       options={ALL_OPTIONS}
                       setSelected={(strArray) => {
-                        // setFormsState((prev) => ({
-                        //   ...prev,
-                        //   selectedCategories: strArray,
-                        // }));
                         setFormsState({
                           ...formsSate,
                           selectedCategories: strArray,
@@ -204,13 +206,9 @@ const NewPost: NextPage = () => {
                       fileError={fileError}
                       inputStatus={inputStatus}
                       checkFiles={checkFiles}
-                      images={formsSate.images}
+                      images={images}
                       handelFileUpload={(fileArray) => {
-                        console.log("fileArray", fileArray);
-                        setFormsState({
-                          ...formsSate,
-                          images: fileArray,
-                        });
+                        setImages(fileArray);
                       }}
                     />
                   </div>
@@ -265,8 +263,15 @@ const NewPost: NextPage = () => {
                 setIsNeedToSignIn={setIsNeedToSignIn}
               />
             </div>
-
-            <div className="mt-6 flex items-center justify-end gap-x-6">
+            <div className="flex h-10 items-center justify-center">
+              {isShowErrorMessage && (
+                <p className=" text-sm leading-5 text-red-600">
+                  Lūdzu, aizpildiet visus laukus un pievienojiet vismaz vienu
+                  attēlu.
+                </p>
+              )}
+            </div>
+            <div className=" flex items-center justify-end gap-x-6">
               <button
                 type="button"
                 disabled={isFormLoading}
@@ -275,19 +280,29 @@ const NewPost: NextPage = () => {
                   setFormsState({
                     name: "",
                     price: 0,
-                    images: [],
                     description: "",
                     availablePieces: 0,
                     selectedCategories: ["Trauki"],
                   });
+                  setImages([]);
                 }}
               >
                 Atcelt
               </button>
               <button
                 type="submit"
-                disabled={isFormLoading}
-                className="relative rounded-md  bg-gray-900 px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600"
+                // disabled={isFormLoading || isFormEmpty || isImagesEmpty}
+                className={classNames(
+                  isFormEmpty || isImagesEmpty || isFormLoading
+                    ? "cursor-not-allowed"
+                    : "cursor-pointer hover:bg-gray-500",
+                  "relative rounded-md bg-gray-900 px-6 py-2 text-sm font-semibold text-white shadow-sm  focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600",
+                )}
+                // onClick={() => {
+                //   if (isFormEmpty || isImagesEmpty) {
+                //     setIsShowErrorMessage(true);
+                //   }
+                // }}
               >
                 {isFormLoading ? <Spinner size="sm" /> : "Izveidot"}
               </button>
