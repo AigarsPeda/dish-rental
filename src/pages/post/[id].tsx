@@ -99,8 +99,8 @@ const PostPage: NextPage = () => {
                   vienības
                 </p>
               </div>
-              <div className="mt-8 items-end justify-between md:flex">
-                <div className="mb-4 flex items-end md:mb-0">
+              <div className="mt-8 items-end justify-between gap-2 xl:flex">
+                <div className="mb-4 flex items-end xl:mb-0">
                   <h1 className="m-0 p-0 text-5xl font-bold">{data?.price}</h1>
                   <span className="ml-2 text-base text-gray-400">
                     € / dienā

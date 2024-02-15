@@ -8,6 +8,8 @@ import {
   text,
   timestamp,
   varchar,
+  numeric,
+  real,
 } from "drizzle-orm/pg-core";
 import { type AdapterAccount } from "next-auth/adapters";
 
@@ -23,7 +25,7 @@ export const posts = createTable(
   "post",
   {
     id: serial("id").primaryKey(),
-    price: integer("price").notNull(),
+    price: real("price").notNull(), // price like 10.99
     name: varchar("name", { length: 256 }),
     availablePieces: integer("availablePieces").notNull(),
     createdById: varchar("createdById", { length: 255 })

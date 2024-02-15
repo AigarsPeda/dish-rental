@@ -10,6 +10,7 @@ import Spinner from "~/components/Spinner/Spinner";
 import useImageUploadThing from "~/hooks/useImageUploadThing";
 import useRedirect from "~/hooks/useRedirect";
 import { api } from "~/utils/api";
+import useLocalStorage from "../hooks/useLocalStorage";
 
 const ALL_OPTIONS = [
   "Trauki",
@@ -48,23 +49,25 @@ const NewPost: NextPage = () => {
   const { response, fileError, checkFiles, inputStatus, handelStartUpload } =
     useImageUploadThing();
 
-  const [formsSate, setFormsState] = useState<FormStateType>({
-    name: "",
-    price: 0,
-    images: [],
-    description: "",
-    availablePieces: 0,
-    selectedCategories: ["Trauki"],
-  });
+  const [formsSate, setFormsState] = useLocalStorage<FormStateType>(
+    "new-post-form",
+    {
+      name: "",
+      price: 0,
+      images: [],
+      description: "",
+      availablePieces: 0,
+      selectedCategories: ["Trauki"],
+    },
+  );
 
   useEffect(() => {
     if (response.length === 0) return;
 
-    // reset the form state for images
-    setFormsState((prev) => ({
-      ...prev,
+    setFormsState({
+      ...formsSate,
       images: [],
-    }));
+    });
 
     void mutate({
       name: formsSate.name,
@@ -76,8 +79,7 @@ const NewPost: NextPage = () => {
     });
   }, [response]);
 
-  // TODO: Price
-  // TODO: Availability
+  // TODO: Availability Date
 
   return (
     <>
@@ -131,10 +133,14 @@ const NewPost: NextPage = () => {
                         className="block w-full rounded-md border-0 bg-transparent px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                         value={formsSate.name}
                         onChange={(e) => {
-                          setFormsState((prev) => ({
-                            ...prev,
+                          // setFormsState((prev) => ({
+                          //   ...prev,
+                          //   name: e.target.value,
+                          // }));
+                          setFormsState({
+                            ...formsSate,
                             name: e.target.value,
-                          }));
+                          });
                         }}
                       />
                     </div>
@@ -151,10 +157,14 @@ const NewPost: NextPage = () => {
                       selected={formsSate.selectedCategories}
                       options={ALL_OPTIONS}
                       setSelected={(strArray) => {
-                        setFormsState((prev) => ({
-                          ...prev,
+                        // setFormsState((prev) => ({
+                        //   ...prev,
+                        //   selectedCategories: strArray,
+                        // }));
+                        setFormsState({
+                          ...formsSate,
                           selectedCategories: strArray,
-                        }));
+                        });
                       }}
                     />
                     <p className="mt-1 text-sm leading-6 text-gray-400">
@@ -177,10 +187,10 @@ const NewPost: NextPage = () => {
                         className="block w-full rounded-md border-0 bg-transparent px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                         value={formsSate.description}
                         onChange={(e) => {
-                          setFormsState((prev) => ({
-                            ...prev,
+                          setFormsState({
+                            ...formsSate,
                             description: e.target.value,
-                          }));
+                          });
                         }}
                       ></textarea>
                     </div>
@@ -196,10 +206,11 @@ const NewPost: NextPage = () => {
                       checkFiles={checkFiles}
                       images={formsSate.images}
                       handelFileUpload={(fileArray) => {
-                        setFormsState((prev) => ({
-                          ...prev,
+                        console.log("fileArray", fileArray);
+                        setFormsState({
+                          ...formsSate,
                           images: fileArray,
-                        }));
+                        });
                       }}
                     />
                   </div>
@@ -213,13 +224,14 @@ const NewPost: NextPage = () => {
                     </label>
                     <div className="mt-2">
                       <NumberInput
+                        isDecimal
                         id="product-price"
                         value={formsSate.price}
                         onChange={(value) => {
-                          setFormsState((prev) => ({
-                            ...prev,
+                          setFormsState({
+                            ...formsSate,
                             price: value,
-                          }));
+                          });
                         }}
                       />
                     </div>
@@ -237,10 +249,10 @@ const NewPost: NextPage = () => {
                         id="product-available-pieces"
                         value={formsSate.availablePieces}
                         onChange={(value) => {
-                          setFormsState((prev) => ({
-                            ...prev,
+                          setFormsState({
+                            ...formsSate,
                             availablePieces: value,
-                          }));
+                          });
                         }}
                       />
                     </div>

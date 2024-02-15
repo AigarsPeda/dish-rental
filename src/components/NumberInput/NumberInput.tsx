@@ -3,10 +3,16 @@ import { type FC } from "react";
 interface NumberInputProps {
   id: string;
   value: number;
+  isDecimal?: boolean;
   onChange: (value: number) => void;
 }
 
-const NumberInput: FC<NumberInputProps> = ({ id, value, onChange }) => {
+const NumberInput: FC<NumberInputProps> = ({
+  id,
+  value,
+  isDecimal,
+  onChange,
+}) => {
   return (
     <div className="relative flex items-center">
       <button
@@ -16,6 +22,11 @@ const NumberInput: FC<NumberInputProps> = ({ id, value, onChange }) => {
         className="h-11 rounded-s-lg border border-gray-300 bg-gray-100 p-3 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100"
         onClick={() => {
           if (value > 1) {
+            if (isDecimal) {
+              onChange(Math.round((value - 0.1) * 10) / 10);
+              return;
+            }
+
             onChange(value - 1);
           }
         }}
@@ -51,6 +62,11 @@ const NumberInput: FC<NumberInputProps> = ({ id, value, onChange }) => {
         data-input-counter-increment={id}
         className="h-11 rounded-e-lg border border-gray-300 bg-gray-100 p-3 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100"
         onClick={() => {
+          if (isDecimal) {
+            onChange(Math.round((value + 0.1) * 10) / 10);
+            return;
+          }
+
           onChange(value + 1);
         }}
       >
