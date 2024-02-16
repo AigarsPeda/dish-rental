@@ -57,7 +57,7 @@ const PostPage: NextPage = () => {
             </div>
             <div className="">
               <Image
-                src={data?.images[0]?.url ?? "/images/placeholder.png"}
+                src={data?.images[0]?.url ?? "/images/placeholder.jpeg"}
                 alt={data?.images[0]?.name ?? "Image"}
                 width={500}
                 height={500}

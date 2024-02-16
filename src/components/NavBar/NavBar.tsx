@@ -13,7 +13,7 @@ const NavBar: FC = () => {
           height={50}
           alt="dish-rental"
           className="rounded-full"
-          src="/images/dish_rent.png"
+          src="/images/placeholder.jpeg"
         />
         <p className="text-3xl font-extrabold tracking-tight text-gray-800">
           Dish rental

@@ -19,3 +19,29 @@ export const NewPostSchema = z.object({
 
 export type ImageDataType = z.infer<typeof ImageDataSchema>;
 export type NewPostType = z.infer<typeof NewPostSchema>;
+
+export const DBImageSchema = z.object({
+  id: z.number(),
+  key: z.string(),
+  url: z.string(),
+  name: z.string(),
+  size: z.number(),
+  postId: z.number(),
+});
+
+export type DBImageType = z.infer<typeof DBImageSchema>;
+
+export const DBPostSchema = z.object({
+  id: z.number(),
+  price: z.number(),
+  createdAt: z.date(),
+  createdById: z.string(),
+  name: z.string().nullish(),
+  availablePieces: z.number(),
+  updatedAt: z.date().nullable(),
+  categories: z.string().nullish(),
+  description: z.string().nullish(),
+  images: z.array(DBImageSchema),
+});
+
+export type DBPostType = z.infer<typeof DBPostSchema>;

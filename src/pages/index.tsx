@@ -1,26 +1,11 @@
-import { signIn, signOut, useSession } from "next-auth/react";
-import Head from "next/head";
-import Image from "next/image";
-import { api } from "~/utils/api";
-import { UploadButton } from "~/utils/uploadthing";
-import Card from "~/components/Card/Card";
-import ProfileDropdown from "~/components/ProfileDropdown/ProfileDropdown";
-import PageHead from "~/components/PageHead/PageHead";
 import { type NextPage } from "next";
-import { useDropzone } from "@uploadthing/react";
+import { signIn, signOut, useSession } from "next-auth/react";
+import Card from "~/components/Card/Card";
+import PageHead from "~/components/PageHead/PageHead";
+import { api } from "~/utils/api";
 
 const Home: NextPage = () => {
-  const hello = api.post.hello.useQuery({ text: "from tRPC" });
-
-  const { mutate } = api.post.deleteImage.useMutation();
-
-  const createArray = (length: number) => {
-    const arr = [];
-    for (let i = 0; i < length; i++) {
-      arr.push(i);
-    }
-    return arr;
-  };
+  const { data, isLoading } = api.post.getAll.useQuery();
 
   return (
     <>
@@ -31,58 +16,24 @@ const Home: NextPage = () => {
       />
       <main className="min-h-screen bg-gray-100 bg-gradient-to-b">
         <div className="flex w-full items-center justify-center pt-4">
-          {/* <Card /> */}
           <div className="grid w-full grid-cols-[repeat(auto-fit,minmax(310px,1fr))] gap-5 px-4">
-            {createArray(10).map((i) => (
-              <Card key={i} />
-            ))}
+            {isLoading && (
+              <div>
+                <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
+                  Lādējās...
+                </h1>
+              </div>
+            )}
+
+            {data?.length !== 0 ? (
+              data?.map((post) => <Card key={post.id} post={post} />)
+            ) : (
+              <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
+                Nevies sludinājumu vēl nav pievienoti :(
+              </h1>
+            )}
           </div>
         </div>
-        {/* <Card /> */}
-        {/* <div className="flex flex-col items-center justify-center gap-4">
-          <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
-            Dish rental
-          </h1>
-          <h2 className="text-2xl text-white">
-            Rent your dishes and make money
-          </h2>
-          <Image
-            src="/images/dish_rent.png"
-            alt="dish-rental"
-            width={500}
-            height={500}
-          />
-        </div> */}
-
-        {/* <div className="flex flex-col items-center gap-2">
-          <p className="text-3xl text-white">
-            {hello.data ? hello.data.greeting : "Loading tRPC query..."}
-          </p>
-          <AuthShowcase />
-        </div>
-        <UploadButton
-          endpoint="imageUpload"
-          onClientUploadComplete={(res) => {
-            // Do something with the response
-            console.log("Files: ", res);
-            // TODO: save url to db with id of the user
-            alert("Upload Completed");
-          }}
-          onUploadError={(error: Error) => {
-            // Do something with the error.
-            alert(`ERROR! ${error.message}`);
-          }}
-        />
-        <button
-          onClick={() =>
-            // deleteFiles("4867186a-23e9-45e1-bbde-517f1865ed95-hk0kl7.png")
-            // mutate("4867186a-23e9-45e1-bbde-517f1865ed95-hk0kl7.png")
-            // deleteValue()
-            mutate("2f766643-edc8-41f5-9c20-e8bb2ab7ca70-1vuq0w.png")
-          }
-        >
-          Delete image
-        </button> */}
       </main>
     </>
   );
