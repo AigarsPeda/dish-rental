@@ -11,6 +11,7 @@ export const ImageDataSchema = z.object({
 export const NewPostSchema = z.object({
   name: z.string().min(1),
   price: z.number().min(0),
+  isPublished: z.boolean(),
   description: z.string().min(1),
   categories: z.array(z.string()),
   availablePieces: z.number().min(0),
@@ -36,6 +37,7 @@ export const DBPostSchema = z.object({
   price: z.number(),
   createdAt: z.date(),
   createdById: z.string(),
+  isPublished: z.boolean(),
   name: z.string().nullish(),
   availablePieces: z.number(),
   updatedAt: z.date().nullable(),

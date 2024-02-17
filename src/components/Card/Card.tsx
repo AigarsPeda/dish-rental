@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { type FC } from "react";
+import { classNames } from "uploadthing/client";
 import ShoppingCartIcon from "~/components/icons/ShoppingCartIcon/ShoppingCartIcon";
 import { DBPostType } from "~/types/post.schema";
 import ImageLoader from "~/utils/ImageLoader";
@@ -22,7 +23,7 @@ const Card: FC<CardProps> = ({ post }) => {
         priority
         alt="dish-rental"
         loader={ImageLoader}
-        className="overflow-hidden rounded-lg p-1"
+        className={classNames("overflow-hidden rounded-lg p-1")}
         src={post.images[0]?.url ?? "/images/placeholder.jpeg"}
         width={300}
         height={300}
@@ -38,14 +39,8 @@ const Card: FC<CardProps> = ({ post }) => {
             {post.name}
           </h5>
         </div>
-        {/* <div className="mb-5 mt-2.5 flex items-center">
-          <Stars />
-          <span className="ms-3 rounded bg-blue-100 px-2.5 py-0.5 text-xs font-semibold text-blue-800">
-            5.0
-          </span>
-        </div> */}
         <div className="mt-2.5 flex items-center justify-between transition-all">
-          <span className="text-4xl font-bold text-gray-900">
+          <span className="text-3xl font-bold text-gray-900">
             {post.price} € / dienā
           </span>
           <button

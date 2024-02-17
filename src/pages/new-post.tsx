@@ -12,6 +12,7 @@ import useImageUploadThing from "~/hooks/useImageUploadThing";
 import useLocalStorage from "~/hooks/useLocalStorage";
 import useRedirect from "~/hooks/useRedirect";
 import { api } from "~/utils/api";
+import Toggle from "../components/Toggle/Toggle";
 
 const ALL_OPTIONS = [
   "Trauki",
@@ -30,6 +31,7 @@ type FormStateType = {
   name: string;
   price: number;
   description: string;
+  isPublished: boolean;
   availablePieces: number;
   selectedCategories: string[];
 };
@@ -58,6 +60,7 @@ const NewPost: NextPage = () => {
       name: "",
       price: 0,
       description: "",
+      isPublished: true,
       availablePieces: 0,
       selectedCategories: ["Trauki"],
     },
@@ -75,6 +78,7 @@ const NewPost: NextPage = () => {
       name: formsSate.name,
       imagesData: response,
       price: formsSate.price,
+      isPublished: formsSate.isPublished,
       description: formsSate.description,
       categories: formsSate.selectedCategories,
       availablePieces: formsSate.availablePieces,
@@ -93,7 +97,7 @@ const NewPost: NextPage = () => {
       <main className="min-h-screen bg-gray-100 bg-gradient-to-b">
         <div className="flex w-full items-center justify-center text-center">
           <form
-            className="mx-auto mt-4 max-w-xl px-2"
+            className="mx-auto mt-4 max-w-xl px-2 pb-10"
             onSubmit={(e) => {
               e.preventDefault();
               if (isFormEmpty || isImagesEmpty) {
@@ -213,7 +217,7 @@ const NewPost: NextPage = () => {
                     />
                   </div>
 
-                  <div className="sm:col-span-2 sm:col-start-1">
+                  <div className="mx-auto max-w-40 sm:col-span-2">
                     <label
                       htmlFor="product-price"
                       className="block font-medium leading-6 text-gray-900"
@@ -235,7 +239,7 @@ const NewPost: NextPage = () => {
                     </div>
                   </div>
 
-                  <div className="sm:col-span-2">
+                  <div className="mx-auto max-w-40 sm:col-span-2">
                     <label
                       htmlFor="product-available-pieces"
                       className="block font-medium leading-6 text-gray-900"
@@ -250,6 +254,26 @@ const NewPost: NextPage = () => {
                           setFormsState({
                             ...formsSate,
                             availablePieces: value,
+                          });
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="mx-auto max-w-40 sm:col-span-2">
+                    <label
+                      htmlFor="product-available-pieces"
+                      className="block font-medium leading-6 text-gray-900"
+                    >
+                      Publicēts
+                    </label>
+                    <div className="mt-4">
+                      <Toggle
+                        isChecked={formsSate.isPublished}
+                        handleChange={() => {
+                          setFormsState({
+                            ...formsSate,
+                            isPublished: !formsSate.isPublished,
                           });
                         }}
                       />
@@ -281,6 +305,7 @@ const NewPost: NextPage = () => {
                     name: "",
                     price: 0,
                     description: "",
+                    isPublished: true,
                     availablePieces: 0,
                     selectedCategories: ["Trauki"],
                   });
@@ -291,18 +316,12 @@ const NewPost: NextPage = () => {
               </button>
               <button
                 type="submit"
-                // disabled={isFormLoading || isFormEmpty || isImagesEmpty}
                 className={classNames(
                   isFormEmpty || isImagesEmpty || isFormLoading
                     ? "cursor-not-allowed"
                     : "cursor-pointer hover:bg-gray-500",
                   "relative rounded-md bg-gray-900 px-6 py-2 text-sm font-semibold text-white shadow-sm  focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600",
                 )}
-                // onClick={() => {
-                //   if (isFormEmpty || isImagesEmpty) {
-                //     setIsShowErrorMessage(true);
-                //   }
-                // }}
               >
                 {isFormLoading ? <Spinner size="sm" /> : "Izveidot"}
               </button>

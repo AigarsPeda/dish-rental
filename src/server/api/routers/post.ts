@@ -1,3 +1,4 @@
+import { eq } from "drizzle-orm";
 import { z } from "zod";
 import {
   createTRPCRouter,
@@ -25,6 +26,7 @@ export const postRouter = createTRPCRouter({
         .values({
           name: input.name,
           price: input.price,
+          isPublished: input.isPublished,
           description: input.description,
           createdById: ctx.session.user.id,
           categories: input.categories.join(","),
@@ -70,6 +72,7 @@ export const postRouter = createTRPCRouter({
 
   getAll: publicProcedure.query(({ ctx }) => {
     return ctx.db.query.posts.findMany({
+      where: (posts, { eq }) => eq(posts.isPublished, true),
       orderBy: (posts, { desc }) => [desc(posts.createdAt)],
       with: {
         images: true,
@@ -83,8 +86,30 @@ export const postRouter = createTRPCRouter({
     });
   }),
 
-  getSecretMessage: protectedProcedure.query(() => {
-    return "you can now see this secret message!";
+  setPublished: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+        isPublished: z.boolean(),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      await ctx.db
+        .update(posts)
+        .set({ isPublished: input.isPublished })
+        .where(eq(posts.id, input.id));
+
+      return `updated post: ${input.id}`;
+    }),
+
+  getUsersPosts: protectedProcedure.query(({ ctx }) => {
+    return ctx.db.query.posts.findMany({
+      where: (posts, { eq }) => eq(posts.createdById, ctx.session.user.id),
+      orderBy: (posts, { desc }) => [desc(posts.createdAt)],
+      with: {
+        images: true,
+      },
+    });
   }),
 
   deleteImage: protectedProcedure
