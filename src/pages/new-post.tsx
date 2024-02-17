@@ -46,6 +46,14 @@ const NewPost: NextPage = () => {
   const [isShowErrorMessage, setIsShowErrorMessage] = useState(false);
   const { mutate } = api.post.create.useMutation({
     onSuccess: (result) => {
+      setFormsState({
+        name: "",
+        price: 0,
+        description: "",
+        isPublished: true,
+        availablePieces: 0,
+        selectedCategories: ["Trauki"],
+      });
       setIsFormLoading(false);
       redirectToPath(`/post/${result.postId}`);
     },
@@ -55,7 +63,7 @@ const NewPost: NextPage = () => {
     useImageUploadThing();
 
   const [formsSate, setFormsState] = useLocalStorage<FormStateType>(
-    "new-post-form",
+    "new-post-form-v2",
     {
       name: "",
       price: 0,
@@ -68,6 +76,16 @@ const NewPost: NextPage = () => {
 
   const isImagesEmpty = images.length === 0;
   const isFormEmpty = Object.values(formsSate).some((value) => value === "");
+
+  // try to get new-post-form from local storage and delete it if it exists
+  useEffect(() => {
+    const localData = localStorage.getItem("new-post-form");
+    if (localData) {
+      const parsedData = JSON.parse(localData);
+      setFormsState(parsedData);
+      localStorage.removeItem("new-post-form");
+    }
+  }, []);
 
   useEffect(() => {
     if (response.length === 0) return;
@@ -244,7 +262,7 @@ const NewPost: NextPage = () => {
                       htmlFor="product-available-pieces"
                       className="block font-medium leading-6 text-gray-900"
                     >
-                      Pieejami vienības
+                      Pieejamas vienības
                     </label>
                     <div className="mt-2">
                       <NumberInput
