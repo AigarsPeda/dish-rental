@@ -13,8 +13,8 @@ interface EditPostCardProps {
 const EditPostCard: FC<EditPostCardProps> = ({ post }) => {
   const utils = api.useUtils();
   const { mutate } = api.post.setPublished.useMutation({
-    onSuccess: () => {
-      utils.post.getUsersPosts.invalidate();
+    onSuccess: async () => {
+      await utils.post.getUsersPosts.invalidate();
     },
   });
   return (
