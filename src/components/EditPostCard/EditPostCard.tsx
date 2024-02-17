@@ -14,6 +14,23 @@ interface EditPostCardProps {
 const EditPostCard: FC<EditPostCardProps> = ({ post }) => {
   const utils = api.useUtils();
   const { mutate } = api.post.setPublished.useMutation({
+    onMutate: ({ id, isPublished }) => {
+      // Optimistic update
+      utils.post.getUsersPosts.setData(undefined, (prev) => {
+        if (prev) {
+          return prev.map((p) => {
+            if (p.id === id) {
+              return {
+                ...p,
+                isPublished,
+              };
+            }
+            return p;
+          });
+        }
+        return prev;
+      });
+    },
     onSuccess: async () => {
       await utils.post.getUsersPosts.invalidate();
     },
@@ -59,6 +76,7 @@ const EditPostCard: FC<EditPostCardProps> = ({ post }) => {
               isChecked={post.isPublished}
               handleChange={() => {
                 // console.log("clicked");
+
                 void mutate({ id: post.id, isPublished: !post.isPublished });
               }}
             />
