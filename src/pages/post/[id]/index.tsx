@@ -2,11 +2,11 @@ import { type NextPage } from "next";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import NumberInput from "~/components/NumberInput/NumberInput";
 import PageHead from "~/components/PageHead/PageHead";
 import ShoppingCartIcon from "~/components/icons/ShoppingCartIcon/ShoppingCartIcon";
 import ImageLoader from "~/utils/ImageLoader";
 import { api } from "~/utils/api";
-import NumberInput from "../../components/NumberInput/NumberInput";
 
 const PostPage: NextPage = () => {
   const router = useRouter();
