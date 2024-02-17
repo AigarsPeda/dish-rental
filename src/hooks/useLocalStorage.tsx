@@ -12,7 +12,7 @@ function useLocalStorage<T>(
     try {
       const item = window.localStorage.getItem(key);
       if (item) {
-        setStoredValue(JSON.parse(item));
+        setStoredValue(JSON.parse(item) as T);
       }
     } catch (error) {
       console.error(error);

@@ -79,12 +79,7 @@ const NewPost: NextPage = () => {
 
   // try to get new-post-form from local storage and delete it if it exists
   useEffect(() => {
-    const localData = localStorage.getItem("new-post-form");
-    if (localData) {
-      const parsedData = JSON.parse(localData);
-      setFormsState(parsedData);
-      localStorage.removeItem("new-post-form");
-    }
+    localStorage.removeItem("new-post-form");
   }, []);
 
   useEffect(() => {
