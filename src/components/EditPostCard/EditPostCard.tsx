@@ -38,12 +38,6 @@ const EditPostCard: FC<EditPostCardProps> = ({ post }) => {
 
   return (
     <div className="relative w-full rounded-lg border bg-white shadow-sm">
-      {/* <button
-        onClick={() => console.log("clicked")}
-        className="absolute -right-2 -top-3 flex items-center justify-center gap-2 rounded-md bg-red-500 p-2.5 text-center text-sm font-medium text-white transition-all hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-blue-800"
-      >
-        <IoTrashOutline className="h-6 w-6" />
-      </button> */}
       <Image
         priority
         alt="dish-rental"
@@ -65,18 +59,10 @@ const EditPostCard: FC<EditPostCardProps> = ({ post }) => {
         <p className="text-3xl font-bold text-gray-900">{post.name}</p>
         <div className="mt-2.5 flex flex-wrap items-center justify-between transition-all">
           <div className="mt-4 flex w-full justify-between gap-4">
-            {/* <button
-              onClick={() => console.log("clicked")}
-              className="flex items-center justify-center gap-2 rounded-md bg-red-500 px-5 py-2.5 text-center text-sm font-medium text-white transition-all hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-blue-800"
-            >
-              Delete
-            </button> */}
             <Toggle
               label="Publicēts"
               isChecked={post.isPublished}
               handleChange={() => {
-                // console.log("clicked");
-
                 void mutate({ id: post.id, isPublished: !post.isPublished });
               }}
             />

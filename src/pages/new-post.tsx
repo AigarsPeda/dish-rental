@@ -1,3 +1,4 @@
+import { ALL_OPTIONS } from "hardcoded";
 import { type NextPage } from "next";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
@@ -8,24 +9,12 @@ import NumberInput from "~/components/NumberInput/NumberInput";
 import PageHead from "~/components/PageHead/PageHead";
 import SignInModal from "~/components/SignInModal/SignInModal";
 import Spinner from "~/components/Spinner/Spinner";
+import TextInput from "~/components/TextInput/TextInput";
+import Toggle from "~/components/Toggle/Toggle";
 import useImageUploadThing from "~/hooks/useImageUploadThing";
 import useLocalStorage from "~/hooks/useLocalStorage";
 import useRedirect from "~/hooks/useRedirect";
 import { api } from "~/utils/api";
-import Toggle from "../components/Toggle/Toggle";
-
-const ALL_OPTIONS = [
-  "Trauki",
-  "Galda piederumi",
-  "Gatavošana",
-  "Mēbeles un tekstils",
-  "Krūzes un glāzes",
-  "Servēšanas inventārs",
-  "Bāra inventārs",
-  "Dekorācijas galda klāšanai",
-  "Apgaismojums",
-  "Cits",
-];
 
 type FormStateType = {
   name: string;
@@ -141,32 +130,11 @@ const NewPost: NextPage = () => {
 
                 <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                   <div className="sm:col-span-6">
-                    <label
-                      htmlFor="product-name"
-                      className="block font-medium leading-6 text-gray-900"
-                    >
-                      Nosaukums
-                    </label>
-                    <div className="mt-2">
-                      <input
-                        type="text"
-                        id="product-name"
-                        name="product-name"
-                        autoComplete="given-name"
-                        className="block w-full rounded-md border-0 bg-transparent px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                        value={formsSate.name}
-                        onChange={(e) => {
-                          // setFormsState((prev) => ({
-                          //   ...prev,
-                          //   name: e.target.value,
-                          // }));
-                          setFormsState({
-                            ...formsSate,
-                            name: e.target.value,
-                          });
-                        }}
-                      />
-                    </div>
+                    <TextInput
+                      name="Nosaukums"
+                      value={formsSate.name}
+                      onChange={(e) => setFormsState({ ...formsSate, name: e })}
+                    />
                   </div>
                   <div className="sm:col-span-6">
                     <label
