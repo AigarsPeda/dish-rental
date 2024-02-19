@@ -15,6 +15,7 @@ import useImageUploadThing from "~/hooks/useImageUploadThing";
 import useLocalStorage from "~/hooks/useLocalStorage";
 import useRedirect from "~/hooks/useRedirect";
 import { api } from "~/utils/api";
+import Image from "next/image";
 
 type FormStateType = {
   name: string;
@@ -158,7 +159,6 @@ const NewPost: NextPage = () => {
                       Maksimums 3 kategorijas.
                     </p>
                   </div>
-
                   <div className="col-span-full">
                     <label
                       htmlFor="product-description"
@@ -187,17 +187,48 @@ const NewPost: NextPage = () => {
                   </div>
 
                   <div className="col-span-full">
-                    <DropZone
-                      fileError={fileError}
-                      inputStatus={inputStatus}
-                      checkFiles={checkFiles}
-                      images={images}
-                      handelFileUpload={(fileArray) => {
-                        setImages(fileArray);
-                      }}
-                    />
+                    <label
+                      htmlFor="cover-photo"
+                      className="mb-4 block font-medium leading-6 text-gray-900"
+                    >
+                      Produkta attēli
+                    </label>
+                    <div className="grid md:grid-cols-6">
+                      <div className="sm:col-span-3">
+                        <DropZone
+                          images={images}
+                          fileError={fileError}
+                          checkFiles={checkFiles}
+                          inputStatus={inputStatus}
+                          handelFileUpload={(fileArray) => {
+                            setImages(fileArray);
+                          }}
+                        />
+                      </div>
+                      <div className="mx-auto sm:col-span-3">
+                        <div className="flex flex-wrap gap-2">
+                          {images.map((file) => (
+                            <div
+                              key={file.name}
+                              className="relative h-20 w-20 overflow-hidden rounded-md"
+                            >
+                              {/* <img
+                                src={URL.createObjectURL(file)}
+                                alt={file.name}
+                                className="h-full w-full object-cover"
+                              /> */}
+                              <Image
+                                src={URL.createObjectURL(file)}
+                                alt={file.name}
+                                layout="fill"
+                                objectFit="cover"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
                   </div>
-
                   <div className="mx-auto max-w-40 sm:col-span-2">
                     <label
                       htmlFor="product-price"
@@ -219,7 +250,6 @@ const NewPost: NextPage = () => {
                       />
                     </div>
                   </div>
-
                   <div className="mx-auto max-w-40 sm:col-span-2">
                     <label
                       htmlFor="product-available-pieces"
@@ -240,7 +270,6 @@ const NewPost: NextPage = () => {
                       />
                     </div>
                   </div>
-
                   <div className="mx-auto max-w-40 sm:col-span-2">
                     <label
                       htmlFor="product-available-pieces"
@@ -301,7 +330,7 @@ const NewPost: NextPage = () => {
                   isFormEmpty || isImagesEmpty || isFormLoading
                     ? "cursor-not-allowed"
                     : "cursor-pointer hover:bg-gray-500",
-                  "relative rounded-md bg-gray-900 px-6 py-2 text-sm font-semibold text-white shadow-sm  focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600",
+                  "relative rounded-md bg-gray-900 px-6 py-2 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600",
                 )}
               >
                 {isFormLoading ? <Spinner size="sm" /> : "Izveidot"}

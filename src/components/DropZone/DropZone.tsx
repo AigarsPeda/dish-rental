@@ -25,14 +25,9 @@ const DropZone: FC<DropZoneProps> = ({
   handleStartUpload,
 }) => {
   return (
-    <div className="col-span-full">
-      <label
-        htmlFor="cover-photo"
-        className="block font-medium leading-6 text-gray-900"
-      >
-        Produkta attēli
-      </label>
-      <div className="relative mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
+    <>
+      {/* <div className="relative mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 py-5"> */}
+      <div className="relative flex justify-center rounded-lg border-gray-900/25">
         <div className="text-center">
           <svg
             className="mx-auto h-12 w-12 text-gray-300"
@@ -47,13 +42,13 @@ const DropZone: FC<DropZoneProps> = ({
             />
           </svg>
 
-          <div className="mt-4 flex text-sm leading-6 text-gray-600">
+          <div className="flex text-sm leading-6 text-gray-600">
             <label
               htmlFor="cover-photo"
-              className="w-32 cursor-pointer rounded-md bg-white px-2 font-semibold text-gray-900 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
+              className="mx-auto w-32 cursor-pointer rounded-md bg-gray-900 px-2 font-semibold text-gray-50 focus-within:outline-none focus-within:ring-2 focus-within:ring-gray-600 focus-within:ring-offset-2 hover:text-gray-50"
             >
-              {inputStatus !== "Loading" && <span>Upload a file</span>}
-              {inputStatus === "Loading" && <span>Uploading...</span>}
+              {inputStatus !== "Loading" && <span>Augšuplādēt attēlus</span>}
+              {inputStatus === "Loading" && <span>Lādējās...</span>}
 
               <input
                 multiple
@@ -78,9 +73,9 @@ const DropZone: FC<DropZoneProps> = ({
               />
             </label>
 
-            {inputStatus !== "Loading" ? (
+            {/* {inputStatus !== "Loading" ? (
               <p className="pl-1">or drag and drop</p>
-            ) : null}
+            ) : null} */}
           </div>
 
           <div className="flex items-center justify-center py-2">
@@ -120,7 +115,8 @@ const DropZone: FC<DropZoneProps> = ({
                   "relative z-50 flex w-32 items-center justify-center rounded-md  px-4 py-2 text-sm ",
                 )}
               >
-                {inputStatus === "Idle" && `Upload ${images.length} files`}
+                {inputStatus === "Idle" &&
+                  `Augšuplādēti ${images.length} attēli`}
                 {inputStatus === "Loading" && <Spinner size="sm" />}
                 {inputStatus === "Success" && (
                   <span className="flex items-center justify-center gap-2">
@@ -149,10 +145,12 @@ const DropZone: FC<DropZoneProps> = ({
               </p>
             )}
           </div>
-          <p className="text-xs leading-5 text-gray-600">JPG up to 2MB</p>
+          <p className="text-xs leading-5 text-gray-600">
+            JPG līdz 2MB. Maksimums 4 attēli.
+          </p>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
