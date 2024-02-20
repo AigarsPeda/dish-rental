@@ -6,7 +6,7 @@ import classNames from "~/utils/classNames";
 
 interface MultiSelectProps {
   id: string;
-  options: string[];
+  options: { [key: string]: string };
   selected: string[];
   setSelected: (selected: string[]) => void;
 }
@@ -42,7 +42,8 @@ const MultiSelect: FC<MultiSelectProps> = ({
                 setSelected(selected.filter((i) => i !== item));
               }}
             >
-              {item}
+              {/* {item} */}
+              {options[item]}
               <span className="absolute right-0 top-0 text-red-500 opacity-0 group-hover:opacity-100 ">
                 <IoClose />
               </span>
@@ -74,7 +75,26 @@ const MultiSelect: FC<MultiSelectProps> = ({
           )}
         >
           <div className="py-1" role="none">
-            {options.map((option) => (
+            {Object.keys(options).map((option) => (
+              <button
+                key={option}
+                type="button"
+                onClick={() => {
+                  if (selected.includes(option)) {
+                    setSelected(selected.filter((item) => item !== option));
+                  } else {
+                    setSelected([...selected, option]);
+                  }
+                }}
+                className={classNames(
+                  selected.includes(option) && "bg-gray-100",
+                  "block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100",
+                )}
+              >
+                {options[option]}
+              </button>
+            ))}
+            {/* {options.map((option) => (
               <button
                 key={option}
                 type="button"
@@ -92,7 +112,7 @@ const MultiSelect: FC<MultiSelectProps> = ({
               >
                 {option}
               </button>
-            ))}
+            ))} */}
           </div>
         </div>
       )}

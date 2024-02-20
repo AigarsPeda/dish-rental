@@ -1,11 +1,26 @@
 import { type NextPage } from "next";
 import { signIn, signOut, useSession } from "next-auth/react";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 import Card from "~/components/Card/Card";
 import PageHead from "~/components/PageHead/PageHead";
 import { api } from "~/utils/api";
 
 const Home: NextPage = () => {
-  const { data, isLoading } = api.post.getAll.useQuery();
+  const router = useRouter();
+  const [categories, setCategories] = useState<string[]>([]);
+  const { data, isLoading } = api.post.getAll.useQuery({
+    category: categories,
+  });
+
+  useEffect(() => {
+    if (router.query.category && typeof router.query.category === "string") {
+      const category = router.query.category.split(",");
+      setCategories(category);
+    } else {
+      setCategories([]);
+    }
+  }, [router.query.category]);
 
   return (
     <>
@@ -15,6 +30,16 @@ const Home: NextPage = () => {
         descriptionLong="Nomā vai iznomā traukus"
       />
       <main className="min-h-screen bg-gray-100 bg-gradient-to-b">
+        <div className="flex h-6 items-center justify-end gap-4 p-4">
+          {categories.length !== 0 && (
+            <button
+              onClick={() => router.push(`/`)}
+              className="rounded-md bg-gray-200 px-3 py-1 font-semibold text-gray-800"
+            >
+              Noņemt filtrus ({categories.length})
+            </button>
+          )}
+        </div>
         <div className="flex w-full items-center justify-center pt-4">
           <div className="grid w-full grid-cols-[repeat(auto-fit,minmax(310px,1fr))] gap-5 px-4">
             {isLoading && (

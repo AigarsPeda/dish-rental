@@ -13,6 +13,7 @@ import {
   boolean,
 } from "drizzle-orm/pg-core";
 import { type AdapterAccount } from "next-auth/adapters";
+import { array } from "zod";
 
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
@@ -38,7 +39,10 @@ export const posts = createTable(
       .notNull(),
     updatedAt: timestamp("updatedAt"),
     description: text("description"),
-    categories: text("categories"),
+    // categories: text("categories"),
+    categories: text("categories")
+      .array()
+      .default(sql`ARRAY[]::text[]`),
   },
   (example) => ({
     createdByIdIdx: index("createdById_idx").on(example.createdById),

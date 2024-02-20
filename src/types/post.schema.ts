@@ -41,9 +41,9 @@ export const DBPostSchema = z.object({
   name: z.string().nullish(),
   availablePieces: z.number(),
   updatedAt: z.date().nullable(),
-  categories: z.string().nullish(),
-  description: z.string().nullish(),
   images: z.array(DBImageSchema),
+  description: z.string().nullish(),
+  categories: z.array(z.string()).nullish(),
 });
 
 export type DBPostType = z.infer<typeof DBPostSchema>;

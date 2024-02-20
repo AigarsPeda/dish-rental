@@ -29,7 +29,6 @@ type FormStateType = {
 const NewPost: NextPage = () => {
   const { redirectToPath } = useRedirect();
   const { data: sessionData } = useSession();
-
   const [images, setImages] = useState<File[]>([]);
   const [isFormLoading, setIsFormLoading] = useState(false);
   const [isNeedToSignIn, setIsNeedToSignIn] = useState(false);
@@ -42,7 +41,7 @@ const NewPost: NextPage = () => {
         description: "",
         isPublished: true,
         availablePieces: 0,
-        selectedCategories: ["Trauki"],
+        selectedCategories: ["trauki"],
       });
       setIsFormLoading(false);
       redirectToPath(`/post/${result.postId}`);
@@ -60,7 +59,7 @@ const NewPost: NextPage = () => {
       description: "",
       isPublished: true,
       availablePieces: 0,
-      selectedCategories: ["Trauki"],
+      selectedCategories: ["trauki"],
     },
   );
 
@@ -97,6 +96,7 @@ const NewPost: NextPage = () => {
         descriptionShort="Nomā vai iznomā traukus"
         descriptionLong="Nomā vai iznomā traukus"
       />
+      {console.log("formsSate", formsSate)}
       <main className="min-h-screen bg-gray-100 bg-gradient-to-b">
         <div className="flex w-full items-center justify-center text-center">
           <form
@@ -317,7 +317,7 @@ const NewPost: NextPage = () => {
                     description: "",
                     isPublished: true,
                     availablePieces: 0,
-                    selectedCategories: ["Trauki"],
+                    selectedCategories: ["trauki"],
                   });
                   setImages([]);
                 }}

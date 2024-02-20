@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { arrayContains, eq } from "drizzle-orm";
 import { z } from "zod";
 import {
   createTRPCRouter,
@@ -29,7 +29,7 @@ export const postRouter = createTRPCRouter({
           isPublished: input.isPublished,
           description: input.description,
           createdById: ctx.session.user.id,
-          categories: input.categories.join(","),
+          categories: input.categories,
           availablePieces: input.availablePieces,
         })
         .returning({ id: posts.id });
@@ -70,15 +70,26 @@ export const postRouter = createTRPCRouter({
       return post;
     }),
 
-  getAll: publicProcedure.query(({ ctx }) => {
-    return ctx.db.query.posts.findMany({
-      where: (posts, { eq }) => eq(posts.isPublished, true),
-      orderBy: (posts, { desc }) => [desc(posts.createdAt)],
-      with: {
-        images: true,
-      },
-    });
-  }),
+  getAll: publicProcedure
+    .input(z.object({ category: z.array(z.string()).nullable() }))
+    .query(({ ctx, input }) => {
+      return ctx.db.query.posts.findMany({
+        where: (posts, { eq }) => {
+          if (
+            input.category &&
+            input.category.length > 0 &&
+            eq(posts.isPublished, true)
+          ) {
+            return arrayContains(posts.categories, input.category);
+          }
+          return eq(posts.isPublished, true);
+        },
+        orderBy: (posts, { desc }) => [desc(posts.createdAt)],
+        with: {
+          images: true,
+        },
+      });
+    }),
 
   getLatest: publicProcedure.query(({ ctx }) => {
     return ctx.db.query.posts.findFirst({

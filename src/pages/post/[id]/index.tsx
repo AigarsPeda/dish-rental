@@ -1,5 +1,7 @@
+import { ALL_OPTIONS } from "hardcoded";
 import { type NextPage } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import NumberInput from "~/components/NumberInput/NumberInput";
@@ -46,11 +48,11 @@ const PostPage: NextPage = () => {
               <div className="flex flex-row gap-4 md:flex-col">
                 {data?.images.map((image) => (
                   <Image
+                    width={100}
+                    height={100}
                     key={image.id}
                     src={image.url}
                     alt={image.name}
-                    width={100}
-                    height={100}
                     loader={ImageLoader}
                     className="h-24 w-24 rounded-lg object-cover shadow-lg"
                   />
@@ -58,11 +60,11 @@ const PostPage: NextPage = () => {
               </div>
               <div className="">
                 <Image
-                  src={data?.images[0]?.url ?? "/images/placeholder.jpeg"}
-                  alt={data?.images[0]?.name ?? "Image"}
                   width={500}
                   height={500}
                   loader={ImageLoader}
+                  alt={data?.images[0]?.name ?? "Image"}
+                  src={data?.images[0]?.url ?? "/images/placeholder.jpeg"}
                   className="h-full max-h-[28rem] w-[28rem] rounded-lg object-cover shadow-lg"
                 />
               </div>
@@ -72,15 +74,18 @@ const PostPage: NextPage = () => {
                 <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">
                   {data?.name}
                 </h1>
-
                 <div className="mt-4 flex flex-wrap gap-2">
-                  {splitCategories(data?.categories ?? "").map((category) => (
-                    <span
+                  {data?.categories?.map((category) => (
+                    <Link
                       key={category}
+                      href={{
+                        pathname: `/`,
+                        query: { category: category },
+                      }}
                       className="rounded-md bg-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-800 md:px-6 md:py-2"
                     >
-                      {category}
-                    </span>
+                      {ALL_OPTIONS[category as keyof typeof ALL_OPTIONS]}
+                    </Link>
                   ))}
                 </div>
 
