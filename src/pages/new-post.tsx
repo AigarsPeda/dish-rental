@@ -96,7 +96,6 @@ const NewPost: NextPage = () => {
         descriptionShort="Nomā vai iznomā traukus"
         descriptionLong="Nomā vai iznomā traukus"
       />
-      {console.log("formsSate", formsSate)}
       <main className="min-h-screen bg-gray-100 bg-gradient-to-b">
         <div className="flex w-full items-center justify-center text-center">
           <form
