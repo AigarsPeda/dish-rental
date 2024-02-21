@@ -31,6 +31,8 @@ export const postRouter = createTRPCRouter({
           createdById: ctx.session.user.id,
           categories: input.categories,
           availablePieces: input.availablePieces,
+          availableDatesStart: input.availableDatesStart,
+          availableDatesEnd: input.availableDatesEnd,
         })
         .returning({ id: posts.id });
 

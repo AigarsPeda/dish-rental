@@ -12,6 +12,8 @@ export const NewPostSchema = z.object({
   name: z.string().min(1),
   price: z.number().min(0),
   isPublished: z.boolean(),
+  availableDatesEnd: z.date(),
+  availableDatesStart: z.date(),
   description: z.string().min(1),
   categories: z.array(z.string()),
   availablePieces: z.number().min(0),
@@ -43,6 +45,8 @@ export const DBPostSchema = z.object({
   updatedAt: z.date().nullable(),
   images: z.array(DBImageSchema),
   description: z.string().nullish(),
+  availableDatesEnd: z.date().nullish(),
+  availableDatesStart: z.date().nullish(),
   categories: z.array(z.string()).nullish(),
 });
 

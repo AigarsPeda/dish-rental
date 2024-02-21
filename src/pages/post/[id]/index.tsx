@@ -9,6 +9,7 @@ import PageHead from "~/components/PageHead/PageHead";
 import ShoppingCartIcon from "~/components/icons/ShoppingCartIcon/ShoppingCartIcon";
 import ImageLoader from "~/utils/ImageLoader";
 import { api } from "~/utils/api";
+import formatDate from "~/utils/formatDate";
 
 const PostPage: NextPage = () => {
   const router = useRouter();
@@ -17,10 +18,6 @@ const PostPage: NextPage = () => {
     { id: postId ?? 1 },
     { enabled: postId !== null },
   );
-
-  const splitCategories = (categories: string) => {
-    return categories.split(",");
-  };
 
   useEffect(() => {
     if (router.query.id && typeof router.query.id === "string") {
@@ -103,6 +100,18 @@ const PostPage: NextPage = () => {
                       {data?.availablePieces}{" "}
                     </span>{" "}
                     vienības
+                  </p>
+                </div>
+                <div className="mt-2">
+                  <p className="text-gray-400">
+                    Piejami no{" "}
+                    <span className="font-semibold text-gray-800">
+                      {formatDate(data?.availableDatesStart)}
+                    </span>{" "}
+                    līdz{" "}
+                    <span className="font-semibold text-gray-800">
+                      {formatDate(data?.availableDatesEnd)}
+                    </span>
                   </p>
                 </div>
                 <div className="mt-8 items-end justify-between gap-2 xl:flex">

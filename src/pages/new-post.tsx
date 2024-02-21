@@ -1,7 +1,9 @@
 import { ALL_OPTIONS } from "hardcoded";
 import { type NextPage } from "next";
 import { useSession } from "next-auth/react";
+import Image from "next/image";
 import { useEffect, useState } from "react";
+import Datepicker, { type DateValueType } from "react-tailwindcss-datepicker";
 import { classNames } from "uploadthing/client";
 import DropZone from "~/components/DropZone/DropZone";
 import MultiSelect from "~/components/MultiSelect/MultiSelect";
@@ -15,7 +17,7 @@ import useImageUploadThing from "~/hooks/useImageUploadThing";
 import useLocalStorage from "~/hooks/useLocalStorage";
 import useRedirect from "~/hooks/useRedirect";
 import { api } from "~/utils/api";
-import Image from "next/image";
+import ImageLoader from "~/utils/ImageLoader";
 
 type FormStateType = {
   name: string;
@@ -24,6 +26,7 @@ type FormStateType = {
   isPublished: boolean;
   availablePieces: number;
   selectedCategories: string[];
+  availableDates: DateValueType;
 };
 
 const NewPost: NextPage = () => {
@@ -33,6 +36,8 @@ const NewPost: NextPage = () => {
   const [isFormLoading, setIsFormLoading] = useState(false);
   const [isNeedToSignIn, setIsNeedToSignIn] = useState(false);
   const [isShowErrorMessage, setIsShowErrorMessage] = useState(false);
+  const { response, fileError, checkFiles, inputStatus, handelStartUpload } =
+    useImageUploadThing();
   const { mutate } = api.post.create.useMutation({
     onSuccess: (result) => {
       setFormsState({
@@ -42,14 +47,15 @@ const NewPost: NextPage = () => {
         isPublished: true,
         availablePieces: 0,
         selectedCategories: ["trauki"],
+        availableDates: {
+          startDate: new Date(),
+          endDate: new Date(new Date().setMonth(new Date().getMonth() + 1)),
+        },
       });
       setIsFormLoading(false);
       redirectToPath(`/post/${result.postId}`);
     },
   });
-
-  const { response, fileError, checkFiles, inputStatus, handelStartUpload } =
-    useImageUploadThing();
 
   const [formsSate, setFormsState] = useLocalStorage<FormStateType>(
     "new-post-form-v2",
@@ -60,11 +66,31 @@ const NewPost: NextPage = () => {
       isPublished: true,
       availablePieces: 0,
       selectedCategories: ["trauki"],
+      availableDates: {
+        startDate: new Date(),
+        endDate: new Date(new Date().setMonth(new Date().getMonth() + 1)),
+      },
     },
   );
 
   const isImagesEmpty = images.length === 0;
   const isFormEmpty = Object.values(formsSate).some((value) => value === "");
+
+  const resetState = () => {
+    setFormsState({
+      name: "",
+      price: 0,
+      description: "",
+      isPublished: true,
+      availablePieces: 0,
+      selectedCategories: ["trauki"],
+      availableDates: {
+        startDate: new Date(),
+        endDate: new Date(new Date().setMonth(new Date().getMonth() + 1)),
+      },
+    });
+    setImages([]);
+  };
 
   // try to get new-post-form from local storage and delete it if it exists
   useEffect(() => {
@@ -84,10 +110,14 @@ const NewPost: NextPage = () => {
       description: formsSate.description,
       categories: formsSate.selectedCategories,
       availablePieces: formsSate.availablePieces,
+      availableDatesStart: new Date(
+        formsSate.availableDates?.startDate ?? new Date(),
+      ),
+      availableDatesEnd: new Date(
+        formsSate.availableDates?.endDate ?? new Date(),
+      ),
     });
   }, [response]);
-
-  // TODO: Availability Date
 
   return (
     <>
@@ -99,7 +129,7 @@ const NewPost: NextPage = () => {
       <main className="min-h-screen bg-gray-100 bg-gradient-to-b">
         <div className="flex w-full items-center justify-center text-center">
           <form
-            className="mx-auto mt-4 max-w-xl px-2 pb-10"
+            className="mx-auto mt-4 max-w-xl px-4 pb-10"
             onSubmit={(e) => {
               e.preventDefault();
               if (isFormEmpty || isImagesEmpty) {
@@ -170,7 +200,7 @@ const NewPost: NextPage = () => {
                         rows={3}
                         id="product-description"
                         name="product-description"
-                        className="block w-full rounded-md border-0 bg-transparent px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border-0 bg-white px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-100 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                         value={formsSate.description}
                         onChange={(e) => {
                           setFormsState({
@@ -185,49 +215,6 @@ const NewPost: NextPage = () => {
                     </p>
                   </div>
 
-                  <div className="col-span-full">
-                    <label
-                      htmlFor="cover-photo"
-                      className="mb-4 block font-medium leading-6 text-gray-900"
-                    >
-                      Produkta attēli
-                    </label>
-                    <div className="grid md:grid-cols-6">
-                      <div className="sm:col-span-3">
-                        <DropZone
-                          images={images}
-                          fileError={fileError}
-                          checkFiles={checkFiles}
-                          inputStatus={inputStatus}
-                          handelFileUpload={(fileArray) => {
-                            setImages(fileArray);
-                          }}
-                        />
-                      </div>
-                      <div className="mx-auto sm:col-span-3">
-                        <div className="flex flex-wrap gap-2">
-                          {images.map((file) => (
-                            <div
-                              key={file.name}
-                              className="relative h-20 w-20 overflow-hidden rounded-md"
-                            >
-                              {/* <img
-                                src={URL.createObjectURL(file)}
-                                alt={file.name}
-                                className="h-full w-full object-cover"
-                              /> */}
-                              <Image
-                                src={URL.createObjectURL(file)}
-                                alt={file.name}
-                                layout="fill"
-                                objectFit="cover"
-                              />
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
                   <div className="mx-auto max-w-40 sm:col-span-2">
                     <label
                       htmlFor="product-price"
@@ -288,6 +275,66 @@ const NewPost: NextPage = () => {
                       />
                     </div>
                   </div>
+                  <div className="sm:col-span-3">
+                    <label
+                      htmlFor="product-available-pieces"
+                      className="block font-medium leading-6 text-gray-900"
+                    >
+                      Pieejamības datumi
+                    </label>
+                    <div className="mt-4">
+                      <Datepicker
+                        displayFormat={"DD/MM/YYYY"}
+                        value={formsSate.availableDates}
+                        onChange={(newValue) => {
+                          setFormsState({
+                            ...formsSate,
+                            availableDates: newValue,
+                          });
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-span-full">
+                    <label
+                      htmlFor="cover-photo"
+                      className="mb-4 block font-medium leading-6 text-gray-900"
+                    >
+                      Produkta attēli
+                    </label>
+                    <DropZone
+                      images={images}
+                      fileError={fileError}
+                      checkFiles={checkFiles}
+                      inputStatus={inputStatus}
+                      handelFileUpload={(fileArray) => {
+                        setImages(fileArray);
+                      }}
+                    />
+                  </div>
+                  <div className="col-span-full place-items-center justify-center">
+                    <div className="mx-auto flex flex-wrap justify-center gap-2">
+                      {images.map((file) => (
+                        <div
+                          key={file.name}
+                          className="relative h-20 w-20 overflow-hidden rounded-md"
+                        >
+                          <Image
+                            width={0}
+                            height={0}
+                            alt={file.name}
+                            loader={ImageLoader}
+                            src={URL.createObjectURL(file)}
+                            style={{
+                              width: "120px",
+                              height: "auto",
+                              objectFit: "cover",
+                            }}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -307,19 +354,9 @@ const NewPost: NextPage = () => {
             <div className=" flex items-center justify-end gap-x-6">
               <button
                 type="button"
+                onClick={resetState}
                 disabled={isFormLoading}
                 className="text-sm font-semibold leading-6 text-gray-900"
-                onClick={() => {
-                  setFormsState({
-                    name: "",
-                    price: 0,
-                    description: "",
-                    isPublished: true,
-                    availablePieces: 0,
-                    selectedCategories: ["trauki"],
-                  });
-                  setImages([]);
-                }}
               >
                 Atcelt
               </button>

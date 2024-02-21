@@ -26,7 +26,7 @@ const MultiSelect: FC<MultiSelectProps> = ({
     <div className="relative" ref={dropdownRef}>
       <div
         id={id}
-        className="flex min-h-10 w-full items-center justify-between gap-x-0.5 rounded-md bg-gray-100 px-0.5 text-sm font-semibold text-gray-800 shadow-sm ring-1 ring-inset ring-gray-300 hover:cursor-pointer hover:bg-gray-100 focus:ring-gray-800"
+        className="flex min-h-10 w-full items-center justify-between gap-x-0.5 rounded-md bg-white px-0.5 text-sm font-semibold text-gray-800 shadow-sm ring-1 ring-inset ring-gray-100 hover:cursor-pointer focus:ring-gray-800"
         aria-expanded="true"
         aria-haspopup="true"
         onClick={() => setIsDropdownOpen(!isDropdownOpen)}

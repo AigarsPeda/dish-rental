@@ -19,7 +19,7 @@ const NumberInput: FC<NumberInputProps> = ({
         type="button"
         id="decrement-button"
         data-input-counter-decrement={id}
-        className="h-11 rounded-s-lg border border-gray-300 bg-gray-100 p-3 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100"
+        className="h-11 rounded-s-lg bg-white p-3 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100"
         onClick={() => {
           if (value > 1) {
             if (isDecimal) {
@@ -52,7 +52,7 @@ const NumberInput: FC<NumberInputProps> = ({
         id={id}
         data-input-counter
         aria-describedby="helper-text-explanation"
-        className="block h-11 w-full border border-x-0 border-gray-300 bg-gray-100 py-2.5 text-center text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 "
+        className="block h-11 w-full border border-y-0 border-gray-300 bg-white py-2.5 text-center text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 "
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
       />
@@ -60,7 +60,7 @@ const NumberInput: FC<NumberInputProps> = ({
         type="button"
         id="increment-button"
         data-input-counter-increment={id}
-        className="h-11 rounded-e-lg border border-gray-300 bg-gray-100 p-3 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100"
+        className="h-11 rounded-e-lg bg-white p-3 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100"
         onClick={() => {
           if (isDecimal) {
             onChange(Math.round((value + 0.1) * 10) / 10);

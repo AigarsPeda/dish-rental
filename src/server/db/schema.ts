@@ -31,6 +31,8 @@ export const posts = createTable(
     name: varchar("name", { length: 256 }),
     isPublished: boolean("isPublished").notNull().default(false),
     availablePieces: integer("availablePieces").notNull(),
+    availableDatesStart: timestamp("availableDatesStart", { mode: "date" }),
+    availableDatesEnd: timestamp("availableDatesEnd", { mode: "date" }),
     createdById: varchar("createdById", { length: 255 })
       .notNull()
       .references(() => users.id),
