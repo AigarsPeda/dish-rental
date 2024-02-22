@@ -5,11 +5,11 @@ import {
   protectedProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
-import { posts, images } from "~/server/db/schema";
+import { product, images } from "~/server/db/schema";
 import { utapi } from "~/server/uploadthing";
-import { NewPostSchema } from "~/types/post.schema";
+import { NewProductSchema } from "~/types/product.schema";
 
-export const postRouter = createTRPCRouter({
+export const productRouter = createTRPCRouter({
   hello: publicProcedure
     .input(z.object({ text: z.string() }))
     .query(({ input }) => {
@@ -19,10 +19,10 @@ export const postRouter = createTRPCRouter({
     }),
 
   create: protectedProcedure
-    .input(NewPostSchema)
+    .input(NewProductSchema)
     .mutation(async ({ ctx, input }) => {
       const ids = await ctx.db
-        .insert(posts)
+        .insert(product)
         .values({
           name: input.name,
           price: input.price,
@@ -34,7 +34,7 @@ export const postRouter = createTRPCRouter({
           availableDatesStart: input.availableDatesStart,
           availableDatesEnd: input.availableDatesEnd,
         })
-        .returning({ id: posts.id });
+        .returning({ id: product.id });
 
       const postId = ids[0]?.id;
 
@@ -62,8 +62,8 @@ export const postRouter = createTRPCRouter({
   getById: publicProcedure
     .input(z.object({ id: z.number() }))
     .query(({ input, ctx }) => {
-      const post = ctx.db.query.posts.findFirst({
-        where: (posts, { eq }) => eq(posts.id, input.id),
+      const post = ctx.db.query.product.findFirst({
+        where: (product, { eq }) => eq(product.id, input.id),
         with: {
           images: true,
         },
@@ -75,18 +75,18 @@ export const postRouter = createTRPCRouter({
   getAll: publicProcedure
     .input(z.object({ category: z.array(z.string()).nullable() }))
     .query(({ ctx, input }) => {
-      return ctx.db.query.posts.findMany({
-        where: (posts, { eq }) => {
+      return ctx.db.query.product.findMany({
+        where: (product, { eq }) => {
           if (
             input.category &&
             input.category.length > 0 &&
-            eq(posts.isPublished, true)
+            eq(product.isPublished, true)
           ) {
-            return arrayContains(posts.categories, input.category);
+            return arrayContains(product.categories, input.category);
           }
-          return eq(posts.isPublished, true);
+          return eq(product.isPublished, true);
         },
-        orderBy: (posts, { desc }) => [desc(posts.createdAt)],
+        orderBy: (product, { desc }) => [desc(product.createdAt)],
         with: {
           images: true,
         },
@@ -94,8 +94,8 @@ export const postRouter = createTRPCRouter({
     }),
 
   getLatest: publicProcedure.query(({ ctx }) => {
-    return ctx.db.query.posts.findFirst({
-      orderBy: (posts, { desc }) => [desc(posts.createdAt)],
+    return ctx.db.query.product.findFirst({
+      orderBy: (product, { desc }) => [desc(product.createdAt)],
     });
   }),
 
@@ -108,17 +108,17 @@ export const postRouter = createTRPCRouter({
     )
     .mutation(async ({ input, ctx }) => {
       await ctx.db
-        .update(posts)
+        .update(product)
         .set({ isPublished: input.isPublished })
-        .where(eq(posts.id, input.id));
+        .where(eq(product.id, input.id));
 
       return `updated post: ${input.id}`;
     }),
 
   getUsersPosts: protectedProcedure.query(({ ctx }) => {
-    return ctx.db.query.posts.findMany({
-      where: (posts, { eq }) => eq(posts.createdById, ctx.session.user.id),
-      orderBy: (posts, { desc }) => [desc(posts.createdAt)],
+    return ctx.db.query.product.findMany({
+      where: (product, { eq }) => eq(product.createdById, ctx.session.user.id),
+      orderBy: (product, { desc }) => [desc(product.createdAt)],
       with: {
         images: true,
       },

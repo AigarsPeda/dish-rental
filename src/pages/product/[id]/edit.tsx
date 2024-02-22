@@ -10,7 +10,7 @@ import classNames from "~/utils/classNames";
 const EditPage: NextPage = () => {
   const router = useRouter();
   const [postId, setPostId] = useState<number | null>(null);
-  const { data, isLoading } = api.post.getById.useQuery(
+  const { data, isLoading } = api.product.getById.useQuery(
     { id: postId ?? 1 },
     { enabled: postId !== null },
   );

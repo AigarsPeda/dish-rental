@@ -29,7 +29,7 @@ const ProfileDropdown: FC = () => {
           tabIndex={-1}
           role="menuitem"
           id="menu-item-0"
-          href="/new-post"
+          href="/new-product"
           onClick={() => setIsDropdownOpen(false)}
           className="block px-4 py-2 text-sm text-gray-700"
         >
@@ -40,7 +40,7 @@ const ProfileDropdown: FC = () => {
             tabIndex={-1}
             role="menuitem"
             id="menu-item-0"
-            href="/my-posts"
+            href="/my-products"
             onClick={() => setIsDropdownOpen(false)}
             className="block px-4 py-2 text-sm text-gray-700"
           >

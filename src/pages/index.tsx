@@ -9,7 +9,7 @@ import { api } from "~/utils/api";
 const Home: NextPage = () => {
   const router = useRouter();
   const [categories, setCategories] = useState<string[]>([]);
-  const { data, isLoading } = api.post.getAll.useQuery({
+  const { data, isLoading } = api.product.getAll.useQuery({
     category: categories,
   });
 
@@ -51,7 +51,9 @@ const Home: NextPage = () => {
             )}
 
             {data?.length !== 0 ? (
-              data?.map((post) => <Card key={post.id} post={post} />)
+              data?.map((product) => (
+                <Card key={product.id} product={product} />
+              ))
             ) : (
               <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
                 Nevies sludinājumu vēl nav pievienoti :(

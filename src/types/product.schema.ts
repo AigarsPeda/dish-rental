@@ -8,7 +8,7 @@ export const ImageDataSchema = z.object({
   serverData: z.unknown(),
 });
 
-export const NewPostSchema = z.object({
+export const NewProductSchema = z.object({
   name: z.string().min(1),
   price: z.number().min(0),
   isPublished: z.boolean(),
@@ -21,7 +21,7 @@ export const NewPostSchema = z.object({
 });
 
 export type ImageDataType = z.infer<typeof ImageDataSchema>;
-export type NewPostType = z.infer<typeof NewPostSchema>;
+export type NewProductType = z.infer<typeof NewProductSchema>;
 
 export const DBImageSchema = z.object({
   id: z.number(),
@@ -34,7 +34,7 @@ export const DBImageSchema = z.object({
 
 export type DBImageType = z.infer<typeof DBImageSchema>;
 
-export const DBPostSchema = z.object({
+export const DBProductSchema = z.object({
   id: z.number(),
   price: z.number(),
   createdAt: z.date(),
@@ -50,4 +50,4 @@ export const DBPostSchema = z.object({
   categories: z.array(z.string()).nullish(),
 });
 
-export type DBPostType = z.infer<typeof DBPostSchema>;
+export type DBProductType = z.infer<typeof DBProductSchema>;

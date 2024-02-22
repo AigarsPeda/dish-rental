@@ -4,7 +4,7 @@ import PageHead from "~/components/PageHead/PageHead";
 import { api } from "~/utils/api";
 
 const MyPosts: NextPage = () => {
-  const { data, isLoading } = api.post.getUsersPosts.useQuery();
+  const { data, isLoading } = api.product.getUsersPosts.useQuery();
   return (
     <>
       <PageHead

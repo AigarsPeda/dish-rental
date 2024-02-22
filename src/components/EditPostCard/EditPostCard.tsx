@@ -2,21 +2,21 @@ import Image from "next/image";
 import Link from "next/link";
 import { type FC } from "react";
 import Toggle from "~/components/Toggle/Toggle";
-import { type DBPostType } from "~/types/post.schema";
+import { type DBProductType } from "~/types/product.schema";
 import ImageLoader from "~/utils/ImageLoader";
 import { api } from "~/utils/api";
 import classNames from "~/utils/classNames";
 
 interface EditPostCardProps {
-  post: DBPostType;
+  post: DBProductType;
 }
 
 const EditPostCard: FC<EditPostCardProps> = ({ post }) => {
   const utils = api.useUtils();
-  const { mutate } = api.post.setPublished.useMutation({
+  const { mutate } = api.product.setPublished.useMutation({
     onMutate: ({ id, isPublished }) => {
       // Optimistic update
-      utils.post.getUsersPosts.setData(undefined, (prev) => {
+      utils.product.getUsersPosts.setData(undefined, (prev) => {
         if (prev) {
           return prev.map((p) => {
             if (p.id === id) {
@@ -32,7 +32,7 @@ const EditPostCard: FC<EditPostCardProps> = ({ post }) => {
       });
     },
     onSuccess: async () => {
-      await utils.post.getUsersPosts.invalidate();
+      await utils.product.getUsersPosts.invalidate();
     },
   });
 
@@ -68,7 +68,7 @@ const EditPostCard: FC<EditPostCardProps> = ({ post }) => {
             />
             <Link
               href={{
-                pathname: `/post/${post.id}/edit`,
+                pathname: `/product/${post.id}/edit`,
               }}
               className="flex items-center justify-center gap-2 rounded-md bg-gray-900 px-5 py-2.5 text-center text-sm font-medium text-white transition-all hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-blue-800"
             >

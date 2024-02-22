@@ -3,18 +3,18 @@ import Link from "next/link";
 import { type FC } from "react";
 import { classNames } from "uploadthing/client";
 import ShoppingCartIcon from "~/components/icons/ShoppingCartIcon/ShoppingCartIcon";
-import { DBPostType } from "~/types/post.schema";
+import { DBProductType } from "~/types/product.schema";
 import ImageLoader from "~/utils/ImageLoader";
 
 interface CardProps {
-  post: DBPostType;
+  product: DBProductType;
 }
 
-const Card: FC<CardProps> = ({ post }) => {
+const Card: FC<CardProps> = ({ product }) => {
   return (
     <Link
       href={{
-        pathname: `/post/${post.id}`,
+        pathname: `/product/${product.id}`,
         // query: { group: data?.groups[0], isplayoffmode: tournament.isPlayoffs },
       }}
       className="w-full rounded-lg border bg-white shadow-sm"
@@ -24,7 +24,7 @@ const Card: FC<CardProps> = ({ post }) => {
         alt="dish-rental"
         loader={ImageLoader}
         className={classNames("overflow-hidden rounded-lg p-1")}
-        src={post.images[0]?.url ?? "/images/placeholder.jpeg"}
+        src={product.images[0]?.url ?? "/images/placeholder.jpeg"}
         width={300}
         height={300}
         style={{
@@ -36,12 +36,12 @@ const Card: FC<CardProps> = ({ post }) => {
       <div className="px-2.5 py-1.5 md:px-5 md:py-2.5">
         <div className="text-left">
           <h5 className="text-base font-semibold tracking-tight text-gray-500">
-            {post.name}
+            {product.name}
           </h5>
         </div>
         <div className="mt-2.5 flex items-center justify-between transition-all">
           <span className="text-3xl font-bold text-gray-900">
-            {post.price} € / dienā
+            {product.price} € / dienā
           </span>
           <button
             onClick={() => console.log("clicked")}

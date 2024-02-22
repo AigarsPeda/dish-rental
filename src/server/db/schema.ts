@@ -23,8 +23,8 @@ import { array } from "zod";
  */
 export const createTable = pgTableCreator((name) => `dish-rental_${name}`);
 
-export const posts = createTable(
-  "post",
+export const product = createTable(
+  "product",
   {
     id: serial("id").primaryKey(),
     price: real("price").notNull(), // price like 10.99
@@ -62,7 +62,7 @@ export const images = createTable(
     size: integer("size").notNull(),
     postId: integer("postId")
       .notNull()
-      .references(() => posts.id),
+      .references(() => product.id),
     createdAt: timestamp("created_at")
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
@@ -73,12 +73,12 @@ export const images = createTable(
 );
 
 // one post can have many images
-export const postRelations = relations(posts, ({ many }) => ({
+export const postRelations = relations(product, ({ many }) => ({
   images: many(images),
 }));
 
 export const imageRelations = relations(images, ({ one }) => ({
-  post: one(posts, { fields: [images.postId], references: [posts.id] }),
+  post: one(product, { fields: [images.postId], references: [product.id] }),
 }));
 
 export const users = createTable("user", {
@@ -166,4 +166,6 @@ export const verificationTokens = createTable(
 //   DROP TABLE IF EXISTS "dish-rental_account";
 //   DROP TABLE IF EXISTS "dish-rental_user";
 //   DROP TABLE IF EXISTS "dish-rental_post";
+//   DROP TABLE IF EXISTS "dish-rental_image";
+//   DROP TABLE IF EXISTS "dish-rental_product";
 // `;

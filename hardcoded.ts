@@ -1,16 +1,3 @@
-// export const ALL_OPTIONS = [
-//   "trauki": "Trauki",
-//   "galda piederumi",
-//   "gatavošana",
-//   "mēbeles un tekstils",
-//   "krūzes un glāzes",
-//   "kervēšanas inventārs",
-//   "bāra inventārs",
-//   "dekorācijas galda klāšanai",
-//   "apgaismojums",
-//   "cits",
-// ];
-
 export const ALL_OPTIONS = {
   trauki: "Trauki",
   galda_piederumi: "Galda piederumi",

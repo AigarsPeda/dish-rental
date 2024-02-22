@@ -38,7 +38,7 @@ const NewPost: NextPage = () => {
   const [isShowErrorMessage, setIsShowErrorMessage] = useState(false);
   const { response, fileError, checkFiles, inputStatus, handelStartUpload } =
     useImageUploadThing();
-  const { mutate } = api.post.create.useMutation({
+  const { mutate } = api.product.create.useMutation({
     onSuccess: (result) => {
       setFormsState({
         name: "",
@@ -53,12 +53,12 @@ const NewPost: NextPage = () => {
         },
       });
       setIsFormLoading(false);
-      redirectToPath(`/post/${result.postId}`);
+      redirectToPath(`/product/${result.postId}`);
     },
   });
 
   const [formsSate, setFormsState] = useLocalStorage<FormStateType>(
-    "new-post-form-v2",
+    "new-product-form-v2",
     {
       name: "",
       price: 0,
@@ -92,9 +92,9 @@ const NewPost: NextPage = () => {
     setImages([]);
   };
 
-  // try to get new-post-form from local storage and delete it if it exists
+  // try to get new-product-form from local storage and delete it if it exists
   useEffect(() => {
-    localStorage.removeItem("new-post-form");
+    localStorage.removeItem("new-product-form");
   }, []);
 
   useEffect(() => {

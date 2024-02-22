@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ImageDataType } from "~/types/post.schema";
+import { ImageDataType } from "~/types/product.schema";
 import { useUploadThing } from "~/utils/uploadthing";
 
 const TWO_MB = 2 * 1024 * 1024;
