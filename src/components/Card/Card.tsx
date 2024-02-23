@@ -44,7 +44,12 @@ const Card: FC<CardProps> = ({ product }) => {
             {product.price} € / dienā
           </span>
           <button
-            onClick={() => console.log("clicked")}
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              console.log("add to cart");
+            }}
             className="flex items-center justify-center gap-2 rounded-md bg-gray-900 px-5 py-2.5 text-center text-sm font-medium text-white transition-all hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-blue-800"
           >
             <ShoppingCartIcon />

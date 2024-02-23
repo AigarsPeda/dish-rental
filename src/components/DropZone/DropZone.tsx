@@ -1,11 +1,11 @@
 import { type FC } from "react";
+import { IoAdd, IoCheckmarkSharp } from "react-icons/io5";
 import Spinner from "src/components/Spinner/Spinner";
 import { classNames } from "uploadthing/client";
 import {
   type FileErrorType,
   type InputStatus,
 } from "~/hooks/useImageUploadThing";
-import { IoCheckmarkSharp } from "react-icons/io5";
 
 interface DropZoneProps {
   images: File[];
@@ -26,29 +26,23 @@ const DropZone: FC<DropZoneProps> = ({
 }) => {
   return (
     <>
-      {/* <div className="relative mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 py-5"> */}
       <div className="relative flex justify-center rounded-lg border-gray-900/25">
-        <div className="text-center">
-          <svg
-            className="mx-auto h-12 w-12 text-gray-300"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            aria-hidden="true"
-          >
-            <path
-              fillRule="evenodd"
-              d="M1.5 6a2.25 2.25 0 012.25-2.25h16.5A2.25 2.25 0 0122.5 6v12a2.25 2.25 0 01-2.25 2.25H3.75A2.25 2.25 0 011.5 18V6zM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0021 18v-1.94l-2.69-2.689a1.5 1.5 0 00-2.12 0l-.88.879.97.97a.75.75 0 11-1.06 1.06l-5.16-5.159a1.5 1.5 0 00-2.12 0L3 16.061zm10.125-7.81a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0z"
-              clipRule="evenodd"
-            />
-          </svg>
-
+        <div className="flex text-center">
           <div className="flex text-sm leading-6 text-gray-600">
             <label
               htmlFor="cover-photo"
-              className="mx-auto w-32 cursor-pointer rounded-md bg-gray-900 px-2 font-semibold text-gray-50 focus-within:outline-none focus-within:ring-2 focus-within:ring-gray-600 focus-within:ring-offset-2 hover:text-gray-50"
+              className="mx-auto flex h-20 w-20 cursor-pointer items-center justify-center rounded-md bg-gray-300 px-2 font-semibold text-gray-50 focus-within:outline-none focus-within:ring-2 focus-within:ring-gray-600 focus-within:ring-offset-2 hover:text-gray-50"
             >
-              {inputStatus !== "Loading" && <span>Augšuplādēt attēlus</span>}
-              {inputStatus === "Loading" && <span>Lādējās...</span>}
+              {inputStatus !== "Loading" && (
+                <span>
+                  <IoAdd className="h-10 w-10" />
+                </span>
+              )}
+              {inputStatus === "Loading" && (
+                <span>
+                  <Spinner size="sm" />
+                </span>
+              )}
 
               <input
                 multiple
@@ -72,10 +66,6 @@ const DropZone: FC<DropZoneProps> = ({
                 }}
               />
             </label>
-
-            {/* {inputStatus !== "Loading" ? (
-              <p className="pl-1">or drag and drop</p>
-            ) : null} */}
           </div>
 
           <div className="flex items-center justify-center py-2">
@@ -94,7 +84,6 @@ const DropZone: FC<DropZoneProps> = ({
                 )}
               >
                 {inputStatus === "Idle" && `Upload ${images.length} files`}
-                {inputStatus === "Loading" && <Spinner size="sm" />}
                 {inputStatus === "Success" && (
                   <span className="flex items-center justify-center gap-2">
                     Success
@@ -115,9 +104,6 @@ const DropZone: FC<DropZoneProps> = ({
                   "relative z-50 flex w-32 items-center justify-center rounded-md  px-4 py-2 text-sm ",
                 )}
               >
-                {inputStatus === "Idle" &&
-                  `Augšuplādēti ${images.length} attēli`}
-                {inputStatus === "Loading" && <Spinner size="sm" />}
                 {inputStatus === "Success" && (
                   <span className="flex items-center justify-center gap-2">
                     Success
@@ -145,9 +131,6 @@ const DropZone: FC<DropZoneProps> = ({
               </p>
             )}
           </div>
-          <p className="text-xs leading-5 text-gray-600">
-            JPG līdz 2MB. Maksimums 4 attēli.
-          </p>
         </div>
       </div>
     </>

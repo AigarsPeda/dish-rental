@@ -295,24 +295,74 @@ const NewPost: NextPage = () => {
                       />
                     </div>
                   </div>
+
                   <div className="col-span-full">
-                    <label
-                      htmlFor="cover-photo"
-                      className="mb-4 block font-medium leading-6 text-gray-900"
-                    >
-                      Produkta attēli
-                    </label>
-                    <DropZone
-                      images={images}
-                      fileError={fileError}
-                      checkFiles={checkFiles}
-                      inputStatus={inputStatus}
-                      handelFileUpload={(fileArray) => {
-                        setImages(fileArray);
-                      }}
-                    />
+                    <div>
+                      <label
+                        htmlFor="cover-photo"
+                        className="mb-4 block font-medium leading-6 text-gray-900"
+                      >
+                        Produkta attēli
+                      </label>
+                    </div>
+                    <div className="flex justify-center gap-2">
+                      <div className="flex flex-wrap justify-center gap-2">
+                        {images.map((file) => (
+                          <div
+                            key={file.name}
+                            className="relative h-20 w-20 overflow-hidden rounded-md"
+                          >
+                            <Image
+                              width={0}
+                              height={0}
+                              alt={file.name}
+                              loader={ImageLoader}
+                              src={URL.createObjectURL(file)}
+                              style={{
+                                width: "120px",
+                                height: "auto",
+                                objectFit: "cover",
+                              }}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                      <DropZone
+                        images={images}
+                        fileError={fileError}
+                        checkFiles={checkFiles}
+                        inputStatus={inputStatus}
+                        handelFileUpload={(fileArray) => {
+                          setImages(fileArray);
+                        }}
+                      />
+                    </div>
+                    <div>
+                      <p className="mt-1 text-sm leading-6 text-gray-400">
+                        JPG līdz 2MB. Maksimums 4 attēli.
+                      </p>
+                    </div>
                   </div>
-                  <div className="col-span-full place-items-center justify-center">
+                  {/* <div className="col-span-full flex justify-center">
+                    <div>
+                      <label
+                        htmlFor="cover-photo"
+                        className="mb-4 block font-medium leading-6 text-gray-900"
+                      >
+                        Produkta attēli
+                      </label>
+                      <DropZone
+                        images={images}
+                        fileError={fileError}
+                        checkFiles={checkFiles}
+                        inputStatus={inputStatus}
+                        handelFileUpload={(fileArray) => {
+                          setImages(fileArray);
+                        }}
+                      />
+                    </div>
+                  </div> */}
+                  {/* <div className="col-span-full place-items-center justify-center">
                     <div className="mx-auto flex flex-wrap justify-center gap-2">
                       {images.map((file) => (
                         <div
@@ -334,7 +384,7 @@ const NewPost: NextPage = () => {
                         </div>
                       ))}
                     </div>
-                  </div>
+                  </div> */}
                 </div>
               </div>
 

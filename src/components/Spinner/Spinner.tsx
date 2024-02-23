@@ -14,7 +14,7 @@ const Spinner: FC<SpinnerProps> = ({ size = "md" }) => {
           size === "sm" && "h-5 w-5",
           size === "md" && "h-8 w-8",
           size === "lg" && "h-12 w-12",
-          "animate-spin fill-blue-600 text-gray-200 dark:text-gray-600",
+          "animate-spin fill-gray-800 text-gray-200",
         )}
         viewBox="0 0 100 101"
         fill="none"
