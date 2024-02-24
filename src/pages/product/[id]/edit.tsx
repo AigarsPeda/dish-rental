@@ -1,15 +1,28 @@
+import { ALL_OPTIONS } from "hardcoded";
 import { type NextPage } from "next";
+import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import Datepicker from "react-tailwindcss-datepicker";
+import DropZone from "~/components/DropZone/DropZone";
+import MultiSelect from "~/components/MultiSelect/MultiSelect";
+import NumberInput from "~/components/NumberInput/NumberInput";
 import PageHead from "~/components/PageHead/PageHead";
 import Spinner from "~/components/Spinner/Spinner";
 import TextInput from "~/components/TextInput/TextInput";
+import Textarea from "~/components/Textarea/Textarea";
+import Toggle from "~/components/Toggle/Toggle";
+import useImageUploadThing from "~/hooks/useImageUploadThing";
+import ImageLoader from "~/utils/ImageLoader";
 import { api } from "~/utils/api";
 import classNames from "~/utils/classNames";
 
 const EditPage: NextPage = () => {
   const router = useRouter();
+  const [images, setImages] = useState<File[]>([]);
   const [postId, setPostId] = useState<number | null>(null);
+  const { response, fileError, checkFiles, inputStatus, handelStartUpload } =
+    useImageUploadThing();
   const { data, isLoading } = api.product.getById.useQuery(
     { id: postId ?? 1 },
     { enabled: postId !== null },
@@ -56,7 +69,7 @@ const EditPage: NextPage = () => {
                         onChange={(e) => console.log(e)}
                       />
                     </div>
-                    {/* <div className="sm:col-span-6">
+                    <div className="sm:col-span-6">
                       <label
                         htmlFor="product-category"
                         className="mb-2 block font-medium leading-6 text-gray-900"
@@ -65,21 +78,18 @@ const EditPage: NextPage = () => {
                       </label>
                       <MultiSelect
                         id="product-category"
-                        selected={formsSate.selectedCategories}
+                        selected={data?.categories ?? []}
                         options={ALL_OPTIONS}
                         setSelected={(strArray) => {
-                          setFormsState({
-                            ...formsSate,
-                            selectedCategories: strArray,
-                          });
+                          console.log(strArray);
                         }}
                       />
                       <p className="mt-1 text-sm leading-6 text-gray-400">
                         Maksimums 3 kategorijas.
                       </p>
-                    </div> */}
+                    </div>
 
-                    {/* <div className="col-span-full">
+                    <div className="col-span-full">
                       <label
                         htmlFor="product-description"
                         className="block font-medium leading-6 text-gray-900"
@@ -87,37 +97,15 @@ const EditPage: NextPage = () => {
                         Apraksts
                       </label>
                       <div className="mt-2">
-                        <textarea
-                          rows={3}
-                          id="product-description"
-                          name="product-description"
-                          className="block w-full rounded-md border-0 bg-transparent px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                          value={formsSate.description}
-                          onChange={(e) => {
-                            setFormsState({
-                              ...formsSate,
-                              description: e.target.value,
-                            });
-                          }}
-                        ></textarea>
+                        <Textarea
+                          value={data?.description ?? ""}
+                          onChange={(str) => console.log(str)}
+                        />
                       </div>
                       <p className="mt-1 text-sm leading-6 text-gray-400">
                         Neliels apraksts par jūsu produktu.
                       </p>
-                    </div> */}
-
-                    {/* <div className="col-span-full">
-                      <DropZone
-                        fileError={fileError}
-                        inputStatus={inputStatus}
-                        checkFiles={checkFiles}
-                        images={images}
-                        handelFileUpload={(fileArray) => {
-                          setImages(fileArray);
-                        }}
-                      />
-                    </div> */}
-                    {/* 
+                    </div>
                     <div className="mx-auto max-w-40 sm:col-span-2">
                       <label
                         htmlFor="product-price"
@@ -129,18 +117,15 @@ const EditPage: NextPage = () => {
                         <NumberInput
                           isDecimal
                           id="product-price"
-                          value={formsSate.price}
+                          value={data?.price ?? 0}
                           onChange={(value) => {
-                            setFormsState({
-                              ...formsSate,
-                              price: value,
-                            });
+                            console.log(value);
                           }}
                         />
                       </div>
-                    </div> */}
+                    </div>
 
-                    {/* <div className="mx-auto max-w-40 sm:col-span-2">
+                    <div className="mx-auto max-w-40 sm:col-span-2">
                       <label
                         htmlFor="product-available-pieces"
                         className="block font-medium leading-6 text-gray-900"
@@ -150,18 +135,15 @@ const EditPage: NextPage = () => {
                       <div className="mt-2">
                         <NumberInput
                           id="product-available-pieces"
-                          value={formsSate.availablePieces}
+                          value={data?.availablePieces ?? 0}
                           onChange={(value) => {
-                            setFormsState({
-                              ...formsSate,
-                              availablePieces: value,
-                            });
+                            console.log(value);
                           }}
                         />
                       </div>
-                    </div> */}
+                    </div>
 
-                    {/* <div className="mx-auto max-w-40 sm:col-span-2">
+                    <div className="mx-auto max-w-40 sm:col-span-2">
                       <label
                         htmlFor="product-available-pieces"
                         className="block font-medium leading-6 text-gray-900"
@@ -170,32 +152,106 @@ const EditPage: NextPage = () => {
                       </label>
                       <div className="mt-4">
                         <Toggle
-                          isChecked={formsSate.isPublished}
+                          isChecked={data?.isPublished ?? false}
                           handleChange={() => {
-                            setFormsState({
-                              ...formsSate,
-                              isPublished: !formsSate.isPublished,
-                            });
+                            console.log("toggle");
                           }}
                         />
                       </div>
-                    </div> */}
+                    </div>
+
+                    <div className="sm:col-span-3">
+                      <label
+                        htmlFor="product-available-pieces"
+                        className="block font-medium leading-6 text-gray-900"
+                      >
+                        Pieejamības datumi
+                      </label>
+                      <div className="mt-4">
+                        <Datepicker
+                          displayFormat={"DD/MM/YYYY"}
+                          value={{
+                            startDate: new Date(),
+                            endDate: new Date(),
+                          }}
+                          onChange={(newValue) => {
+                            console.log(newValue);
+                          }}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="col-span-full">
+                      <div>
+                        <label
+                          htmlFor="cover-photo"
+                          className="mb-4 block font-medium leading-6 text-gray-900"
+                        >
+                          Produkta attēli
+                        </label>
+                      </div>
+                      <div className="flex justify-center gap-2">
+                        <div className="flex flex-wrap justify-center gap-2">
+                          {data?.images.map((file) => (
+                            <div
+                              key={file.name}
+                              className="relative h-20 w-20 overflow-hidden rounded-md"
+                            >
+                              <Image
+                                width={0}
+                                height={0}
+                                alt={file.name}
+                                loader={ImageLoader}
+                                src={file.url}
+                                style={{
+                                  width: "120px",
+                                  height: "auto",
+                                  objectFit: "cover",
+                                }}
+                              />
+                            </div>
+                          ))}
+
+                          {/* {images.map((file) => (
+                          <div
+                            key={file.name}
+                            className="relative h-20 w-20 overflow-hidden rounded-md"
+                          >
+                            <Image
+                              width={0}
+                              height={0}
+                              alt={file.name}
+                              loader={ImageLoader}
+                              src={URL.createObjectURL(file)}
+                              style={{
+                                width: "120px",
+                                height: "auto",
+                                objectFit: "cover",
+                              }}
+                            />
+                          </div>
+                        ))} */}
+                        </div>
+                        <DropZone
+                          images={images}
+                          fileError={fileError}
+                          checkFiles={checkFiles}
+                          inputStatus={inputStatus}
+                          handelFileUpload={(fileArray) => {
+                            setImages(fileArray);
+                          }}
+                        />
+                      </div>
+                      <div>
+                        <p className="mt-1 text-sm leading-6 text-gray-400">
+                          JPG līdz 2MB. Maksimums 4 attēli.
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </div>
-
-                {/* <SignInModal
-                  isNeedToSignIn={isNeedToSignIn}
-                  setIsNeedToSignIn={setIsNeedToSignIn}
-                /> */}
               </div>
-              {/* <div className="flex h-10 items-center justify-center">
-                {isShowErrorMessage && (
-                  <p className=" text-sm leading-5 text-red-600">
-                    Lūdzu, aizpildiet visus laukus un pievienojiet vismaz vienu
-                    attēlu.
-                  </p>
-                )}
-              </div> */}
+
               <div className=" flex items-center justify-end gap-x-6">
                 <button
                   type="button"

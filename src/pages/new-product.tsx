@@ -12,12 +12,13 @@ import PageHead from "~/components/PageHead/PageHead";
 import SignInModal from "~/components/SignInModal/SignInModal";
 import Spinner from "~/components/Spinner/Spinner";
 import TextInput from "~/components/TextInput/TextInput";
+import Textarea from "~/components/Textarea/Textarea";
 import Toggle from "~/components/Toggle/Toggle";
 import useImageUploadThing from "~/hooks/useImageUploadThing";
 import useLocalStorage from "~/hooks/useLocalStorage";
 import useRedirect from "~/hooks/useRedirect";
-import { api } from "~/utils/api";
 import ImageLoader from "~/utils/ImageLoader";
+import { api } from "~/utils/api";
 
 type FormStateType = {
   name: string;
@@ -196,19 +197,15 @@ const NewPost: NextPage = () => {
                       Apraksts
                     </label>
                     <div className="mt-2">
-                      <textarea
-                        rows={3}
-                        id="product-description"
-                        name="product-description"
-                        className="block w-full rounded-md border-0 bg-white px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-100 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                      <Textarea
                         value={formsSate.description}
-                        onChange={(e) => {
+                        onChange={(str) => {
                           setFormsState({
                             ...formsSate,
-                            description: e.target.value,
+                            description: str,
                           });
                         }}
-                      ></textarea>
+                      />
                     </div>
                     <p className="mt-1 text-sm leading-6 text-gray-400">
                       Neliels apraksts par jūsu produktu.
@@ -343,48 +340,6 @@ const NewPost: NextPage = () => {
                       </p>
                     </div>
                   </div>
-                  {/* <div className="col-span-full flex justify-center">
-                    <div>
-                      <label
-                        htmlFor="cover-photo"
-                        className="mb-4 block font-medium leading-6 text-gray-900"
-                      >
-                        Produkta attēli
-                      </label>
-                      <DropZone
-                        images={images}
-                        fileError={fileError}
-                        checkFiles={checkFiles}
-                        inputStatus={inputStatus}
-                        handelFileUpload={(fileArray) => {
-                          setImages(fileArray);
-                        }}
-                      />
-                    </div>
-                  </div> */}
-                  {/* <div className="col-span-full place-items-center justify-center">
-                    <div className="mx-auto flex flex-wrap justify-center gap-2">
-                      {images.map((file) => (
-                        <div
-                          key={file.name}
-                          className="relative h-20 w-20 overflow-hidden rounded-md"
-                        >
-                          <Image
-                            width={0}
-                            height={0}
-                            alt={file.name}
-                            loader={ImageLoader}
-                            src={URL.createObjectURL(file)}
-                            style={{
-                              width: "120px",
-                              height: "auto",
-                              objectFit: "cover",
-                            }}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  </div> */}
                 </div>
               </div>
 
