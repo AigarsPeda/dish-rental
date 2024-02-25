@@ -20,7 +20,7 @@
     "@trpc/next": "^10.43.6",
     "@trpc/react-query": "^10.43.6",
     "@trpc/server": "^10.43.6",
-    "@uploadthing/react": "^6.2.3",
+    "@uploadthing/react": "^6.2.4",
     "dayjs": "^1.11.10",
     "drizzle-orm": "^0.29.3",
     "next": "^14.0.4",
@@ -32,7 +32,7 @@
     "react-icons": "^5.0.1",
     "react-tailwindcss-datepicker": "^1.6.6",
     "superjson": "^2.2.1",
-    "uploadthing": "^6.4.0",
+    "uploadthing": "^6.4.1",
     "zod": "^3.22.4"
   },
   "devDependencies": {
