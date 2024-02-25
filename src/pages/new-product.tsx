@@ -23,6 +23,7 @@ import { api } from "~/utils/api";
 type FormStateType = {
   name: string;
   price: number;
+  titleImage: string;
   description: string;
   isPublished: boolean;
   availablePieces: number;
@@ -37,6 +38,7 @@ const NewPost: NextPage = () => {
   const [isFormLoading, setIsFormLoading] = useState(false);
   const [isNeedToSignIn, setIsNeedToSignIn] = useState(false);
   const [isShowErrorMessage, setIsShowErrorMessage] = useState(false);
+
   const { response, fileError, checkFiles, inputStatus, handelStartUpload } =
     useImageUploadThing();
   const { mutate } = api.product.create.useMutation({
@@ -44,6 +46,7 @@ const NewPost: NextPage = () => {
       setFormsState({
         name: "",
         price: 0,
+        titleImage: "",
         description: "",
         isPublished: true,
         availablePieces: 0,
@@ -63,6 +66,7 @@ const NewPost: NextPage = () => {
     {
       name: "",
       price: 0,
+      titleImage: "",
       description: "",
       isPublished: true,
       availablePieces: 0,
@@ -81,6 +85,7 @@ const NewPost: NextPage = () => {
     setFormsState({
       name: "",
       price: 0,
+      titleImage: "",
       description: "",
       isPublished: true,
       availablePieces: 0,
@@ -107,6 +112,7 @@ const NewPost: NextPage = () => {
       name: formsSate.name,
       imagesData: response,
       price: formsSate.price,
+      titleImage: formsSate.titleImage,
       isPublished: formsSate.isPublished,
       description: formsSate.description,
       categories: formsSate.selectedCategories,
@@ -305,9 +311,20 @@ const NewPost: NextPage = () => {
                     <div className="flex justify-center gap-2">
                       <div className="flex flex-wrap justify-center gap-2">
                         {images.map((file) => (
-                          <div
+                          <button
+                            type="button"
                             key={file.name}
-                            className="relative h-20 w-20 overflow-hidden rounded-md"
+                            className={classNames(
+                              file.name === formsSate.titleImage &&
+                                "ring-2 ring-gray-900",
+                              "relative h-20 w-20 overflow-hidden rounded-md transition-all hover:ring-2 hover:ring-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900",
+                            )}
+                            onClick={() => {
+                              setFormsState({
+                                ...formsSate,
+                                titleImage: file.name,
+                              });
+                            }}
                           >
                             <Image
                               width={0}
@@ -321,7 +338,14 @@ const NewPost: NextPage = () => {
                                 objectFit: "cover",
                               }}
                             />
-                          </div>
+                            {file.name === formsSate.titleImage && (
+                              <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-25">
+                                <p className="text-xs font-semibold text-white">
+                                  Titulbilde
+                                </p>
+                              </div>
+                            )}
+                          </button>
                         ))}
                       </div>
                       <DropZone
@@ -330,7 +354,12 @@ const NewPost: NextPage = () => {
                         checkFiles={checkFiles}
                         inputStatus={inputStatus}
                         handelFileUpload={(fileArray) => {
+                          console.log(fileArray);
                           setImages(fileArray);
+                          setFormsState({
+                            ...formsSate,
+                            titleImage: fileArray[0]?.name ?? "",
+                          });
                         }}
                       />
                     </div>

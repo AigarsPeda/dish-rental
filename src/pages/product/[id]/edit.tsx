@@ -193,44 +193,39 @@ const EditPage: NextPage = () => {
                       <div className="flex justify-center gap-2">
                         <div className="flex flex-wrap justify-center gap-2">
                           {data?.images.map((file) => (
-                            <div
+                            <button
+                              type="button"
                               key={file.name}
-                              className="relative h-20 w-20 overflow-hidden rounded-md"
+                              className={classNames(
+                                file.name === data?.titleImage &&
+                                  "ring-2 ring-gray-900",
+                                "relative h-20 w-20 overflow-hidden rounded-md transition-all hover:ring-2 hover:ring-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900",
+                              )}
+                              onClick={() => {
+                                console.log("set title image");
+                              }}
                             >
                               <Image
                                 width={0}
                                 height={0}
+                                src={file.url}
                                 alt={file.name}
                                 loader={ImageLoader}
-                                src={file.url}
                                 style={{
                                   width: "120px",
                                   height: "auto",
                                   objectFit: "cover",
                                 }}
                               />
-                            </div>
+                              {file.name === data?.titleImage && (
+                                <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-25">
+                                  <p className="text-xs font-semibold text-white">
+                                    Titulbilde
+                                  </p>
+                                </div>
+                              )}
+                            </button>
                           ))}
-
-                          {/* {images.map((file) => (
-                          <div
-                            key={file.name}
-                            className="relative h-20 w-20 overflow-hidden rounded-md"
-                          >
-                            <Image
-                              width={0}
-                              height={0}
-                              alt={file.name}
-                              loader={ImageLoader}
-                              src={URL.createObjectURL(file)}
-                              style={{
-                                width: "120px",
-                                height: "auto",
-                                objectFit: "cover",
-                              }}
-                            />
-                          </div>
-                        ))} */}
                         </div>
                         <DropZone
                           images={images}

@@ -29,6 +29,7 @@ export const product = createTable(
     id: serial("id").primaryKey(),
     price: real("price").notNull(), // price like 10.99
     name: varchar("name", { length: 256 }),
+    titleImage: varchar("titleImage", { length: 255 }),
     isPublished: boolean("isPublished").notNull().default(false),
     availablePieces: integer("availablePieces").notNull(),
     availableDatesStart: timestamp("availableDatesStart", { mode: "date" }),

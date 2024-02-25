@@ -26,6 +26,7 @@ export const productRouter = createTRPCRouter({
         .values({
           name: input.name,
           price: input.price,
+          titleImage: input.titleImage,
           isPublished: input.isPublished,
           description: input.description,
           createdById: ctx.session.user.id,

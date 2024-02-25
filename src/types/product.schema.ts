@@ -9,6 +9,7 @@ export const ImageDataSchema = z.object({
 });
 
 export const NewProductSchema = z.object({
+  titleImage: z.string(),
   name: z.string().min(1),
   price: z.number().min(0),
   isPublished: z.boolean(),
@@ -44,6 +45,7 @@ export const DBProductSchema = z.object({
   availablePieces: z.number(),
   updatedAt: z.date().nullable(),
   images: z.array(DBImageSchema),
+  titleImage: z.string().nullish(),
   description: z.string().nullish(),
   availableDatesEnd: z.date().nullish(),
   availableDatesStart: z.date().nullish(),

@@ -10,6 +10,7 @@ import ShoppingCartIcon from "~/components/icons/ShoppingCartIcon/ShoppingCartIc
 import ImageLoader from "~/utils/ImageLoader";
 import { api } from "~/utils/api";
 import formatDate from "~/utils/formatDate";
+import getTitleImage from "~/utils/getTitleImage";
 
 const PostPage: NextPage = () => {
   const router = useRouter();
@@ -33,7 +34,10 @@ const PostPage: NextPage = () => {
   return (
     <>
       <PageHead
-        image={data?.images[0]?.url}
+        image={
+          getTitleImage(data?.images, data?.titleImage)?.url ??
+          "/images/placeholder.jpeg"
+        }
         title={data?.name ?? "Trauku noma | Izveidot jaunu sludinājumu"}
         descriptionLong={data?.description ?? "Nomā vai iznomā traukus"}
         descriptionShort={data?.description ?? "Nomā vai iznomā traukus"}
@@ -61,8 +65,11 @@ const PostPage: NextPage = () => {
                   height={500}
                   loader={ImageLoader}
                   alt={data?.images[0]?.name ?? "Image"}
-                  src={data?.images[0]?.url ?? "/images/placeholder.jpeg"}
                   className="h-full max-h-[28rem] w-[28rem] rounded-lg object-cover shadow-lg"
+                  src={
+                    getTitleImage(data?.images, data?.titleImage)?.url ??
+                    "/images/placeholder.jpeg"
+                  }
                 />
               </div>
             </div>

@@ -5,6 +5,7 @@ import { classNames } from "uploadthing/client";
 import ShoppingCartIcon from "~/components/icons/ShoppingCartIcon/ShoppingCartIcon";
 import { DBProductType } from "~/types/product.schema";
 import ImageLoader from "~/utils/ImageLoader";
+import getTitleImage from "~/utils/getTitleImage";
 
 interface CardProps {
   product: DBProductType;
@@ -21,17 +22,20 @@ const Card: FC<CardProps> = ({ product }) => {
     >
       <Image
         priority
+        width={300}
+        height={300}
         alt="dish-rental"
         loader={ImageLoader}
         className={classNames("overflow-hidden rounded-lg p-1")}
-        src={product.images[0]?.url ?? "/images/placeholder.jpeg"}
-        width={300}
-        height={300}
         style={{
           width: "100%",
           height: "300px",
           objectFit: "cover",
         }}
+        src={
+          getTitleImage(product.images, product.titleImage)?.url ??
+          "/images/placeholder.jpeg"
+        }
       />
       <div className="px-2.5 py-1.5 md:px-5 md:py-2.5">
         <div className="text-left">
