@@ -116,6 +116,38 @@ export const productRouter = createTRPCRouter({
       return `updated post: ${input.id}`;
     }),
 
+  changeTitleImage: protectedProcedure
+    .input(z.object({ id: z.number(), imageName: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      const post = await ctx.db.query.product.findFirst({
+        where: (product, { eq }) => eq(product.id, input.id),
+        with: {
+          images: true,
+        },
+      });
+
+      if (!post) {
+        throw new Error("post not found");
+      }
+
+      // try to find the image in the post by name if not found throw error
+      const titleImage = post.images.find(
+        (image) => image.name === input.imageName,
+      );
+      if (!titleImage) {
+        throw new Error("image not found");
+      }
+
+      // const titleImage = post.images[0].id;
+
+      await ctx.db
+        .update(product)
+        .set({ titleImage: input.imageName })
+        .where(eq(product.id, input.id));
+
+      return `changed title image for post: ${input.id}`;
+    }),
+
   getUsersPosts: protectedProcedure.query(({ ctx }) => {
     return ctx.db.query.product.findMany({
       where: (product, { eq }) => eq(product.createdById, ctx.session.user.id),

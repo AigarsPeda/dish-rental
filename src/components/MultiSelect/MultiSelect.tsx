@@ -7,6 +7,7 @@ import classNames from "~/utils/classNames";
 interface MultiSelectProps {
   id: string;
   selected: string[];
+  isOneSelect?: boolean;
   options: Record<string, string>;
   setSelected: (selected: string[]) => void;
 }
@@ -15,6 +16,7 @@ const MultiSelect: FC<MultiSelectProps> = ({
   id,
   options,
   selected,
+  isOneSelect,
   setSelected,
 }) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -31,23 +33,27 @@ const MultiSelect: FC<MultiSelectProps> = ({
         aria-haspopup="true"
         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
       >
-        <div className="flex flex-wrap">
-          {selected.map((item) => (
-            <button
-              key={item}
-              type="button"
-              className="group relative my-0.5 rounded px-2 py-2 text-gray-800  transition-all hover:bg-gray-200"
-              onClick={(e) => {
-                e.stopPropagation();
-                setSelected(selected.filter((i) => i !== item));
-              }}
-            >
-              {options[item]}
-              <span className="absolute right-0 top-0 text-red-500 opacity-0 group-hover:opacity-100 ">
-                <IoClose />
-              </span>
-            </button>
-          ))}
+        <div className={"flex flex-wrap"}>
+          {selected.length !== 0 ? (
+            selected.map((item) => (
+              <button
+                key={item}
+                type="button"
+                className="group relative my-0.5 rounded px-2 py-2 text-gray-800 transition-all hover:bg-gray-200"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelected(selected.filter((i) => i !== item));
+                }}
+              >
+                {options[item]}
+                <span className="absolute right-0 top-0 text-red-500 opacity-0 group-hover:opacity-100 ">
+                  <IoClose />
+                </span>
+              </button>
+            ))
+          ) : (
+            <span className="pl-3 text-gray-400">Izvēlies kategorijas</span>
+          )}
         </div>
 
         <button
@@ -79,6 +85,12 @@ const MultiSelect: FC<MultiSelectProps> = ({
                 key={i}
                 type="button"
                 onClick={() => {
+                  if (isOneSelect) {
+                    setSelected([option]);
+                    setIsDropdownOpen(false);
+                    return;
+                  }
+
                   if (selected.includes(option)) {
                     setSelected(selected.filter((item) => item !== option));
                   } else {
