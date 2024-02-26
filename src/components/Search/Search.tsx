@@ -49,7 +49,6 @@ const Search: FC = () => {
 
   return (
     <div className="flex w-full justify-center">
-      {console.log("formsSate", formsSate)}
       <div className="w-[22rem] rounded-2xl border-2 border-gray-300 bg-gray-100 p-0.5 shadow md:w-auto">
         <div className="flex flex-wrap items-center justify-center gap-1">
           <div className="w-full min-w-[200px] md:w-auto">
@@ -64,7 +63,7 @@ const Search: FC = () => {
                   ...formsSate,
                   selectedCategories: strArray,
                 });
-                router.push({
+                void router.push({
                   pathname: "/",
                   query: {
                     ...router.query,
@@ -85,7 +84,7 @@ const Search: FC = () => {
                   ...formsSate,
                   availableDates: newValue,
                 });
-                router.push({
+                void router.push({
                   pathname: "/",
                   query: {
                     ...router.query,
@@ -107,7 +106,7 @@ const Search: FC = () => {
                     startDate: null,
                   },
                 });
-                router.push("/");
+                void router.push("/");
               }}
               className={classNames(
                 queryParamsCount === 0 ? "text-gray-400" : "text-gray-800",
