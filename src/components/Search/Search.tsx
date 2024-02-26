@@ -1,51 +1,23 @@
 import { ALL_OPTIONS } from "hardcoded";
 import { useRouter } from "next/router";
-import { useEffect, useState, type FC } from "react";
-import Datepicker, { DateValueType } from "react-tailwindcss-datepicker";
+import { type FC } from "react";
+import Datepicker from "react-tailwindcss-datepicker";
 import { classNames } from "uploadthing/client";
 import MultiSelect from "~/components/MultiSelect/MultiSelect";
+import { FormStateType } from "~/pages";
 
-type FormStateType = {
-  selectedCategories: string[];
-  availableDates: DateValueType;
-};
+interface SearchProps {
+  formsSate: FormStateType;
+  queryParamsCount: number;
+  setFormsState: (state: FormStateType) => void;
+}
 
-const Search: FC = () => {
+const Search: FC<SearchProps> = ({
+  formsSate,
+  queryParamsCount,
+  setFormsState,
+}) => {
   const router = useRouter();
-
-  const [formsSate, setFormsState] = useState<FormStateType>({
-    selectedCategories: [],
-    availableDates: {
-      endDate: null,
-      startDate: null,
-    },
-  });
-
-  const queryParamsCount = Object.keys(router.query).length;
-
-  useEffect(() => {
-    if (router.query.category && typeof router.query.category === "string") {
-      const category = router.query.category.split(",");
-      setFormsState((sate) => ({
-        ...sate,
-        selectedCategories: category,
-      }));
-    }
-  }, [router.query.category]);
-
-  useEffect(() => {
-    if (router.query.start_date && router.query.end_date) {
-      const startDate = new Date(router.query.start_date as string);
-      const endDate = new Date(router.query.end_date as string);
-      setFormsState((sate) => ({
-        ...sate,
-        availableDates: {
-          endDate,
-          startDate,
-        },
-      }));
-    }
-  }, [router.query.start_date, router.query.end_date]);
 
   return (
     <div className="flex w-full justify-center">

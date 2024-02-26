@@ -27,7 +27,7 @@ const PageHead: FC<PageHeadProps> = ({
       <meta name="description" content={descriptionLong} />
       <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
+      <meta name="viewport" content="width=device-width, user-scalable=no" />
       <meta property="twitter:title" content={title} />
       <meta name="twitter:card" content="summary_large_image" />
       <meta property="twitter:description" content={descriptionShort} />

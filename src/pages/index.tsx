@@ -2,26 +2,55 @@ import { type NextPage } from "next";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { DateValueType } from "react-tailwindcss-datepicker";
 import Card from "~/components/Card/Card";
 import PageHead from "~/components/PageHead/PageHead";
 import Search from "~/components/Search/Search";
 import { api } from "~/utils/api";
 
+export type FormStateType = {
+  selectedCategories: string[];
+  availableDates: DateValueType;
+};
+
 const Home: NextPage = () => {
   const router = useRouter();
-  const [categories, setCategories] = useState<string[]>([]);
+  const queryParamsCount = Object.keys(router.query).length;
+  const [formsSate, setFormsState] = useState<FormStateType>({
+    selectedCategories: [],
+    availableDates: {
+      endDate: null,
+      startDate: null,
+    },
+  });
+
   const { data, isLoading } = api.product.getAll.useQuery({
-    category: categories,
+    category: formsSate.selectedCategories,
   });
 
   useEffect(() => {
     if (router.query.category && typeof router.query.category === "string") {
       const category = router.query.category.split(",");
-      setCategories(category);
-    } else {
-      setCategories([]);
+      setFormsState((sate) => ({
+        ...sate,
+        selectedCategories: category,
+      }));
     }
   }, [router.query.category]);
+
+  useEffect(() => {
+    if (router.query.start_date && router.query.end_date) {
+      const startDate = new Date(router.query.start_date as string);
+      const endDate = new Date(router.query.end_date as string);
+      setFormsState((sate) => ({
+        ...sate,
+        availableDates: {
+          endDate,
+          startDate,
+        },
+      }));
+    }
+  }, [router.query.start_date, router.query.end_date]);
 
   return (
     <>
@@ -31,7 +60,11 @@ const Home: NextPage = () => {
         descriptionLong="Nomā vai iznomā traukus"
       />
       <main className="min-h-screen bg-gray-100 bg-gradient-to-b">
-        <Search />
+        <Search
+          formsSate={formsSate}
+          queryParamsCount={queryParamsCount}
+          setFormsState={setFormsState}
+        />
 
         <div className="flex w-full items-center justify-center pt-4">
           <div className="grid w-full grid-cols-[repeat(auto-fit,minmax(310px,1fr))] gap-5 px-4">
