@@ -7,6 +7,7 @@ import classNames from "~/utils/classNames";
 interface MultiSelectProps {
   id: string;
   selected: string[];
+  isCustom?: boolean;
   isOneSelect?: boolean;
   options: Record<string, string>;
   setSelected: (selected: string[]) => void;
@@ -14,7 +15,9 @@ interface MultiSelectProps {
 
 const MultiSelect: FC<MultiSelectProps> = ({
   id,
+
   options,
+  isCustom,
   selected,
   isOneSelect,
   setSelected,
@@ -28,12 +31,17 @@ const MultiSelect: FC<MultiSelectProps> = ({
     <div className="relative" ref={dropdownRef}>
       <div
         id={id}
-        className="flex min-h-10 w-full items-center justify-between gap-x-0.5 rounded-md bg-white px-0.5 text-sm font-semibold text-gray-800 shadow-sm ring-1 ring-inset ring-gray-100 hover:cursor-pointer focus:ring-gray-800"
+        className={classNames(
+          isCustom
+            ? "w-full rounded-t-xl md:rounded-l-xl md:rounded-tr-none"
+            : "rounded-md ring-1 ring-inset ring-gray-100",
+          "flex min-h-10 w-full items-center justify-between gap-x-0.5 bg-white px-0.5 text-sm font-semibold text-gray-800 shadow-sm  hover:cursor-pointer focus:ring-gray-800",
+        )}
         aria-expanded="true"
         aria-haspopup="true"
         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
       >
-        <div className={"flex flex-wrap"}>
+        <div className="flex flex-wrap">
           {selected.length !== 0 ? (
             selected.map((item) => (
               <button
