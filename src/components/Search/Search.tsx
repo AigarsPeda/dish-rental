@@ -12,29 +12,47 @@ type FormStateType = {
 
 const Search: FC = () => {
   const router = useRouter();
-  const [categories, setCategories] = useState<string[]>([]);
+
   const [formsSate, setFormsState] = useState<FormStateType>({
     selectedCategories: [],
     availableDates: {
-      startDate: null,
       endDate: null,
+      startDate: null,
     },
   });
+
+  const queryParamsCount = Object.keys(router.query).length;
 
   useEffect(() => {
     if (router.query.category && typeof router.query.category === "string") {
       const category = router.query.category.split(",");
-      setCategories(category);
-    } else {
-      setCategories([]);
+      setFormsState((sate) => ({
+        ...sate,
+        selectedCategories: category,
+      }));
     }
   }, [router.query.category]);
 
+  useEffect(() => {
+    if (router.query.start_date && router.query.end_date) {
+      const startDate = new Date(router.query.start_date as string);
+      const endDate = new Date(router.query.end_date as string);
+      setFormsState((sate) => ({
+        ...sate,
+        availableDates: {
+          endDate,
+          startDate,
+        },
+      }));
+    }
+  }, [router.query.start_date, router.query.end_date]);
+
   return (
     <div className="flex w-full justify-center">
+      {console.log("formsSate", formsSate)}
       <div className="w-[22rem] rounded-2xl border-2 border-gray-300 bg-gray-100 p-0.5 shadow md:w-auto">
         <div className="flex flex-wrap items-center justify-center gap-1">
-          <div className="w-full md:w-auto">
+          <div className="w-full min-w-[200px] md:w-auto">
             <MultiSelect
               id="product-category"
               isOneSelect
@@ -46,18 +64,34 @@ const Search: FC = () => {
                   ...formsSate,
                   selectedCategories: strArray,
                 });
+                router.push({
+                  pathname: "/",
+                  query: {
+                    ...router.query,
+                    category: strArray.join(","),
+                  },
+                });
               }}
             />
           </div>
           <div className="">
             <Datepicker
+              toggleClassName="hidden"
               displayFormat={"DD/MM/YYYY"}
-              inputClassName="rounded-none pl-3 focus:ring-0 md:w-64 w-[21.35rem] font-semibold text-sm h-10 text-gray-800"
+              inputClassName="rounded-none pl-3 focus:ring-0 md:w-64 w-[21.45rem] font-semibold text-sm h-10 text-gray-800 text-center"
               value={formsSate.availableDates}
               onChange={(newValue) => {
                 setFormsState({
                   ...formsSate,
                   availableDates: newValue,
+                });
+                router.push({
+                  pathname: "/",
+                  query: {
+                    ...router.query,
+                    end_date: newValue?.endDate?.toString(),
+                    start_date: newValue?.startDate?.toString(),
+                  },
                 });
               }}
             />
@@ -65,13 +99,22 @@ const Search: FC = () => {
 
           <div className="w-full md:w-auto">
             <button
-              onClick={() => router.push(`/`)}
+              onClick={() => {
+                setFormsState({
+                  selectedCategories: [],
+                  availableDates: {
+                    endDate: null,
+                    startDate: null,
+                  },
+                });
+                router.push("/");
+              }}
               className={classNames(
-                categories.length === 0 ? "text-gray-400" : "text-gray-800",
+                queryParamsCount === 0 ? "text-gray-400" : "text-gray-800",
                 "w-full whitespace-nowrap rounded-b-xl bg-white px-4 py-2.5 text-sm font-semibold md:rounded-r-xl md:rounded-bl-none",
               )}
             >
-              Noņemt filtrus ({categories.length})
+              Noņemt filtrus ({queryParamsCount})
             </button>
           </div>
         </div>

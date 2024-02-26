@@ -15,7 +15,6 @@ interface MultiSelectProps {
 
 const MultiSelect: FC<MultiSelectProps> = ({
   id,
-
   options,
   isCustom,
   selected,
@@ -41,7 +40,7 @@ const MultiSelect: FC<MultiSelectProps> = ({
         aria-haspopup="true"
         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
       >
-        <div className="flex flex-wrap">
+        <div className="flex w-full flex-wrap justify-center">
           {selected.length !== 0 ? (
             selected.map((item) => (
               <button
