@@ -96,6 +96,9 @@ export const imageRelations = relations(images, ({ one }) => ({
   post: one(product, { fields: [images.postId], references: [product.id] }),
 }));
 
+// Bookings table for the product
+// We need to create a new table for the bookings to determine the availability of the product
+
 export const users = createTable("user", {
   id: varchar("id", { length: 255 }).notNull().primaryKey(),
   name: varchar("name", { length: 255 }),

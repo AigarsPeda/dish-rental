@@ -61,7 +61,7 @@ const PostPage: NextPage = () => {
                     />
                   ))}
                 </div>
-                <div className="">
+                <div>
                   <Image
                     width={500}
                     height={500}
