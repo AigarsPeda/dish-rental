@@ -67,7 +67,7 @@ const MultiSelect: FC<MultiSelectProps> = ({
           type="button"
           className={classNames(
             isDropdownOpen ? "rotate-180" : "rotate-0",
-            "flex h-full w-10 transform items-center justify-center text-gray-800 transition-all",
+            "absolute right-0 flex h-full w-10 transform items-center justify-center text-gray-800 transition-all",
           )}
         >
           <IoChevronDownOutline />

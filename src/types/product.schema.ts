@@ -47,8 +47,8 @@ export const DBProductSchema = z.object({
   images: z.array(DBImageSchema),
   titleImage: z.string().nullish(),
   description: z.string().nullish(),
-  availableDatesEnd: z.date().nullish(),
-  availableDatesStart: z.date().nullish(),
+  availableDatesEnd: z.number().nullish(),
+  availableDatesStart: z.number().nullish(),
   categories: z.array(z.string()).nullish(),
 });
 

@@ -5,7 +5,7 @@ import {
   protectedProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
-import { product, images } from "~/server/db/schema";
+import { images, product } from "~/server/db/schema";
 import { utapi } from "~/server/uploadthing";
 import { NewProductSchema } from "~/types/product.schema";
 
@@ -32,8 +32,8 @@ export const productRouter = createTRPCRouter({
           createdById: ctx.session.user.id,
           categories: input.categories,
           availablePieces: input.availablePieces,
-          availableDatesStart: input.availableDatesStart,
-          availableDatesEnd: input.availableDatesEnd,
+          availableDatesStart: input.availableDatesStart.getTime(),
+          availableDatesEnd: input.availableDatesEnd.getTime(),
         })
         .returning({ id: product.id });
 
@@ -74,18 +74,39 @@ export const productRouter = createTRPCRouter({
     }),
 
   getAll: publicProcedure
-    .input(z.object({ category: z.array(z.string()).nullable() }))
+    .input(
+      z.object({
+        category: z.array(z.string()).nullable(),
+        availableDatesStart: z.date().optional(),
+        availableDatesEnd: z.date().optional(),
+      }),
+    )
     .query(({ ctx, input }) => {
       return ctx.db.query.product.findMany({
-        where: (product, { eq }) => {
-          if (
-            input.category &&
-            input.category.length > 0 &&
-            eq(product.isPublished, true)
-          ) {
-            return arrayContains(product.categories, input.category);
+        where: (product, { eq, gte, lte, and }) => {
+          let whereConditions = [];
+
+          if (input.availableDatesStart && input.availableDatesEnd) {
+            const start = input.availableDatesStart?.getTime();
+            const endDate = input.availableDatesEnd?.getTime();
+            whereConditions.push(
+              and(
+                lte(product.availableDatesStart, start),
+                gte(product.availableDatesEnd, endDate),
+              ),
+            );
           }
-          return eq(product.isPublished, true);
+
+          if (input.category && input.category?.length > 0) {
+            whereConditions.push(
+              arrayContains(product.categories, input.category),
+            );
+          }
+
+          whereConditions.push(eq(product.isPublished, true));
+
+          // Combining all conditions with AND
+          return and(...whereConditions);
         },
         orderBy: (product, { desc }) => [desc(product.createdAt)],
         with: {

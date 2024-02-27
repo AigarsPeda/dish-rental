@@ -26,6 +26,15 @@ const Home: NextPage = () => {
 
   const { data, isLoading } = api.product.getAll.useQuery({
     category: formsSate.selectedCategories,
+    // availableDatesEnd: new Date(formsSate.availableDates?.endDate ?? ""),
+    ...(formsSate.availableDates?.endDate && {
+      availableDatesEnd: new Date(formsSate.availableDates?.endDate),
+    }),
+
+    // availableDatesStart: new Date(formsSate.availableDates?.startDate ?? ""),
+    ...(formsSate.availableDates?.startDate && {
+      availableDatesStart: new Date(formsSate.availableDates?.startDate),
+    }),
   });
 
   useEffect(() => {

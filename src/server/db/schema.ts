@@ -1,19 +1,18 @@
 import { relations, sql } from "drizzle-orm";
 import {
+  boolean,
   index,
   integer,
   pgTableCreator,
   primaryKey,
+  real,
   serial,
   text,
   timestamp,
   varchar,
-  numeric,
-  real,
-  boolean,
+  bigint,
 } from "drizzle-orm/pg-core";
 import { type AdapterAccount } from "next-auth/adapters";
-import { array } from "zod";
 
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
@@ -32,8 +31,23 @@ export const product = createTable(
     titleImage: varchar("titleImage", { length: 255 }),
     isPublished: boolean("isPublished").notNull().default(false),
     availablePieces: integer("availablePieces").notNull(),
-    availableDatesStart: timestamp("availableDatesStart", { mode: "date" }),
-    availableDatesEnd: timestamp("availableDatesEnd", { mode: "date" }),
+    // availableDatesStart: timestamp("availableDatesStart", { mode: "date" }),
+    // availableDatesStart: bigint("availableDatesStart", {
+    //   mode: "number",
+    // }).notNull(),
+    // availableDatesEnd: bigint("availableDatesEnd", {
+    //   mode: "number",
+    // }).notNull(),
+    // availableDatesStart: timestamp("availableDatesStart", { mode: "date" }),
+    availableDatesStart: bigint("availableDatesStart", {
+      mode: "number",
+    }).notNull(),
+    // availableDatesEnd: timestamp("availableDatesEnd", { mode: "date" }),
+    availableDatesEnd: bigint("availableDatesEnd", {
+      mode: "number",
+    }).notNull(),
+    // availableDatesEnd: timestamp("availableDatesEnd", { mode: "date" }),
+
     createdById: varchar("createdById", { length: 255 })
       .notNull()
       .references(() => users.id),
