@@ -1,8 +1,11 @@
 import { type FC } from "react";
+import { classNames } from "uploadthing/client";
 
 interface NumberInputProps {
   id: string;
   value: number;
+  // isGray?: boolean;
+  bgColor?: "gray" | "white";
   isDecimal?: boolean;
   onChange: (value: number) => void;
 }
@@ -10,8 +13,9 @@ interface NumberInputProps {
 const NumberInput: FC<NumberInputProps> = ({
   id,
   value,
-  isDecimal,
   onChange,
+  isDecimal,
+  bgColor = "white",
 }) => {
   return (
     <div className="relative flex items-center">
@@ -19,7 +23,11 @@ const NumberInput: FC<NumberInputProps> = ({
         type="button"
         id="decrement-button"
         data-input-counter-decrement={id}
-        className="h-11 rounded-s-lg bg-white p-3 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100"
+        className={classNames(
+          bgColor === "white" && "bg-white",
+          bgColor === "gray" && "bg-gray-200",
+          "h-11 rounded-s-lg p-3 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100",
+        )}
         onClick={() => {
           if (value > 1) {
             if (isDecimal) {
@@ -52,7 +60,11 @@ const NumberInput: FC<NumberInputProps> = ({
         id={id}
         data-input-counter
         aria-describedby="helper-text-explanation"
-        className="block h-11 w-full border border-y-0 border-gray-300 bg-white py-2.5 text-center text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 "
+        className={classNames(
+          bgColor === "white" && "bg-white",
+          bgColor === "gray" && "bg-gray-200",
+          "block h-11 w-full border border-y-0 border-gray-300 py-2.5 text-center text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500",
+        )}
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
       />
@@ -60,7 +72,11 @@ const NumberInput: FC<NumberInputProps> = ({
         type="button"
         id="increment-button"
         data-input-counter-increment={id}
-        className="h-11 rounded-e-lg bg-white p-3 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100"
+        className={classNames(
+          bgColor === "white" && "bg-white",
+          bgColor === "gray" && "bg-gray-200",
+          "h-11 rounded-e-lg p-3 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100",
+        )}
         onClick={() => {
           if (isDecimal) {
             onChange(Math.round((value + 0.1) * 10) / 10);

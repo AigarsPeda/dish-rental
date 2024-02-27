@@ -133,14 +133,22 @@ const PostPage: NextPage = () => {
                       </span>
                     </div>
                     <div className="flex items-end justify-between gap-3">
-                      <div className="w-40">
-                        <NumberInput
-                          id="product-price"
-                          value={0}
-                          onChange={() => {
-                            console.log("changed");
-                          }}
-                        />
+                      <div>
+                        <label
+                          htmlFor="product-price"
+                          className="text-sm text-gray-400"
+                        >
+                          Skaits
+                        </label>
+                        <div className="w-40">
+                          <NumberInput
+                            id="product-price"
+                            value={0}
+                            onChange={() => {
+                              console.log("changed");
+                            }}
+                          />
+                        </div>
                       </div>
                       <button
                         onClick={() => router.back()}
