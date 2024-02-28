@@ -60,7 +60,7 @@ const Card: FC<CardProps> = ({ product }) => {
                 e.stopPropagation();
 
                 const isModalOpen = router.query.order_modal === "true";
-                router.push(
+                void router.push(
                   {
                     query: {
                       order_modal: !isModalOpen,
@@ -84,7 +84,7 @@ const Card: FC<CardProps> = ({ product }) => {
         setIsOrderModalOpen={() => {
           // const isModalOpen = router.query.order_modal === "true";
 
-          router.push(
+          void router.push(
             {
               query: {
                 // order_modal: !isModalOpen,

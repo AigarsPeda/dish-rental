@@ -84,7 +84,7 @@ export const productRouter = createTRPCRouter({
     .query(({ ctx, input }) => {
       return ctx.db.query.product.findMany({
         where: (product, { eq, gte, lte, and }) => {
-          let whereConditions = [];
+          const whereConditions = [];
 
           if (input.availableDatesStart && input.availableDatesEnd) {
             const start = input.availableDatesStart?.getTime();
