@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useState, type FC } from "react";
+import { useState, type FC, use, useEffect } from "react";
 import { classNames } from "uploadthing/client";
 import OrderModal from "~/components/OrderModal/OrderModal";
 import ShoppingCartIcon from "~/components/icons/ShoppingCartIcon/ShoppingCartIcon";
@@ -14,9 +14,6 @@ interface CardProps {
 }
 
 const Card: FC<CardProps> = ({ product }) => {
-  // const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
-  const router = useRouter();
-
   return (
     <>
       <Link
@@ -58,18 +55,6 @@ const Card: FC<CardProps> = ({ product }) => {
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-
-                const isModalOpen = router.query.order_modal === "true";
-                void router.push(
-                  {
-                    query: {
-                      order_modal: !isModalOpen,
-                      product_id: product.id,
-                    },
-                  },
-                  undefined,
-                  { shallow: true },
-                );
               }}
               className="flex items-center justify-center gap-2 rounded-md bg-gray-900 px-5 py-2.5 text-center text-sm font-medium text-white transition-all hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-blue-800"
             >
@@ -79,23 +64,6 @@ const Card: FC<CardProps> = ({ product }) => {
           </div>
         </div>
       </Link>
-      <OrderModal
-        isOrderModalOpen={router.query.order_modal === "true"}
-        setIsOrderModalOpen={() => {
-          // const isModalOpen = router.query.order_modal === "true";
-
-          void router.push(
-            {
-              query: {
-                // order_modal: !isModalOpen,
-                // product: product.id,
-              },
-            },
-            undefined,
-            { shallow: true },
-          );
-        }}
-      />
     </>
   );
 };

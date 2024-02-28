@@ -16,7 +16,7 @@ const MyPosts: NextPage = () => {
         <h1 className="px-4 text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
           Mani sludinājumi
         </h1>
-        <div className="flex w-full items-center justify-center pt-4">
+        <div className="flex w-full items-center justify-center pt-5 md:pt-10">
           <div className="grid w-full grid-cols-[repeat(auto-fit,minmax(310px,1fr))] gap-5 px-4">
             {isLoading && (
               <div>

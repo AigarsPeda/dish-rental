@@ -54,23 +54,6 @@ const Modal: FC<ModalProps> = ({
                   </button>
                 </div>
                 {children}
-
-                {/* <div className="border-blueGray-200 flex items-center justify-end rounded-b border-t border-solid p-6">
-                    <button
-                      className="background-transparent mb-1 mr-1 px-6 py-2 text-sm font-bold uppercase text-red-500 outline-none transition-all duration-150 ease-linear focus:outline-none"
-                      type="button"
-                      onClick={handleModalClose}
-                    >
-                      Close
-                    </button>
-                    <button
-                      className="mb-1 mr-1 rounded bg-emerald-500 px-6 py-3 text-sm font-bold uppercase text-white shadow outline-none transition-all duration-150 ease-linear hover:shadow-lg focus:outline-none active:bg-emerald-600"
-                      type="button"
-                      onClick={handleSuccess}
-                    >
-                      Save Changes
-                    </button>
-                  </div> */}
               </div>
             </div>
           </div>

@@ -16,12 +16,12 @@ export type FormStateType = {
 
 interface OrderModalProps {
   isOrderModalOpen: boolean;
-  setIsOrderModalOpen: (value: boolean) => void;
+  handleModalClose: () => void;
 }
 
 const OrderModal: FC<OrderModalProps> = ({
   isOrderModalOpen,
-  setIsOrderModalOpen,
+  handleModalClose,
 }) => {
   const router = useRouter();
   const [postId, setPostId] = useState<number | null>(null);
@@ -47,12 +47,7 @@ const OrderModal: FC<OrderModalProps> = ({
   }, [router.query]);
 
   return (
-    <Modal
-      isModalOpen={isOrderModalOpen}
-      handleModalClose={() => {
-        setIsOrderModalOpen(false);
-      }}
-    >
+    <Modal isModalOpen={isOrderModalOpen} handleModalClose={handleModalClose}>
       <div className="w-full border-b border-gray-900/10 p-3">
         <div>
           <Image
