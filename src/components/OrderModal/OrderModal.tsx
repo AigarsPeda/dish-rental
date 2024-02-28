@@ -1,13 +1,18 @@
+import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState, type FC } from "react";
+import Datepicker, { type DateValueType } from "react-tailwindcss-datepicker";
 import Modal from "~/components/Modal/Modal";
-import { api } from "../../utils/api";
-import Image from "next/image";
-import ImageLoader from "../../utils/ImageLoader";
-import getTitleImage from "../../utils/getTitleImage";
-import formatDate from "../../utils/formatDate";
-import NumberInput from "../NumberInput/NumberInput";
-import ShoppingCartIcon from "../icons/ShoppingCartIcon/ShoppingCartIcon";
+import NumberInput from "~/components/NumberInput/NumberInput";
+import ShoppingCartIcon from "~/components/icons/ShoppingCartIcon/ShoppingCartIcon";
+import ImageLoader from "~/utils/ImageLoader";
+import { api } from "~/utils/api";
+import formatDate from "~/utils/formatDate";
+import getTitleImage from "~/utils/getTitleImage";
+
+export type FormStateType = {
+  availableDates: DateValueType;
+};
 
 interface OrderModalProps {
   isOrderModalOpen: boolean;
@@ -24,6 +29,12 @@ const OrderModal: FC<OrderModalProps> = ({
     { id: postId ?? 1 },
     { enabled: postId !== null },
   );
+  const [formsSate, setFormsState] = useState<FormStateType>({
+    availableDates: {
+      endDate: null,
+      startDate: null,
+    },
+  });
 
   useEffect(() => {
     if (
@@ -49,7 +60,7 @@ const OrderModal: FC<OrderModalProps> = ({
             height={200}
             loader={ImageLoader}
             alt={data?.images[0]?.name ?? "Image"}
-            className="h-full max-h-[20rem] w-[24rem] rounded-lg object-cover"
+            className="h-full max-h-[20rem] w-full rounded-lg object-cover"
             src={
               getTitleImage(data?.images, data?.titleImage)?.url ??
               "/images/placeholder.jpeg"
@@ -87,7 +98,7 @@ const OrderModal: FC<OrderModalProps> = ({
               <h1 className="m-0 p-0 text-5xl font-bold">{data?.price}</h1>
               <span className="ml-2 text-base text-gray-400">€ / dienā</span>
             </div>
-            <div className="flex items-end justify-between gap-3">
+            <div className="flex flex-wrap items-end gap-3 pb-3 md:justify-between">
               <div>
                 <label
                   htmlFor="product-price"
@@ -106,6 +117,29 @@ const OrderModal: FC<OrderModalProps> = ({
                   />
                 </div>
               </div>
+              <div>
+                <Datepicker
+                  toggleClassName="hidden"
+                  displayFormat={"DD/MM/YYYY"}
+                  inputClassName="rounded-md pl-3 bg-gray-200 placeholder:text-gray-500 focus:ring-0 md:w-64 w-[18rem] font-semibold text-sm h-11 text-gray-800 text-center"
+                  value={formsSate.availableDates}
+                  onChange={(newValue) => {
+                    setFormsState({
+                      ...formsSate,
+                      availableDates: newValue,
+                    });
+                    void router.push({
+                      pathname: "/",
+                      query: {
+                        ...router.query,
+                        end_date: newValue?.endDate?.toString(),
+                        start_date: newValue?.startDate?.toString(),
+                      },
+                    });
+                  }}
+                />
+              </div>
+
               <button
                 onClick={() => router.back()}
                 className="flex h-11 items-center gap-2 rounded-md bg-gray-800 px-4 py-2 text-gray-50"
@@ -116,17 +150,6 @@ const OrderModal: FC<OrderModalProps> = ({
             </div>
           </div>
         </div>
-
-        {/* <div className="mt-10 flex items-center justify-center gap-x-6">
-          <button
-            onClick={() => {
-              console.log("clicked");
-            }}
-            className="rounded-md bg-gray-900 px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600"
-          >
-            Hey
-          </button>
-        </div> */}
       </div>
     </Modal>
   );

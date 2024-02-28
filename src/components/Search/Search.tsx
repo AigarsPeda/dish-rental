@@ -45,7 +45,7 @@ const Search: FC<SearchProps> = ({
               }}
             />
           </div>
-          <div className="">
+          <div>
             <Datepicker
               toggleClassName="hidden"
               displayFormat={"DD/MM/YYYY"}
