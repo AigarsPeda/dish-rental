@@ -125,7 +125,7 @@ const PostPage: NextPage = () => {
                   </div>
                   <div className="mt-8 items-end justify-between gap-2 xl:flex">
                     <div className="mb-4 flex items-end xl:mb-0">
-                      <h1 className="m-0 p-0 text-5xl font-bold">
+                      <h1 className="m-0 p-0 text-3xl font-bold">
                         {data?.price}
                       </h1>
                       <span className="ml-2 text-base text-gray-400">

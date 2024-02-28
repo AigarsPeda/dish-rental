@@ -66,6 +66,8 @@ const EditPostCard: FC<EditPostCardProps> = ({ post }) => {
       <div className="p-2">
         <Image
           priority
+          width={400}
+          height={400}
           alt="dish-rental"
           loader={ImageLoader}
           className={classNames(
@@ -76,16 +78,13 @@ const EditPostCard: FC<EditPostCardProps> = ({ post }) => {
             getTitleImage(post.images, post.titleImage)?.url ??
             "/images/placeholder.jpeg"
           }
-          width={300}
-          height={300}
           style={{
-            width: "100%",
             height: "300px",
             objectFit: "cover",
           }}
         />
       </div>
-      <div className="flex flex-wrap justify-center gap-2 px-1">
+      <div className="flex flex-wrap gap-2 px-2.5">
         {post?.images.map((file) => (
           <button
             type="button"
