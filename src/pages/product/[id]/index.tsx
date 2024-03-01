@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import Datepicker, { DateValueType } from "react-tailwindcss-datepicker";
 import NumberInput from "~/components/NumberInput/NumberInput";
 import PageHead from "~/components/PageHead/PageHead";
 import ShoppingCartIcon from "~/components/icons/ShoppingCartIcon/ShoppingCartIcon";
@@ -12,6 +13,10 @@ import { api } from "~/utils/api";
 import formatDate from "~/utils/formatDate";
 import getTitleImage from "~/utils/getTitleImage";
 
+export type FormStateType = {
+  availableDates: DateValueType;
+};
+
 const PostPage: NextPage = () => {
   const router = useRouter();
   const [postId, setPostId] = useState<number | null>(null);
@@ -19,6 +24,13 @@ const PostPage: NextPage = () => {
     { id: postId ?? 1 },
     { enabled: postId !== null },
   );
+
+  const [formsSate, setFormsState] = useState<FormStateType>({
+    availableDates: {
+      endDate: null,
+      startDate: null,
+    },
+  });
 
   useEffect(() => {
     if (router.query.id && typeof router.query.id === "string") {
@@ -102,36 +114,23 @@ const PostPage: NextPage = () => {
 
                 <div>
                   <div className="mt-4">
-                    <p className="text-gray-400">
-                      Pieejamas{" "}
-                      <span className="font-semibold text-gray-800">
-                        {" "}
-                        {data?.availablePieces}{" "}
-                      </span>{" "}
-                      vienības
+                    <p className="text-sm text-gray-800">
+                      Pieejamas {data?.availablePieces} vienības
                     </p>
                   </div>
                   <div className="mt-2">
-                    <p className="text-gray-400">
-                      Piejami no{" "}
-                      <span className="font-semibold text-gray-800">
-                        {formatDate(data?.availableDatesStart)}
-                      </span>{" "}
-                      līdz{" "}
-                      <span className="font-semibold text-gray-800">
-                        {formatDate(data?.availableDatesEnd)}
-                      </span>
+                    <p className="text-sm text-gray-800">
+                      No {formatDate(data?.availableDatesStart)} līdz{" "}
+                      {formatDate(data?.availableDatesEnd)}
                     </p>
                   </div>
-                  <div className="mt-8 items-end justify-between gap-2 xl:flex">
-                    <div className="mb-4 flex items-end xl:mb-0">
-                      <h1 className="m-0 p-0 text-3xl font-bold">
-                        {data?.price}
-                      </h1>
-                      <span className="ml-2 text-base text-gray-400">
-                        € / dienā
-                      </span>
-                    </div>
+                  <div className="my-3 flex items-end xl:mb-0">
+                    <p className="m-0 p-0 text-3xl font-medium">
+                      € {data?.price}
+                    </p>
+                    <p className="ml-2 pb-0.5 text-base text-gray-600">dienā</p>
+                  </div>
+                  <div className="mt-2 items-end justify-between gap-2 xl:flex">
                     <div className="flex items-end justify-between gap-3">
                       <div>
                         <label
@@ -140,7 +139,7 @@ const PostPage: NextPage = () => {
                         >
                           Skaits
                         </label>
-                        <div className="w-40">
+                        <div className="md:w-40">
                           <NumberInput
                             id="product-price"
                             value={0}
@@ -150,9 +149,39 @@ const PostPage: NextPage = () => {
                           />
                         </div>
                       </div>
+                      <div>
+                        <label
+                          htmlFor="product-price"
+                          className="text-sm text-gray-400"
+                        >
+                          Laiks
+                        </label>
+                        <Datepicker
+                          toggleClassName="hidden"
+                          displayFormat={"DD/MM/YYYY"}
+                          inputClassName="rounded-md bg-white placeholder:text-gray-500 focus:ring-0 w-[14rem] font-semibold text-sm h-11 text-gray-800 text-center"
+                          value={formsSate.availableDates}
+                          onChange={(newValue) => {
+                            setFormsState({
+                              ...formsSate,
+                              availableDates: newValue,
+                            });
+                            void router.push({
+                              pathname: "/",
+                              query: {
+                                ...router.query,
+                                end_date: newValue?.endDate?.toString(),
+                                start_date: newValue?.startDate?.toString(),
+                              },
+                            });
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <div className="mt-6 flex w-full justify-end md:mt-3">
                       <button
                         onClick={() => router.back()}
-                        className="flex h-11 items-center gap-2 rounded-md bg-gray-800 px-4 py-2 text-gray-50"
+                        className="flex h-11 w-full items-center justify-center gap-2 whitespace-nowrap rounded-md bg-gray-800 px-4 py-2 text-gray-50"
                       >
                         <ShoppingCartIcon size="sm" />
                         Ielikt grozā
