@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { type FC } from "react";
 import ProfileDropdown from "~/components/ProfileDropdown/ProfileDropdown";
-import ShoppingCartIcon from "~/components/icons/ShoppingCartIcon/ShoppingCartIcon";
+import ShoppingCartDropdown from "~/components/ShoppingCartDropdown/ShoppingCartDropdown";
 
 const NavBar: FC = () => {
   return (
@@ -20,7 +20,7 @@ const NavBar: FC = () => {
         </p>
       </Link>
       <div className="flex items-center gap-2 text-gray-800">
-        <ShoppingCartIcon size="lg" />
+        <ShoppingCartDropdown />
         <ProfileDropdown />
       </div>
     </div>
