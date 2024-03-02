@@ -14,7 +14,9 @@ import formatDate from "~/utils/formatDate";
 import getTitleImage from "~/utils/getTitleImage";
 
 export type FormStateType = {
-  availableDates: DateValueType;
+  price: number;
+  amount: number;
+  orderDates: DateValueType;
 };
 
 const PostPage: NextPage = () => {
@@ -26,9 +28,11 @@ const PostPage: NextPage = () => {
   );
 
   const [formsSate, setFormsState] = useState<FormStateType>({
-    availableDates: {
-      endDate: null,
-      startDate: null,
+    price: 0,
+    amount: 4,
+    orderDates: {
+      endDate: new Date(new Date().setDate(new Date().getDate() + 2)),
+      startDate: new Date(),
     },
   });
 
@@ -38,6 +42,38 @@ const PostPage: NextPage = () => {
       setPostId(id);
     }
   }, [router.query.id]);
+
+  const calculatePrice = (
+    price: number | undefined,
+    amount: number,
+    startDate: Date,
+    endDate: Date,
+  ) => {
+    if (!price) return 0;
+
+    const diffTime = Math.abs(endDate?.getTime() - startDate?.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    // round to 2 decimal places
+    return Math.round(price * amount * diffDays * 100) / 100;
+  };
+
+  // calculate initial price
+  useEffect(() => {
+    if (data) {
+      const amount = formsSate.amount;
+      const priceForOneDay = data.price;
+      const startDate = new Date(formsSate.orderDates?.startDate ?? "");
+      const endDate = new Date(formsSate.orderDates?.endDate ?? "");
+
+      const price = calculatePrice(priceForOneDay, amount, startDate, endDate);
+
+      setFormsState((state) => ({
+        ...state,
+        price: price,
+      }));
+    }
+  }, [data]);
 
   return (
     <>
@@ -125,7 +161,7 @@ const PostPage: NextPage = () => {
                     </p>
                   </div>
                   <div className="my-3 flex items-end xl:mb-0">
-                    <p className="m-0 p-0 text-3xl font-medium">
+                    <p className="m-0 p-0 text-xl font-medium">
                       € {data?.price}
                     </p>
                     <p className="ml-2 pb-0.5 text-base text-gray-600">dienā</p>
@@ -142,9 +178,20 @@ const PostPage: NextPage = () => {
                         <div className="md:w-40">
                           <NumberInput
                             id="product-price"
-                            value={0}
-                            onChange={() => {
-                              console.log("changed");
+                            value={formsSate.amount}
+                            onChange={(num) => {
+                              const price = calculatePrice(
+                                data?.price,
+                                num,
+                                new Date(formsSate.orderDates?.startDate ?? ""),
+                                new Date(formsSate.orderDates?.endDate ?? ""),
+                              );
+
+                              setFormsState({
+                                ...formsSate,
+                                amount: num,
+                                price: price,
+                              });
                             }}
                           />
                         </div>
@@ -160,24 +207,25 @@ const PostPage: NextPage = () => {
                           toggleClassName="hidden"
                           displayFormat={"DD/MM/YYYY"}
                           inputClassName="rounded-md bg-white placeholder:text-gray-500 focus:ring-0 w-[14rem] font-semibold text-sm h-11 text-gray-800 text-center"
-                          value={formsSate.availableDates}
+                          value={formsSate.orderDates}
                           onChange={(newValue) => {
+                            const price = calculatePrice(
+                              data?.price,
+                              formsSate.amount,
+                              new Date(newValue?.startDate ?? ""),
+                              new Date(newValue?.endDate ?? ""),
+                            );
+
                             setFormsState({
                               ...formsSate,
-                              availableDates: newValue,
-                            });
-                            void router.push({
-                              pathname: "/",
-                              query: {
-                                ...router.query,
-                                end_date: newValue?.endDate?.toString(),
-                                start_date: newValue?.startDate?.toString(),
-                              },
+                              price: price,
+                              orderDates: newValue,
                             });
                           }}
                         />
                       </div>
                     </div>
+
                     <div className="mt-6 flex w-full justify-end md:mt-3">
                       <button
                         onClick={() => router.back()}
@@ -186,6 +234,11 @@ const PostPage: NextPage = () => {
                         <ShoppingCartIcon size="sm" />
                         Ielikt grozā
                       </button>
+                    </div>
+                    <div className="text-right">
+                      <p className="mt-2 text-2xl text-gray-900">
+                        Kopā: € {formsSate.price}
+                      </p>
                     </div>
                   </div>
                 </div>
