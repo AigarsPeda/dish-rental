@@ -10,7 +10,7 @@ import PageHead from "~/components/PageHead/PageHead";
 import ShoppingCartIcon from "~/components/icons/ShoppingCartIcon/ShoppingCartIcon";
 import ImageLoader from "~/utils/ImageLoader";
 import { api } from "~/utils/api";
-import formatDate from "~/utils/formatDate";
+import { formatDate } from "~/utils/dateUtils";
 import getTitleImage from "~/utils/getTitleImage";
 
 export type FormStateType = {
@@ -43,6 +43,11 @@ const PostPage: NextPage = () => {
     }
   }, [router.query.id]);
 
+  const calculateDaysBetween = (startDate: Date, endDate: Date) => {
+    const diffTime = Math.abs(endDate?.getTime() - startDate?.getTime());
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+  };
+
   const calculatePrice = (
     price: number | undefined,
     amount: number,
@@ -51,8 +56,7 @@ const PostPage: NextPage = () => {
   ) => {
     if (!price) return 0;
 
-    const diffTime = Math.abs(endDate?.getTime() - startDate?.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const diffDays = calculateDaysBetween(startDate, endDate);
 
     // round to 2 decimal places
     return Math.round(price * amount * diffDays * 100) / 100;
@@ -123,7 +127,7 @@ const PostPage: NextPage = () => {
                   />
                 </div>
               </div>
-              <div className="flex flex-col justify-between pt-5 md:pl-10 md:pt-0">
+              <div className="flex max-w-sm flex-col justify-between pt-5 md:pl-10 md:pt-0">
                 <div>
                   <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">
                     {data?.name}
@@ -164,7 +168,7 @@ const PostPage: NextPage = () => {
                     <p className="m-0 p-0 text-xl font-medium">
                       € {data?.price}
                     </p>
-                    <p className="ml-2 pb-0.5 text-base text-gray-600">dienā</p>
+                    <p className="ml-2 pb-px text-sm text-gray-600">dienā</p>
                   </div>
                   <div className="mt-2 items-end justify-between gap-2 xl:flex">
                     <div className="flex items-end justify-between gap-3">
@@ -175,7 +179,7 @@ const PostPage: NextPage = () => {
                         >
                           Skaits
                         </label>
-                        <div className="md:w-40">
+                        <div className="md:w-32">
                           <NumberInput
                             id="product-price"
                             value={formsSate.amount}
@@ -206,7 +210,7 @@ const PostPage: NextPage = () => {
                         <Datepicker
                           toggleClassName="hidden"
                           displayFormat={"DD/MM/YYYY"}
-                          inputClassName="rounded-md bg-white placeholder:text-gray-500 focus:ring-0 w-[14rem] font-semibold text-sm h-11 text-gray-800 text-center"
+                          inputClassName="rounded-md bg-white placeholder:text-gray-500 focus:ring-0 w-[12rem] font-semibold text-sm h-11 text-gray-800 text-center"
                           value={formsSate.orderDates}
                           onChange={(newValue) => {
                             const price = calculatePrice(
@@ -225,21 +229,36 @@ const PostPage: NextPage = () => {
                         />
                       </div>
                     </div>
+                  </div>
+                </div>
+                <div className="mt-6 flex w-full justify-end md:mt-3">
+                  <button
+                    onClick={() => router.back()}
+                    className="flex h-11 w-full items-center justify-center gap-2 whitespace-nowrap rounded-md bg-gray-800 px-4 py-2 text-gray-50"
+                  >
+                    <ShoppingCartIcon size="sm" />
+                    Ielikt grozā
+                  </button>
+                </div>
 
-                    <div className="mt-6 flex w-full justify-end md:mt-3">
-                      <button
-                        onClick={() => router.back()}
-                        className="flex h-11 w-full items-center justify-center gap-2 whitespace-nowrap rounded-md bg-gray-800 px-4 py-2 text-gray-50"
-                      >
-                        <ShoppingCartIcon size="sm" />
-                        Ielikt grozā
-                      </button>
-                    </div>
-                    <div className="text-right">
-                      <p className="mt-2 text-2xl text-gray-900">
-                        Kopā: € {formsSate.price}
-                      </p>
-                    </div>
+                <div className="flex justify-between">
+                  <div>
+                    <p className="text-ms mt-2 text-gray-400">
+                      € {data?.price} x {formsSate.amount} x{" "}
+                      {calculateDaysBetween(
+                        new Date(formsSate.orderDates?.startDate ?? ""),
+                        new Date(formsSate.orderDates?.endDate ?? ""),
+                      )}{" "}
+                      dienas
+                    </p>
+                  </div>
+                  <div className="text-right ">
+                    <p>
+                      <span className=" text-gray-400">Kopā: </span>
+                      <span className="text-2xl font-medium text-gray-900">
+                        € {formsSate.price}
+                      </span>
+                    </p>
                   </div>
                 </div>
               </div>

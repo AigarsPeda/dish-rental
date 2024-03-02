@@ -7,7 +7,7 @@ import NumberInput from "~/components/NumberInput/NumberInput";
 import ShoppingCartIcon from "~/components/icons/ShoppingCartIcon/ShoppingCartIcon";
 import ImageLoader from "~/utils/ImageLoader";
 import { api } from "~/utils/api";
-import formatDate from "~/utils/formatDate";
+import { formatDate } from "~/utils/dateUtils";
 import getTitleImage from "~/utils/getTitleImage";
 
 export type FormStateType = {
