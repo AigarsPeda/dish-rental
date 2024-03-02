@@ -1,4 +1,4 @@
-import { ALL_OPTIONS } from "hardcoded";
+import { ALL_OPTIONS, LOCAL_STORAGE_KEYS } from "hardcoded";
 import { type NextPage } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -8,6 +8,8 @@ import Datepicker, { DateValueType } from "react-tailwindcss-datepicker";
 import NumberInput from "~/components/NumberInput/NumberInput";
 import PageHead from "~/components/PageHead/PageHead";
 import ShoppingCartIcon from "~/components/icons/ShoppingCartIcon/ShoppingCartIcon";
+import useLocalStorage from "~/hooks/useLocalStorage";
+import { type OrderType } from "~/types/order.schema";
 import ImageLoader from "~/utils/ImageLoader";
 import { api } from "~/utils/api";
 import { formatDate } from "~/utils/dateUtils";
@@ -25,6 +27,11 @@ const PostPage: NextPage = () => {
   const { data, isLoading } = api.product.getById.useQuery(
     { id: postId ?? 1 },
     { enabled: postId !== null },
+  );
+
+  const [orders, setOrders] = useLocalStorage<OrderType[]>(
+    LOCAL_STORAGE_KEYS.shoppingCart,
+    [],
   );
 
   const [formsSate, setFormsState] = useState<FormStateType>({
@@ -233,7 +240,24 @@ const PostPage: NextPage = () => {
                 </div>
                 <div className="mt-6 flex w-full justify-end md:mt-3">
                   <button
-                    onClick={() => router.back()}
+                    onClick={() => {
+                      if (data) {
+                        const order: OrderType = {
+                          id: data.id ?? 0,
+                          name: data.name ?? "",
+                          price: formsSate.price,
+                        };
+
+                        setOrders((prev) => {
+                          if (prev.find((o) => o.id === order.id)) {
+                            return prev.map((o) =>
+                              o.id === order.id ? order : o,
+                            );
+                          }
+                          return [...prev, order];
+                        });
+                      }
+                    }}
                     className="flex h-11 w-full items-center justify-center gap-2 whitespace-nowrap rounded-md bg-gray-800 px-4 py-2 text-gray-50"
                   >
                     <ShoppingCartIcon size="sm" />

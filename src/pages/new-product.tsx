@@ -1,4 +1,4 @@
-import { ALL_OPTIONS } from "hardcoded";
+import { ALL_OPTIONS, LOCAL_STORAGE_KEYS } from "hardcoded";
 import { type NextPage } from "next";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
@@ -62,7 +62,7 @@ const NewPost: NextPage = () => {
   });
 
   const [formsSate, setFormsState] = useLocalStorage<FormStateType>(
-    "new-product-form-v2",
+    LOCAL_STORAGE_KEYS.productForm,
     {
       name: "",
       price: 0,

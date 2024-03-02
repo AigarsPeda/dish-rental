@@ -9,3 +9,8 @@ export const ALL_OPTIONS = {
   apgaismojums: "Apgaismojums",
   cits: "Cits",
 };
+
+export const LOCAL_STORAGE_KEYS = {
+  shoppingCart: "shopping-cart-v2",
+  productForm: "new-product-form-v2",
+};

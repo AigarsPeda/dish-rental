@@ -1,23 +1,10 @@
 import { useState, useEffect } from "react";
 
-function useLocalStorage<T>(
+const useLocalStorage = <T,>(
   key: string,
   initialValue: T,
-): [T, (value: T | ((val: T) => T)) => void] {
-  // Initialize state with initialValue; defer reading localStorage
+): [T, (value: T | ((val: T) => T)) => void] => {
   const [storedValue, setStoredValue] = useState<T>(initialValue);
-
-  useEffect(() => {
-    // Read from localStorage only after mounting
-    try {
-      const item = window.localStorage.getItem(key);
-      if (item) {
-        setStoredValue(JSON.parse(item) as T);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  }, [key]);
 
   const setValue = (value: T | ((val: T) => T)) => {
     try {
@@ -35,7 +22,19 @@ function useLocalStorage<T>(
     }
   };
 
+  useEffect(() => {
+    // Read from localStorage only after mounting
+    try {
+      const item = window.localStorage.getItem(key);
+      if (item) {
+        setStoredValue(JSON.parse(item) as T);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }, [key]);
+
   return [storedValue, setValue];
-}
+};
 
 export default useLocalStorage;
