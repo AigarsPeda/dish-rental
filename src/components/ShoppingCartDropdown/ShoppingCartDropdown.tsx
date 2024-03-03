@@ -42,7 +42,7 @@ const ShoppingCartDropdown = () => {
                     height={100}
                     loader={ImageLoader}
                     alt={order.name ?? "Image"}
-                    className="w-22 h-full max-h-20 rounded object-cover shadow-lg"
+                    className="h-24 w-auto rounded object-cover shadow-lg"
                     src={order.imageURL ?? "/images/placeholder.jpeg"}
                   />
                 </div>

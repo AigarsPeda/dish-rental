@@ -32,6 +32,7 @@ const Card: FC<CardProps> = ({ product }) => {
             style={{
               height: "300px",
               objectFit: "cover",
+              width: "100%",
             }}
             src={
               getTitleImage(product.images, product.titleImage)?.url ??

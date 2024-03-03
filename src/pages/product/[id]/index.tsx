@@ -23,18 +23,12 @@ export type FormStateType = {
 
 const PostPage: NextPage = () => {
   const router = useRouter();
+  const { dispatch } = useContext(GlobalAppContext);
   const [postId, setPostId] = useState<number | null>(null);
   const { data, isLoading } = api.product.getById.useQuery(
     { id: postId ?? 1 },
     { enabled: postId !== null },
   );
-
-  const { appState, dispatch } = useContext(GlobalAppContext);
-
-  // const [orders, setOrders] = useLocalStorage<OrderType[]>(
-  //   LOCAL_STORAGE_KEYS.shoppingCart,
-  //   [],
-  // );
 
   const [formsSate, setFormsState] = useState<FormStateType>({
     price: 0,
