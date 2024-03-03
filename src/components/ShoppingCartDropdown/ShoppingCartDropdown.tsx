@@ -1,20 +1,19 @@
+import Image from "next/image";
 import { useContext, useState } from "react";
 import Dropdown from "~/components/Dropdown/Dropdown";
 import ShoppingCartIcon from "~/components/icons/ShoppingCartIcon/ShoppingCartIcon";
 import { GlobalAppContext } from "~/context/GlobalAppContext/GlobalAppContext";
+import ImageLoader from "~/utils/ImageLoader";
+import { formatDate } from "~/utils/dateUtils";
 
 const ShoppingCartDropdown = () => {
-  const { appState } = useContext(GlobalAppContext);
-
+  const { appState, dispatch } = useContext(GlobalAppContext);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  // const [orders, setOrders] = useLocalStorage<OrderType[]>(
-  //   LOCAL_STORAGE_KEYS.shoppingCart,
-  //   [],
-  // );
 
   return (
     <>
       <Dropdown
+        width="w-96"
         isDropdownOpen={isDropdownOpen}
         setIsDropdownOpen={setIsDropdownOpen}
         title={
@@ -29,24 +28,60 @@ const ShoppingCartDropdown = () => {
         }
       >
         {appState.orders.length === 0 ? (
-          <p className="px-4 py-2 text-sm text-gray-700">Jūsu grozs ir tukšs</p>
+          <p className="px-2 py-2 text-sm text-gray-700">Jūsu grozs ir tukšs</p>
         ) : (
           appState.orders.map((order) => (
             <div
-              key={order.order_id}
-              className="flex items-center justify-between px-4 py-2 text-sm text-gray-700"
+              key={order.orderId}
+              className="px-3 py-2 text-sm text-gray-700"
             >
-              <div>
-                <p>{order.start_date.toISOString()}</p>
-                <p>{order.end_date.toISOString()}</p>
-              </div>
-              <div>
-                <p>{order.name}</p>
-                <p>{order.price} €</p>
-                <p>
-                  {order.quantity} x {order.price} € ={" "}
-                  {order.quantity * order.price} €
-                </p>
+              <div className="flex justify-between space-x-2">
+                <div>
+                  <Image
+                    width={100}
+                    height={100}
+                    loader={ImageLoader}
+                    alt={order.name ?? "Image"}
+                    className="w-22 h-full max-h-20 rounded object-cover shadow-lg"
+                    src={order.imageURL ?? "/images/placeholder.jpeg"}
+                  />
+                </div>
+                <div className="flex w-full flex-col">
+                  <div>
+                    <div className="flex justify-between text-base font-medium text-gray-900">
+                      <h2>
+                        <a href="#">Throwback Hip Bag</a>
+                      </h2>
+                      <p className="ml-2 text-xl">€ {order.price}</p>
+                    </div>
+                    <div className="flex flex-1 items-end justify-between text-sm">
+                      <p className="text-gray-500">
+                        Laiks: {formatDate(order.startDate)} -{" "}
+                        {formatDate(order.endDate)}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex flex-1 items-end justify-between text-sm">
+                    <p className="text-gray-500">Skaits: {order.quantity}</p>
+
+                    <div className="flex">
+                      <button
+                        type="button"
+                        className="font-medium text-indigo-600 hover:text-indigo-500"
+                        onClick={() =>
+                          dispatch({
+                            type: "REMOVE_ORDER_ITEM",
+                            payload: {
+                              id: order.orderId,
+                            },
+                          })
+                        }
+                      >
+                        Noņemt
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           ))

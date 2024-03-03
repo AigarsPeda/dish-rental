@@ -1,4 +1,4 @@
-import { ALL_OPTIONS, LOCAL_STORAGE_KEYS } from "hardcoded";
+import { ALL_OPTIONS } from "hardcoded";
 import { type NextPage } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -8,13 +8,12 @@ import Datepicker, { DateValueType } from "react-tailwindcss-datepicker";
 import NumberInput from "~/components/NumberInput/NumberInput";
 import PageHead from "~/components/PageHead/PageHead";
 import ShoppingCartIcon from "~/components/icons/ShoppingCartIcon/ShoppingCartIcon";
-import useLocalStorage from "~/hooks/useLocalStorage";
+import { GlobalAppContext } from "~/context/GlobalAppContext/GlobalAppContext";
 import { type OrderType } from "~/types/order.schema";
 import ImageLoader from "~/utils/ImageLoader";
 import { api } from "~/utils/api";
 import { formatDate } from "~/utils/dateUtils";
 import getTitleImage from "~/utils/getTitleImage";
-import { GlobalAppContext } from "../../../context/GlobalAppContext/GlobalAppContext";
 
 export type FormStateType = {
   price: number;
@@ -246,17 +245,20 @@ const PostPage: NextPage = () => {
                     onClick={() => {
                       if (data) {
                         const order: OrderType = {
-                          order_id: crypto.randomUUID(),
-                          product_id: data.id ?? 0,
+                          orderId: crypto.randomUUID(),
+                          productId: data.id ?? 0,
                           name: data.name ?? "",
                           price: formsSate.price,
                           quantity: formsSate.amount,
-                          start_date: new Date(
+                          startDate: new Date(
                             formsSate.orderDates?.startDate ?? "",
                           ),
-                          end_date: new Date(
+                          endDate: new Date(
                             formsSate.orderDates?.endDate ?? "",
                           ),
+                          imageURL:
+                            getTitleImage(data.images, data.titleImage)?.url ??
+                            "",
                         };
 
                         dispatch({

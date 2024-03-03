@@ -4,15 +4,17 @@ import useOnClickOutside from "~/hooks/useOnClickOutside";
 import classNames from "~/utils/classNames";
 
 interface DropdownProps {
-  title: string | ReactNode;
   children: ReactNode;
   isDropdownOpen: boolean;
+  title: string | ReactNode;
+  width?: "w-56" | "w-64" | "w-96";
   setIsDropdownOpen: (value: boolean) => void;
 }
 
 const Dropdown: FC<DropdownProps> = ({
   title,
   children,
+  width = "w-56",
   isDropdownOpen,
   setIsDropdownOpen,
 }) => {
@@ -53,7 +55,10 @@ const Dropdown: FC<DropdownProps> = ({
             isAnimation
               ? "visible translate-x-0 scale-100 opacity-100"
               : "invisible scale-95 opacity-0",
-            "absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 transition-all duration-150 focus:outline-none",
+            width === "w-56" && "w-56",
+            width === "w-64" && "w-64",
+            width === "w-96" && "w-96",
+            "absolute right-0 z-10 mt-2 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 transition-all duration-150 focus:outline-none",
           )}
           role="menu"
           aria-orientation="vertical"

@@ -18,7 +18,7 @@ const globalAppReducer = (
       return {
         ...state,
         orders: state.orders.filter(
-          (order) => order.order_id !== action.payload.id,
+          (order) => order.orderId !== action.payload.id,
         ),
       };
     }
