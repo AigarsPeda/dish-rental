@@ -19,18 +19,18 @@ const ShoppingCartDropdown = () => {
         title={
           <div className="relative">
             <ShoppingCartIcon size="lg" />
-            {appState.orders.length > 0 && (
+            {appState?.orders?.length > 0 && (
               <div className="absolute right-0 top-0 -mr-1 -mt-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-xs text-white">
-                {appState.orders.length}
+                {appState.orders?.length}
               </div>
             )}
           </div>
         }
       >
-        {appState.orders.length === 0 ? (
+        {appState?.orders?.length === 0 ? (
           <p className="px-2 py-2 text-sm text-gray-700">Jūsu grozs ir tukšs</p>
         ) : (
-          appState.orders.map((order) => (
+          appState?.orders?.map((order) => (
             <div
               key={order.orderId}
               className="px-3 py-2 text-sm text-gray-700"
