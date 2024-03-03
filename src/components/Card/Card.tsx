@@ -12,8 +12,6 @@ interface CardProps {
 }
 
 const Card: FC<CardProps> = ({ product }) => {
-  // const router = useRouter();
-
   return (
     <>
       <Link

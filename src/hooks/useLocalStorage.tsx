@@ -5,7 +5,6 @@ const useLocalStorage = <T,>(
   initialValue: T,
 ): [T, (value: T | ((val: T) => T)) => void] => {
   const [storedValue, setStoredValue] = useState<T>(initialValue);
-
   const setValue = (value: T | ((val: T) => T)) => {
     try {
       // Determine the value to store

@@ -3,7 +3,7 @@ import { type NextPage } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Datepicker, { DateValueType } from "react-tailwindcss-datepicker";
 import NumberInput from "~/components/NumberInput/NumberInput";
 import PageHead from "~/components/PageHead/PageHead";
@@ -14,6 +14,7 @@ import ImageLoader from "~/utils/ImageLoader";
 import { api } from "~/utils/api";
 import { formatDate } from "~/utils/dateUtils";
 import getTitleImage from "~/utils/getTitleImage";
+import { GlobalAppContext } from "../../../context/GlobalAppContext/GlobalAppContext";
 
 export type FormStateType = {
   price: number;
@@ -29,10 +30,12 @@ const PostPage: NextPage = () => {
     { enabled: postId !== null },
   );
 
-  const [orders, setOrders] = useLocalStorage<OrderType[]>(
-    LOCAL_STORAGE_KEYS.shoppingCart,
-    [],
-  );
+  const { appState, dispatch } = useContext(GlobalAppContext);
+
+  // const [orders, setOrders] = useLocalStorage<OrderType[]>(
+  //   LOCAL_STORAGE_KEYS.shoppingCart,
+  //   [],
+  // );
 
   const [formsSate, setFormsState] = useState<FormStateType>({
     price: 0,
@@ -243,19 +246,32 @@ const PostPage: NextPage = () => {
                     onClick={() => {
                       if (data) {
                         const order: OrderType = {
-                          id: data.id ?? 0,
+                          order_id: crypto.randomUUID(),
+                          product_id: data.id ?? 0,
                           name: data.name ?? "",
                           price: formsSate.price,
+                          quantity: formsSate.amount,
+                          start_date: new Date(
+                            formsSate.orderDates?.startDate ?? "",
+                          ),
+                          end_date: new Date(
+                            formsSate.orderDates?.endDate ?? "",
+                          ),
                         };
 
-                        setOrders((prev) => {
-                          if (prev.find((o) => o.id === order.id)) {
-                            return prev.map((o) =>
-                              o.id === order.id ? order : o,
-                            );
-                          }
-                          return [...prev, order];
+                        dispatch({
+                          type: "ADD_ORDER_ITEM",
+                          payload: order,
                         });
+
+                        // setOrders((prev) => {
+                        //   if (prev.find((o) => o.id === order.id)) {
+                        //     return prev.map((o) =>
+                        //       o.id === order.id ? order : o,
+                        //     );
+                        //   }
+                        //   return [...prev, order];
+                        // });
                       }
                     }}
                     className="flex h-11 w-full items-center justify-center gap-2 whitespace-nowrap rounded-md bg-gray-800 px-4 py-2 text-gray-50"
