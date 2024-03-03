@@ -19,5 +19,5 @@ export const initialAppState: GlobalAppStateType = {
 
 export const GlobalAppContext = createContext<IAppContext>({
   appState: initialAppState,
-  dispatch: () => {},
+  dispatch: () => null,
 });
