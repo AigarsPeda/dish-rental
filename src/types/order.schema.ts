@@ -6,8 +6,8 @@ export const OrderSchema = z.object({
   name: z.string(),
   price: z.number(),
   quantity: z.number(),
-  startDate: z.date(),
-  endDate: z.date(),
+  startDate: z.string(),
+  endDate: z.string(),
   imageURL: z.string(),
 });
 

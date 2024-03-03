@@ -1,11 +1,11 @@
 import { createContext } from "react";
 import { type GlobalAppStateActionType } from "~/context/GlobalAppContext/GlobalAppContextReducer";
-import { type OrderType } from "~/types/order.schema";
+import { type GlobalAppStateType } from "~/types/appState.schema";
 
-export interface GlobalAppStateType {
-  orders: OrderType[];
-  theme: "light" | "dark";
-}
+// export interface GlobalAppStateType {
+//   orders: OrderType[];
+//   theme: "light" | "dark";
+// }
 
 export interface IAppContext {
   appState: GlobalAppStateType;

@@ -12,6 +12,7 @@ import { api } from "~/utils/api";
 
 import "~/styles/globals.css";
 import { LOCAL_STORAGE_KEYS } from "../../hardcoded";
+import { GlobalAppStateSchema } from "../types/appState.schema";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -22,9 +23,15 @@ const MyApp: AppType<{ session: Session | null }> = ({
   useEffect(() => {
     const savedAppState = localStorage.getItem(LOCAL_STORAGE_KEYS.shoppingCart);
     if (savedAppState) {
+      const parsedAppState = JSON.parse(savedAppState);
+
+      const validAppState = GlobalAppStateSchema.parse(parsedAppState);
+
+      console.log("validAppState", validAppState);
+
       dispatch({
         type: "SET_STATE_FROM_LOCAL_STORAGE",
-        payload: JSON.parse(savedAppState) as typeof appState,
+        payload: validAppState,
       });
     }
   }, []);

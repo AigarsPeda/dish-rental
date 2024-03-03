@@ -56,8 +56,8 @@ const ShoppingCartDropdown = () => {
                     </div>
                     <div className="flex flex-1 items-end justify-between text-sm">
                       <p className="text-gray-500">
-                        Laiks: {formatDate(order.startDate)} -{" "}
-                        {formatDate(order.endDate)}
+                        Laiks: {formatDate(new Date(order.startDate))} -{" "}
+                        {formatDate(new Date(order.endDate))}
                       </p>
                     </div>
                   </div>

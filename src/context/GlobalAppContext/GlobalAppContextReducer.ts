@@ -1,5 +1,5 @@
 import { LOCAL_STORAGE_KEYS } from "hardcoded";
-import { type GlobalAppStateType } from "~/context/GlobalAppContext/GlobalAppContext";
+import { type GlobalAppStateType } from "~/types/appState.schema";
 import { type OrderType } from "~/types/order.schema";
 
 export type GlobalAppStateActionType =
