@@ -24,7 +24,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
     if (savedAppState) {
       dispatch({
         type: "SET_STATE_FROM_LOCAL_STORAGE",
-        payload: JSON.parse(savedAppState),
+        payload: JSON.parse(savedAppState) as typeof appState,
       });
     }
   }, []);
