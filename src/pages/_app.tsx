@@ -1,7 +1,7 @@
 import { type Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
 import { type AppType } from "next/app";
-import { use, useEffect, useReducer, useState } from "react";
+import { useEffect, useReducer } from "react";
 import NavBar from "~/components/NavBar/NavBar";
 import {
   GlobalAppContext,
@@ -18,14 +18,6 @@ const MyApp: AppType<{ session: Session | null }> = ({
   pageProps: { session, ...pageProps },
 }) => {
   const [appState, dispatch] = useReducer(globalAppReducer, initialAppState);
-
-  // useEffect(() => {
-  //   // save to local storage
-  //   localStorage.setItem(
-  //     LOCAL_STORAGE_KEYS.shoppingCart,
-  //     JSON.stringify(appState),
-  //   );
-  // }, [appState]);
 
   useEffect(() => {
     const savedAppState = localStorage.getItem(LOCAL_STORAGE_KEYS.shoppingCart);
