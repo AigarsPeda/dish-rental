@@ -123,7 +123,7 @@ const PostPage: NextPage = () => {
                     </div>
                   ))}
                 </div>
-                <div className="h-[28rem] w-[28rem]">
+                <div className="h-[22rem] w-[22rem] md:h-[26rem] md:w-[26rem]">
                   <Image
                     priority
                     width={500}
