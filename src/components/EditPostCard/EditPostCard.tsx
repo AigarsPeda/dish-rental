@@ -62,7 +62,7 @@ const EditPostCard: FC<EditPostCardProps> = ({ post }) => {
     });
 
   return (
-    <div className="relative w-full max-w-[22.6rem] rounded-lg border bg-white shadow-sm">
+    <div className="relative w-full rounded-lg border bg-white shadow-sm">
       <div className="p-2">
         <Image
           priority
@@ -79,6 +79,7 @@ const EditPostCard: FC<EditPostCardProps> = ({ post }) => {
             "/images/placeholder.jpeg"
           }
           style={{
+            width: "100%",
             height: "300px",
             objectFit: "cover",
           }}

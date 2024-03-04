@@ -12,6 +12,7 @@ const ProfileDropdown: FC = () => {
   return (
     <>
       <Dropdown
+        isDisableArrow
         isDropdownOpen={isDropdownOpen}
         setIsDropdownOpen={setIsDropdownOpen}
         title={

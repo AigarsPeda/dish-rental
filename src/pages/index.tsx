@@ -84,7 +84,7 @@ const Home: NextPage = () => {
               </div>
             )}
 
-            {!isLoading && data?.length !== 0 ? (
+            {data?.length !== 0 ? (
               data?.map((product) => (
                 <Card key={product.id} product={product} />
               ))

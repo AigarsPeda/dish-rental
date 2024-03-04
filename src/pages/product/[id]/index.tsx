@@ -105,28 +105,41 @@ const PostPage: NextPage = () => {
               <div className="flex flex-col-reverse gap-4 md:flex-row">
                 <div className="flex flex-row gap-4 md:flex-col">
                   {data?.images.map((image) => (
-                    <Image
-                      width={100}
-                      height={100}
-                      key={image.id}
-                      src={image.url}
-                      alt={image.name}
-                      loader={ImageLoader}
-                      className="h-24 w-24 rounded-lg object-cover shadow-lg"
-                    />
+                    <div key={image.id} className="h-24 w-24 overflow-hidden">
+                      <Image
+                        priority
+                        width={100}
+                        height={100}
+                        src={image.url}
+                        alt="dish-rental"
+                        loader={ImageLoader}
+                        className=" rounded-lg shadow-lg"
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                        }}
+                      />
+                    </div>
                   ))}
                 </div>
-                <div>
+                <div className="h-[28rem] w-[28rem]">
                   <Image
+                    priority
                     width={500}
                     height={500}
+                    alt="dish-rental"
                     loader={ImageLoader}
-                    alt={data?.images[0]?.name ?? "Image"}
-                    className="h-full max-h-[28rem] w-[28rem] rounded-lg object-cover shadow-lg"
+                    className="rounded-lg object-cover shadow-lg"
                     src={
                       getTitleImage(data?.images, data?.titleImage)?.url ??
                       "/images/placeholder.jpeg"
                     }
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
                   />
                 </div>
               </div>

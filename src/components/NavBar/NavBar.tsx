@@ -19,9 +19,9 @@ const NavBar: FC = () => {
           Dish rental
         </p>
       </Link>
-      <div className="flex items-center gap-2 text-gray-800">
-        <ShoppingCartDropdown />
+      <div className="flex items-end text-gray-800">
         <ProfileDropdown />
+        <ShoppingCartDropdown />
       </div>
     </div>
   );

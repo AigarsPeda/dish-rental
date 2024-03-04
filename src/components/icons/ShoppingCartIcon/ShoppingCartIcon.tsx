@@ -12,7 +12,7 @@ const ShoppingCartIcon: FC<ShoppingCartIconProps> = ({ size = "sm" }) => {
       className={classNames(
         size === "sm" && "h-5 w-5",
         size === "md" && "h-6 w-6",
-        size === "lg" && "h-7 w-7",
+        size === "lg" && "h-8 w-8",
       )}
       fill="none"
       viewBox="0 0 24 24"

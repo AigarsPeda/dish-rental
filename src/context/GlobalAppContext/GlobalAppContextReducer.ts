@@ -5,6 +5,7 @@ import { type OrderType } from "~/types/order.schema";
 export type GlobalAppStateActionType =
   | SetNameType
   | RemoveNameType
+  | ClearOrdersType
   | SetStateFromLocalStorageType;
 
 const saveStateToLocalStorage = (state: GlobalAppStateType) => {
@@ -44,6 +45,17 @@ const globalAppReducer = (
       return newState;
     }
 
+    case "CLEAR_ORDERS": {
+      const newState = {
+        ...state,
+        orders: [],
+      };
+
+      saveStateToLocalStorage(newState);
+
+      return newState;
+    }
+
     default:
       return state;
   }
@@ -66,4 +78,8 @@ interface RemoveNameType {
 interface SetStateFromLocalStorageType {
   type: "SET_STATE_FROM_LOCAL_STORAGE";
   payload: GlobalAppStateType;
+}
+
+interface ClearOrdersType {
+  type: "CLEAR_ORDERS";
 }
