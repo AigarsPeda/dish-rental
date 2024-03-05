@@ -100,8 +100,8 @@ const PostPage: NextPage = () => {
   }, [isAddedToOrder]);
 
   const variants: Variants = {
-    open: { opacity: 1, x: 0 },
-    closed: { opacity: 0, x: "-100%", position: "absolute" },
+    open: { opacity: 1, y: 0 },
+    closed: { opacity: 0, y: "-100%", position: "absolute" },
   };
 
   return (
@@ -302,8 +302,16 @@ const PostPage: NextPage = () => {
                       "relative flex h-11 w-full items-center justify-center gap-2 overflow-hidden whitespace-nowrap rounded-md bg-gray-800 px-4 py-2 text-gray-50 transition-all",
                     )}
                   >
-                    <ShoppingCartIcon size="sm" />
-                    Ielikt grozā
+                    <motion.div
+                      variants={variants}
+                      initial="closed"
+                      animate={!isAddedToOrder ? "open" : "closed"}
+                      className="absolute flex h-full w-full items-center justify-center gap-2 rounded-md bg-gray-800"
+                    >
+                      <ShoppingCartIcon size="sm" />
+                      Ielikt grozā
+                    </motion.div>
+
                     <motion.div
                       variants={variants}
                       initial="closed"
