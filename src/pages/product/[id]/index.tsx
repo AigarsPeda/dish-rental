@@ -1,10 +1,14 @@
+import { useAutoAnimate } from "@formkit/auto-animate/react";
+import { Variants, motion } from "framer-motion";
 import { ALL_OPTIONS } from "hardcoded";
 import { type NextPage } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
+import { IoCheckmarkSharp } from "react-icons/io5";
 import Datepicker, { DateValueType } from "react-tailwindcss-datepicker";
+import { classNames } from "uploadthing/client";
 import NumberInput from "~/components/NumberInput/NumberInput";
 import PageHead from "~/components/PageHead/PageHead";
 import ShoppingCartIcon from "~/components/icons/ShoppingCartIcon/ShoppingCartIcon";
@@ -23,8 +27,10 @@ export type FormStateType = {
 
 const PostPage: NextPage = () => {
   const router = useRouter();
+  const [parent] = useAutoAnimate();
   const { dispatch } = useContext(GlobalAppContext);
   const [postId, setPostId] = useState<number | null>(null);
+  const [isAddedToOrder, setIsAddedToOrder] = useState(false);
   const { data, isLoading } = api.product.getById.useQuery(
     { id: postId ?? 1 },
     { enabled: postId !== null },
@@ -81,6 +87,22 @@ const PostPage: NextPage = () => {
       }));
     }
   }, [data]);
+
+  useEffect(() => {
+    // reset the added to order state after 2 seconds
+    const timeout = setTimeout(() => {
+      setIsAddedToOrder(false);
+    }, 2000);
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [isAddedToOrder]);
+
+  const variants: Variants = {
+    open: { opacity: 1, x: 0 },
+    closed: { opacity: 0, x: "-100%", position: "absolute" },
+  };
 
   return (
     <>
@@ -249,6 +271,7 @@ const PostPage: NextPage = () => {
                 </div>
                 <div className="mt-6 flex w-full justify-end md:mt-3">
                   <button
+                    ref={parent}
                     onClick={() => {
                       if (data) {
                         const order: OrderType = {
@@ -272,21 +295,24 @@ const PostPage: NextPage = () => {
                           type: "ADD_ORDER_ITEM",
                           payload: order,
                         });
-
-                        // setOrders((prev) => {
-                        //   if (prev.find((o) => o.id === order.id)) {
-                        //     return prev.map((o) =>
-                        //       o.id === order.id ? order : o,
-                        //     );
-                        //   }
-                        //   return [...prev, order];
-                        // });
+                        setIsAddedToOrder(true);
                       }
                     }}
-                    className="flex h-11 w-full items-center justify-center gap-2 whitespace-nowrap rounded-md bg-gray-800 px-4 py-2 text-gray-50"
+                    className={classNames(
+                      "relative flex h-11 w-full items-center justify-center gap-2 overflow-hidden whitespace-nowrap rounded-md bg-gray-800 px-4 py-2 text-gray-50 transition-all",
+                    )}
                   >
                     <ShoppingCartIcon size="sm" />
                     Ielikt grozā
+                    <motion.div
+                      variants={variants}
+                      initial="closed"
+                      animate={isAddedToOrder ? "open" : "closed"}
+                      className="absolute flex h-full w-full items-center justify-center gap-2 rounded-md bg-green-500"
+                    >
+                      <IoCheckmarkSharp className="h-6 w-6" />
+                      <span>Pievienots</span>
+                    </motion.div>
                   </button>
                 </div>
 

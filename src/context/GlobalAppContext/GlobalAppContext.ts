@@ -15,6 +15,7 @@ export interface IAppContext {
 export const initialAppState: GlobalAppStateType = {
   orders: [],
   theme: "light",
+  lastOrderUpdateTime: new Date(),
 };
 
 export const GlobalAppContext = createContext<IAppContext>({

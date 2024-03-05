@@ -16,49 +16,45 @@ const globalAppReducer = (
   state: GlobalAppStateType,
   action: GlobalAppStateActionType,
 ): GlobalAppStateType => {
-  switch (action.type) {
-    case "SET_STATE_FROM_LOCAL_STORAGE": {
-      saveStateToLocalStorage(action.payload);
-      return action.payload;
-    }
+  let newState;
 
-    case "ADD_ORDER_ITEM": {
-      const newsState = {
+  switch (action.type) {
+    case "SET_STATE_FROM_LOCAL_STORAGE":
+      newState = action.payload;
+      break;
+
+    case "ADD_ORDER_ITEM":
+      newState = {
         ...state,
         orders: [...state.orders, action.payload],
       };
+      break;
 
-      saveStateToLocalStorage(newsState);
-
-      return newsState;
-    }
-    case "REMOVE_ORDER_ITEM": {
-      const newState = {
+    case "REMOVE_ORDER_ITEM":
+      newState = {
         ...state,
         orders: state.orders.filter(
           (order) => order.orderId !== action.payload.id,
         ),
       };
+      break;
 
-      saveStateToLocalStorage(newState);
-
-      return newState;
-    }
-
-    case "CLEAR_ORDERS": {
-      const newState = {
+    case "CLEAR_ORDERS":
+      newState = {
         ...state,
         orders: [],
       };
-
-      saveStateToLocalStorage(newState);
-
-      return newState;
-    }
+      break;
 
     default:
       return state;
   }
+
+  // Save state to local storage
+  newState.lastOrderUpdateTime = new Date();
+  saveStateToLocalStorage(newState);
+
+  return newState;
 };
 
 export default globalAppReducer;

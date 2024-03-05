@@ -24,6 +24,7 @@
     "@uploadthing/react": "^6.2.4",
     "dayjs": "^1.11.10",
     "drizzle-orm": "^0.29.3",
+    "framer-motion": "^11.0.8",
     "next": "^14.0.4",
     "next-auth": "^4.24.5",
     "next-sitemap": "^4.2.3",

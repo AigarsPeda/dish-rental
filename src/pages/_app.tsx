@@ -27,6 +27,18 @@ const MyApp: AppType<{ session: Session | null }> = ({
         JSON.parse(savedAppState),
       );
 
+      const { lastOrderUpdateTime } = validAppState;
+
+      // if one hour has passed since the last order update, clear the orders
+      if (
+        lastOrderUpdateTime &&
+        new Date(lastOrderUpdateTime) <
+          new Date(new Date().getTime() - 1 * 60 * 60 * 1000)
+      ) {
+        dispatch({ type: "CLEAR_ORDERS" });
+        return;
+      }
+
       dispatch({
         type: "SET_STATE_FROM_LOCAL_STORAGE",
         payload: validAppState,
