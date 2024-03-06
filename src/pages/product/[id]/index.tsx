@@ -125,7 +125,7 @@ const PostPage: NextPage = () => {
           <div className="flex justify-center">
             <div className="p-4 md:flex">
               <div className="flex flex-col-reverse gap-4 md:flex-row">
-                <div className="flex flex-row gap-4 md:flex-col">
+                <div className="flex flex-row flex-wrap gap-2 md:flex-col md:gap-[1.35rem]">
                   {data?.images.map((image) => (
                     <div key={image.id} className="h-24 w-24 overflow-hidden">
                       <Image
@@ -145,7 +145,7 @@ const PostPage: NextPage = () => {
                     </div>
                   ))}
                 </div>
-                <div className="h-[22rem] w-[22rem] md:h-[26rem] md:w-[26rem]">
+                <div className="h-[22rem] w-[22rem] md:h-[28rem] md:w-[28rem]">
                   <Image
                     priority
                     width={500}

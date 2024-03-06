@@ -365,7 +365,7 @@ const NewPost: NextPage = () => {
                     </div>
                     <div>
                       <p className="mt-1 text-sm leading-6 text-gray-400">
-                        JPG līdz 2MB. Maksimums 4 attēli.
+                        JPG līdz 4.5MB. Maksimums 4 attēli.
                       </p>
                     </div>
                   </div>

@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { ImageDataType } from "~/types/product.schema";
 import { useUploadThing } from "~/utils/uploadthing";
+import Compressor from "compressorjs";
 
-const TWO_MB = 2 * 1024 * 1024;
+const FOUR_AND_HALF_MB = 4.5 * 1024 * 1024;
 
 export type InputStatus = "Idle" | "Loading" | "Error" | "Success";
 export type FileErrorType =
@@ -33,7 +34,7 @@ const useImageUploadThing = () => {
   const checkFiles = (files: File[]) => {
     for (const file of files) {
       // check if the file is larger than 2MB
-      if (file.size > TWO_MB) {
+      if (file.size > FOUR_AND_HALF_MB) {
         setFileError("fileSize");
         return;
       }
@@ -51,11 +52,34 @@ const useImageUploadThing = () => {
     }
   };
 
-  const handelStartUpload = (images: File[]) => {
+  const handelStartUpload = async (images: File[]) => {
     if (inputStatus === "Loading" ?? images.length === 0) return;
 
-    setInputStatus("Loading");
-    void startUpload(images);
+    try {
+      const compressedImages = await Promise.all(images.map(compressImage));
+      setInputStatus("Loading");
+      void startUpload(compressedImages);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const compressImage = (image: File) => {
+    return new Promise<File>((resolve, reject) => {
+      new Compressor(image, {
+        quality: 0.6,
+        maxWidth: 1920,
+        success(result) {
+          const compressedFile = new File([result], image.name, {
+            type: image.type,
+          });
+          resolve(compressedFile);
+        },
+        error(err) {
+          reject(err);
+        },
+      });
+    });
   };
 
   useEffect(() => {

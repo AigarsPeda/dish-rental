@@ -22,7 +22,7 @@ const ProfileDropdown: FC = () => {
               name={sessionData.user?.name ?? "n/a"}
             />
           ) : (
-            "Ielogoties"
+            <p>Ielogoties</p>
           )
         }
       >

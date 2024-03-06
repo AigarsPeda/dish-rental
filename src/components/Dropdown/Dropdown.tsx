@@ -25,7 +25,7 @@ const Dropdown: FC<DropdownProps> = ({
   const { shouldRender, isAnimation } = useDelayUnmount(isDropdownOpen, 100);
 
   return (
-    <div className="relative inline-block text-left" ref={dropdownRef}>
+    <div className="relative text-left" ref={dropdownRef}>
       <div>
         <button
           type="button"

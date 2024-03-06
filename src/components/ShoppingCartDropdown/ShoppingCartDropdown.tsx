@@ -35,7 +35,7 @@ const ShoppingCartDropdown = () => {
           <div className="relative">
             <ShoppingCartIcon size="lg" />
             {appState?.orders?.length > 0 && (
-              <div className="absolute right-0 top-0 -mr-1 -mt-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-xs text-white">
+              <div className="absolute right-0 top-0 -mr-1 -mt-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 p-0.5 text-xs text-white">
                 {appState.orders?.length}
               </div>
             )}
