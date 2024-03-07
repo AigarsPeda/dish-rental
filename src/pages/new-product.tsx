@@ -38,7 +38,6 @@ const NewPost: NextPage = () => {
   const [isFormLoading, setIsFormLoading] = useState(false);
   const [isNeedToSignIn, setIsNeedToSignIn] = useState(false);
   const [isShowErrorMessage, setIsShowErrorMessage] = useState(false);
-
   const { response, fileError, checkFiles, inputStatus, handelStartUpload } =
     useImageUploadThing();
   const { mutate } = api.product.create.useMutation({
@@ -288,6 +287,18 @@ const NewPost: NextPage = () => {
                     <div className="mt-4">
                       <Datepicker
                         displayFormat={"DD/MM/YYYY"}
+                        // disabledDates={[
+                        //   {
+                        //     startDate: new Date(
+                        //       new Date().setDate(new Date().getDate() - 1),
+                        //     ),
+                        //     endDate: new Date(
+                        //       new Date().setFullYear(
+                        //         new Date().getFullYear() - 20,
+                        //       ),
+                        //     ),
+                        //   },
+                        // ]}
                         value={formsSate.availableDates}
                         onChange={(newValue) => {
                           setFormsState({

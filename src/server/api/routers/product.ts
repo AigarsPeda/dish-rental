@@ -95,6 +95,9 @@ export const productRouter = createTRPCRouter({
                 gte(product.availableDatesEnd, endDate),
               ),
             );
+          } else {
+            const now = new Date().getTime();
+            whereConditions.push(gte(product.availableDatesEnd, now));
           }
 
           if (input.category && input.category?.length > 0) {
