@@ -1,4 +1,4 @@
-import { arrayContains, eq } from "drizzle-orm";
+import { arrayContains, eq, gte } from "drizzle-orm";
 import { z } from "zod";
 import {
   createTRPCRouter,
@@ -81,8 +81,15 @@ export const productRouter = createTRPCRouter({
         availableDatesEnd: z.date().optional(),
       }),
     )
-    .query(({ ctx, input }) => {
-      return ctx.db.query.product.findMany({
+    .query(async ({ ctx, input }) => {
+      const now = new Date().getTime();
+      // Set all products that are not published and are past their available date to unpublished
+      await ctx.db
+        .update(product)
+        .set({ isPublished: false })
+        .where(gte(product.availableDatesEnd, now));
+
+      ctx.db.query.product.findMany({
         where: (product, { eq, gte, lte, and }) => {
           const whereConditions = [];
 
@@ -95,10 +102,11 @@ export const productRouter = createTRPCRouter({
                 gte(product.availableDatesEnd, endDate),
               ),
             );
-          } else {
-            const now = new Date().getTime();
-            whereConditions.push(gte(product.availableDatesEnd, now));
           }
+          // else {
+          //   const now = new Date().getTime();
+          //   whereConditions.push(gte(product.availableDatesEnd, now));
+          // }
 
           if (input.category && input.category?.length > 0) {
             whereConditions.push(
@@ -111,11 +119,49 @@ export const productRouter = createTRPCRouter({
           // Combining all conditions with AND
           return and(...whereConditions);
         },
+
+        // orderBy: (product, { desc }) => [desc(product.createdAt)],
+        with: {
+          images: true,
+        },
+      });
+
+      const products = ctx.db.query.product.findMany({
+        where: (product, { eq, gte, lte, and }) => {
+          const whereConditions = [];
+
+          // if (input.availableDatesStart && input.availableDatesEnd) {
+          //   const start = input.availableDatesStart?.getTime();
+          //   const endDate = input.availableDatesEnd?.getTime();
+          //   whereConditions.push(
+          //     and(
+          //       lte(product.availableDatesStart, start),
+          //       gte(product.availableDatesEnd, endDate),
+          //     ),
+          //   );
+          // } else {
+          //   const now = new Date().getTime();
+          //   whereConditions.push(gte(product.availableDatesEnd, now));
+          // }
+
+          // if (input.category && input.category?.length > 0) {
+          //   whereConditions.push(
+          //     arrayContains(product.categories, input.category),
+          //   );
+          // }
+
+          whereConditions.push(eq(product.isPublished, true));
+
+          // Combining all conditions with AND
+          return and(...whereConditions);
+        },
         orderBy: (product, { desc }) => [desc(product.createdAt)],
         with: {
           images: true,
         },
       });
+
+      return products;
     }),
 
   getLatest: publicProcedure.query(({ ctx }) => {
