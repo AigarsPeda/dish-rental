@@ -89,7 +89,7 @@ export const productRouter = createTRPCRouter({
         .set({ isPublished: false })
         .where(gte(product.availableDatesEnd, now));
 
-      ctx.db.query.product.findMany({
+      await ctx.db.query.product.findMany({
         where: (product, { eq, gte, lte, and }) => {
           const whereConditions = [];
 
