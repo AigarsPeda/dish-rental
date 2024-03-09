@@ -147,6 +147,40 @@ export const productRouter = createTRPCRouter({
       return `updated post: ${input.id}`;
     }),
 
+  updateProduct: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+        name: z.string().optional(),
+        price: z.number().optional(),
+        titleImage: z.string().optional(),
+        description: z.string().optional(),
+        isPublished: z.boolean().optional(),
+        availablePieces: z.number().optional(),
+        availableDatesEnd: z.date().optional(),
+        availableDatesStart: z.date().optional(),
+        categories: z.array(z.string()).optional(),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      await ctx.db
+        .update(product)
+        .set({
+          name: input.name,
+          price: input.price,
+          categories: input.categories,
+          titleImage: input.titleImage,
+          isPublished: input.isPublished,
+          description: input.description,
+          availablePieces: input.availablePieces,
+          availableDatesEnd: input.availableDatesEnd?.getTime(),
+          availableDatesStart: input.availableDatesStart?.getTime(),
+        })
+        .where(eq(product.id, input.id));
+
+      return `updated post: ${input.id}`;
+    }),
+
   changeTitleImage: protectedProcedure
     .input(z.object({ id: z.number(), imageName: z.string() }))
     .mutation(async ({ input, ctx }) => {

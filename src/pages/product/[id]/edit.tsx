@@ -29,12 +29,44 @@ const EditPage: NextPage = () => {
     { enabled: postId !== null },
   );
 
+  const [formData, setFormData] = useState({
+    name: data?.name,
+    price: data?.price,
+    categories: data?.categories,
+    titleImage: data?.titleImage,
+    isPublished: data?.isPublished,
+    description: data?.description,
+    imagesData: data?.images ?? [],
+    availablePieces: data?.availablePieces,
+    availableDatesStart: data?.availableDatesStart,
+    availableDatesEnd: data?.availableDatesEnd,
+  });
+
+  const { mutate } = api.product.updateProduct.useMutation();
+
   useEffect(() => {
     if (router.query.id && typeof router.query.id === "string") {
       const id = parseInt(router.query.id, 10);
       setPostId(id);
     }
   }, [router.query.id]);
+
+  useEffect(() => {
+    if (data) {
+      setFormData({
+        price: data.price,
+        name: data.name ?? "",
+        imagesData: data.images,
+        titleImage: data.titleImage,
+        isPublished: data.isPublished,
+        categories: data.categories ?? [],
+        description: data.description ?? "",
+        availablePieces: data.availablePieces,
+        availableDatesStart: data.availableDatesStart,
+        availableDatesEnd: data.availableDatesEnd,
+      });
+    }
+  }, [data]);
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -66,8 +98,13 @@ const EditPage: NextPage = () => {
                     <div className="sm:col-span-6">
                       <TextInput
                         name="Nosaukums"
-                        value={data?.name ?? ""}
-                        onChange={(e) => console.log(e)}
+                        value={formData?.name ?? ""}
+                        onChange={(str) => {
+                          setFormData((state) => ({
+                            ...state,
+                            name: str,
+                          }));
+                        }}
                       />
                     </div>
                     <div className="sm:col-span-6">
@@ -79,10 +116,13 @@ const EditPage: NextPage = () => {
                       </label>
                       <MultiSelect
                         id="product-category"
-                        selected={data?.categories ?? []}
+                        selected={formData?.categories ?? []}
                         options={ALL_OPTIONS}
                         setSelected={(strArray) => {
-                          console.log(strArray);
+                          setFormData((state) => ({
+                            ...state,
+                            categories: strArray,
+                          }));
                         }}
                       />
                       <p className="mt-1 text-sm leading-6 text-gray-400">
@@ -99,8 +139,13 @@ const EditPage: NextPage = () => {
                       </label>
                       <div className="mt-2">
                         <Textarea
-                          value={data?.description ?? ""}
-                          onChange={(str) => console.log(str)}
+                          value={formData?.description ?? ""}
+                          onChange={(str) => {
+                            setFormData((state) => ({
+                              ...state,
+                              description: str,
+                            }));
+                          }}
                         />
                       </div>
                       <p className="mt-1 text-sm leading-6 text-gray-400">
@@ -118,9 +163,12 @@ const EditPage: NextPage = () => {
                         <NumberInput
                           isDecimal
                           id="product-price"
-                          value={data?.price ?? 0}
+                          value={formData?.price ?? 0}
                           onChange={(value) => {
-                            console.log(value);
+                            setFormData((state) => ({
+                              ...state,
+                              price: value,
+                            }));
                           }}
                         />
                       </div>
@@ -136,9 +184,12 @@ const EditPage: NextPage = () => {
                       <div className="mt-2">
                         <NumberInput
                           id="product-available-pieces"
-                          value={data?.availablePieces ?? 0}
+                          value={formData?.availablePieces ?? 0}
                           onChange={(value) => {
-                            console.log(value);
+                            setFormData((state) => ({
+                              ...state,
+                              availablePieces: value,
+                            }));
                           }}
                         />
                       </div>
@@ -153,9 +204,12 @@ const EditPage: NextPage = () => {
                       </label>
                       <div className="mt-4">
                         <Toggle
-                          isChecked={data?.isPublished ?? false}
+                          isChecked={formData?.isPublished ?? false}
                           handleChange={() => {
-                            console.log("toggle");
+                            setFormData((state) => ({
+                              ...state,
+                              isPublished: !state.isPublished,
+                            }));
                           }}
                         />
                       </div>
@@ -173,12 +227,22 @@ const EditPage: NextPage = () => {
                           displayFormat={"DD/MM/YYYY"}
                           value={{
                             startDate: new Date(
-                              data?.availableDatesStart ?? "",
+                              formData?.availableDatesStart ?? "",
                             ),
-                            endDate: new Date(data?.availableDatesEnd ?? ""),
+                            endDate: new Date(
+                              formData?.availableDatesEnd ?? "",
+                            ),
                           }}
                           onChange={(newValue) => {
-                            console.log(newValue);
+                            setFormData((state) => ({
+                              ...state,
+                              availableDatesStart: new Date(
+                                newValue?.startDate ?? "",
+                              ).getTime(),
+                              availableDatesEnd: new Date(
+                                newValue?.endDate ?? "",
+                              ).getTime(),
+                            }));
                           }}
                         />
                       </div>
@@ -195,12 +259,12 @@ const EditPage: NextPage = () => {
                       </div>
                       <div className="flex justify-center gap-2">
                         <div className="flex flex-wrap justify-center gap-2">
-                          {data?.images.map((file) => (
+                          {formData?.imagesData?.map((file) => (
                             <button
                               type="button"
                               key={file.name}
                               className={classNames(
-                                file.name === data?.titleImage &&
+                                file.name === formData?.titleImage &&
                                   "ring-2 ring-gray-900",
                                 "relative h-20 w-20 overflow-hidden rounded-md transition-all hover:ring-2 hover:ring-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900",
                               )}
@@ -220,7 +284,7 @@ const EditPage: NextPage = () => {
                                   objectFit: "cover",
                                 }}
                               />
-                              {file.name === data?.titleImage && (
+                              {file.name === formData?.titleImage && (
                                 <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-25">
                                   <p className="text-xs font-semibold text-white">
                                     Titulbilde
