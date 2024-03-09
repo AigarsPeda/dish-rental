@@ -16,6 +16,7 @@ import useImageUploadThing from "~/hooks/useImageUploadThing";
 import ImageLoader from "~/utils/ImageLoader";
 import { api } from "~/utils/api";
 import classNames from "~/utils/classNames";
+import { formatDate } from "../../../utils/dateUtils";
 
 const EditPage: NextPage = () => {
   const router = useRouter();
