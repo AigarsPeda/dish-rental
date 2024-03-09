@@ -171,8 +171,10 @@ const EditPage: NextPage = () => {
                         <Datepicker
                           displayFormat={"DD/MM/YYYY"}
                           value={{
-                            startDate: new Date(),
-                            endDate: new Date(),
+                            startDate: new Date(
+                              data?.availableDatesStart ?? "",
+                            ),
+                            endDate: new Date(data?.availableDatesEnd ?? ""),
                           }}
                           onChange={(newValue) => {
                             console.log(newValue);

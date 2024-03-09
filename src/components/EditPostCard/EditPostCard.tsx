@@ -61,6 +61,10 @@ const EditPostCard: FC<EditPostCardProps> = ({ post }) => {
       },
     });
 
+  const isAvailabilityExpired = (endDate: number | null | undefined) => {
+    return endDate && new Date(endDate).getTime() < new Date().getTime();
+  };
+
   return (
     <div className="relative w-full rounded-lg border bg-white shadow-sm">
       <div className="p-2">
@@ -124,14 +128,20 @@ const EditPostCard: FC<EditPostCardProps> = ({ post }) => {
       <div className="px-2 py-3">
         <p className="text-3xl font-bold text-gray-900">{post.name}</p>
         <div className="mt-2.5 flex flex-wrap items-center justify-between transition-all">
-          <div className="mt-4 flex w-full justify-between gap-4">
-            <Toggle
-              label="Publicēts"
-              isChecked={post.isPublished}
-              handleChange={() => {
-                void mutate({ id: post.id, isPublished: !post.isPublished });
-              }}
-            />
+          <div className="mt-4 flex w-full items-center justify-between gap-4">
+            {isAvailabilityExpired(post?.availableDatesEnd) ? (
+              <p className="text-sm font-semibold text-red-500">
+                Pieejamības termiņš beidzies
+              </p>
+            ) : (
+              <Toggle
+                label="Publicēts"
+                isChecked={post.isPublished}
+                handleChange={() => {
+                  void mutate({ id: post.id, isPublished: !post.isPublished });
+                }}
+              />
+            )}
             <Link
               href={{
                 pathname: `/product/${post.id}/edit`,
