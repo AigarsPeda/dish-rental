@@ -136,7 +136,7 @@ const EditPage: NextPage = () => {
                     <div className="sm:col-span-6">
                       <TextInput
                         name="Nosaukums"
-                        value={data?.name ?? ""}
+                        value={formData?.name ?? ""}
                         onChange={(str) => {
                           setFormData((state) => ({
                             ...state,
@@ -351,8 +351,8 @@ const EditPage: NextPage = () => {
                   </div>
                 </div>
               </div>
-
-              <div className=" flex items-center justify-end gap-x-6">
+              <div className="h-10 w-full"></div>
+              <div className="flex items-center justify-end gap-x-6">
                 <button
                   type="button"
                   className="text-sm font-semibold leading-6 text-gray-900"
