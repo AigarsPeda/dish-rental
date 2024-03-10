@@ -157,8 +157,8 @@ export const productRouter = createTRPCRouter({
         description: z.string().optional(),
         isPublished: z.boolean().optional(),
         availablePieces: z.number().optional(),
-        availableDatesEnd: z.date().optional(),
-        availableDatesStart: z.date().optional(),
+        availableDatesEnd: z.number().optional(),
+        availableDatesStart: z.number().optional(),
         categories: z.array(z.string()).optional(),
       }),
     )
@@ -173,8 +173,8 @@ export const productRouter = createTRPCRouter({
           isPublished: input.isPublished,
           description: input.description,
           availablePieces: input.availablePieces,
-          availableDatesEnd: input.availableDatesEnd?.getTime(),
-          availableDatesStart: input.availableDatesStart?.getTime(),
+          availableDatesEnd: input.availableDatesEnd,
+          availableDatesStart: input.availableDatesStart,
         })
         .where(eq(product.id, input.id));
 

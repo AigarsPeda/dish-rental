@@ -1,14 +1,15 @@
+import { type Variants, motion } from "framer-motion";
 import { ALL_OPTIONS } from "hardcoded";
 import { type NextPage } from "next";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { IoCheckmarkSharp, IoHammerOutline } from "react-icons/io5";
 import Datepicker from "react-tailwindcss-datepicker";
 import DropZone from "~/components/DropZone/DropZone";
 import MultiSelect from "~/components/MultiSelect/MultiSelect";
 import NumberInput from "~/components/NumberInput/NumberInput";
 import PageHead from "~/components/PageHead/PageHead";
-import Spinner from "~/components/Spinner/Spinner";
 import TextInput from "~/components/TextInput/TextInput";
 import Textarea from "~/components/Textarea/Textarea";
 import Toggle from "~/components/Toggle/Toggle";
@@ -16,10 +17,12 @@ import useImageUploadThing from "~/hooks/useImageUploadThing";
 import ImageLoader from "~/utils/ImageLoader";
 import { api } from "~/utils/api";
 import classNames from "~/utils/classNames";
-import { formatDate } from "../../../utils/dateUtils";
+
+type ChangingStatus = "idle" | "changing" | "changed" | "error";
 
 const EditPage: NextPage = () => {
   const router = useRouter();
+  const [changingStatus, setChangingStatus] = useState<ChangingStatus>("idle");
   const [images, setImages] = useState<File[]>([]);
   const [postId, setPostId] = useState<number | null>(null);
   const { response, fileError, checkFiles, inputStatus, handelStartUpload } =
@@ -42,7 +45,16 @@ const EditPage: NextPage = () => {
     availableDatesEnd: data?.availableDatesEnd,
   });
 
-  const { mutate } = api.product.updateProduct.useMutation();
+  const { mutate } = api.product.updateProduct.useMutation({
+    onSuccess: () => {
+      // setIsChanging(false);
+      setChangingStatus("changed");
+    },
+    onMutate: () => {
+      // setIsChanging(true);
+      setChangingStatus("changing");
+    },
+  });
 
   useEffect(() => {
     if (router.query.id && typeof router.query.id === "string") {
@@ -55,12 +67,12 @@ const EditPage: NextPage = () => {
     if (data) {
       setFormData({
         price: data.price,
-        name: data.name ?? "",
+        name: data.name,
         imagesData: data.images,
         titleImage: data.titleImage,
         isPublished: data.isPublished,
-        categories: data.categories ?? [],
-        description: data.description ?? "",
+        categories: data.categories,
+        description: data.description,
         availablePieces: data.availablePieces,
         availableDatesStart: data.availableDatesStart,
         availableDatesEnd: data.availableDatesEnd,
@@ -68,9 +80,23 @@ const EditPage: NextPage = () => {
     }
   }, [data]);
 
+  useEffect(() => {
+    if (changingStatus === "changed") {
+      const timeout = setTimeout(() => {
+        setChangingStatus("idle");
+      }, 2000);
+      return () => clearTimeout(timeout);
+    }
+  }, [changingStatus]);
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
+
+  const variants: Variants = {
+    open: { opacity: 1, y: 0 },
+    closed: { opacity: 0, y: "-100%", position: "absolute" },
+  };
 
   return (
     <>
@@ -86,6 +112,18 @@ const EditPage: NextPage = () => {
               className="mx-auto mt-4 w-full max-w-xl px-2 pb-10"
               onSubmit={(e) => {
                 e.preventDefault();
+                mutate({
+                  id: postId ?? 1,
+                  name: formData.name ?? "",
+                  price: formData.price ?? 0,
+                  isPublished: formData.isPublished,
+                  titleImage: formData.titleImage ?? "",
+                  categories: formData.categories ?? [],
+                  description: formData.description ?? "",
+                  availablePieces: formData.availablePieces,
+                  availableDatesEnd: formData.availableDatesEnd,
+                  availableDatesStart: formData.availableDatesStart,
+                });
               }}
             >
               <div className="w-full space-y-12">
@@ -98,7 +136,7 @@ const EditPage: NextPage = () => {
                     <div className="sm:col-span-6">
                       <TextInput
                         name="Nosaukums"
-                        value={formData?.name ?? ""}
+                        value={data?.name ?? ""}
                         onChange={(str) => {
                           setFormData((state) => ({
                             ...state,
@@ -324,7 +362,7 @@ const EditPage: NextPage = () => {
                 >
                   Atcelt
                 </button>
-                <button
+                {/* <button
                   type="submit"
                   className={classNames(
                     isLoading
@@ -334,32 +372,48 @@ const EditPage: NextPage = () => {
                   )}
                 >
                   {isLoading ? <Spinner size="sm" /> : "Izveidot"}
+                </button> */}
+                <button
+                  type="submit"
+                  className={classNames(
+                    "relative flex h-11 w-40 items-center justify-center gap-2 overflow-hidden whitespace-nowrap rounded-md bg-gray-800 px-4 py-2 text-gray-50 transition-all",
+                  )}
+                >
+                  <motion.div
+                    variants={variants}
+                    initial="closed"
+                    animate={changingStatus === "idle" ? "open" : "closed"}
+                    className="absolute flex h-full w-full items-center justify-center gap-2 rounded-md bg-gray-800"
+                  >
+                    <span>Labot</span>
+                  </motion.div>
+
+                  <motion.div
+                    variants={variants}
+                    initial="closed"
+                    animate={changingStatus === "changing" ? "open" : "closed"}
+                    className="absolute flex h-full w-full items-center justify-center gap-2 rounded-md bg-yellow-500"
+                  >
+                    <IoHammerOutline className="h-6 w-6" />
+
+                    <span>Labo...</span>
+                  </motion.div>
+
+                  <motion.div
+                    variants={variants}
+                    initial="closed"
+                    animate={changingStatus === "changed" ? "open" : "closed"}
+                    className="absolute flex h-full w-full items-center justify-center gap-2 rounded-md bg-green-500"
+                  >
+                    <IoCheckmarkSharp className="h-6 w-6" />
+
+                    <span>Izlabots</span>
+                  </motion.div>
                 </button>
               </div>
             </form>
           </div>
         </main>
-        {/* <h1 className="px-4 text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
-          Labot sludinājumu
-        </h1>
-        <div className="flex w-full items-center justify-center text-center">
-          <form
-            className="mx-auto mt-4 max-w-xl px-2 pb-10"
-            onSubmit={(e) => {
-              e.preventDefault();
-            }}
-          >
-            <div className="space-y-12">
-              <div className="border-b border-gray-900/10 pb-12">
-                <TextInput
-                  name="Nosaukums"
-                  value={data?.name ?? ""}
-                  onChange={(e) => console.log(e)}
-                />
-              </div>
-            </div>
-          </form>
-        </div> */}
       </main>
     </>
   );
