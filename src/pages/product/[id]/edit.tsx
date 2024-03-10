@@ -41,8 +41,8 @@ const EditPage: NextPage = () => {
     description: data?.description,
     imagesData: data?.images ?? [],
     availablePieces: data?.availablePieces,
-    availableDatesStart: data?.availableDatesStart,
     availableDatesEnd: data?.availableDatesEnd,
+    availableDatesStart: data?.availableDatesStart,
   });
 
   const { mutate } = api.product.updateProduct.useMutation({
@@ -307,7 +307,10 @@ const EditPage: NextPage = () => {
                                 "relative h-20 w-20 overflow-hidden rounded-md transition-all hover:ring-2 hover:ring-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900",
                               )}
                               onClick={() => {
-                                console.log("set title image");
+                                setFormData((state) => ({
+                                  ...state,
+                                  titleImage: file.name,
+                                }));
                               }}
                             >
                               <Image
@@ -362,17 +365,6 @@ const EditPage: NextPage = () => {
                 >
                   Atcelt
                 </button>
-                {/* <button
-                  type="submit"
-                  className={classNames(
-                    isLoading
-                      ? "cursor-not-allowed"
-                      : "cursor-pointer hover:bg-gray-500",
-                    "relative rounded-md bg-gray-900 px-6 py-2 text-sm font-semibold text-white shadow-sm  focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600",
-                  )}
-                >
-                  {isLoading ? <Spinner size="sm" /> : "Izveidot"}
-                </button> */}
                 <button
                   type="submit"
                   className={classNames(
