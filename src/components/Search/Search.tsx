@@ -2,9 +2,9 @@ import { ALL_OPTIONS } from "hardcoded";
 import { useRouter } from "next/router";
 import { type FC } from "react";
 import Datepicker from "react-tailwindcss-datepicker";
-import { classNames } from "uploadthing/client";
 import MultiSelect from "~/components/MultiSelect/MultiSelect";
 import { FormStateType } from "~/pages";
+import classNames from "~/utils/classNames";
 
 interface SearchProps {
   formsSate: FormStateType;

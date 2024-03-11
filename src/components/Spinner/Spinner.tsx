@@ -1,5 +1,5 @@
 import { type FC } from "react";
-import { classNames } from "uploadthing/client";
+import classNames from "~/utils/classNames";
 
 interface SpinnerProps {
   size?: "sm" | "md" | "lg";
