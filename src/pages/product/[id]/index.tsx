@@ -8,7 +8,6 @@ import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
 import { IoCheckmarkSharp } from "react-icons/io5";
 import Datepicker, { DateValueType } from "react-tailwindcss-datepicker";
-import { classNames } from "uploadthing/client";
 import NumberInput from "~/components/NumberInput/NumberInput";
 import PageHead from "~/components/PageHead/PageHead";
 import ShoppingCartIcon from "~/components/icons/ShoppingCartIcon/ShoppingCartIcon";
@@ -16,6 +15,7 @@ import { GlobalAppContext } from "~/context/GlobalAppContext/GlobalAppContext";
 import { type OrderType } from "~/types/order.schema";
 import ImageLoader from "~/utils/ImageLoader";
 import { api } from "~/utils/api";
+import classNames from "~/utils/classNames";
 import { formatDate } from "~/utils/dateUtils";
 import getTitleImage from "~/utils/getTitleImage";
 

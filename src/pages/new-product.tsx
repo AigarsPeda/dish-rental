@@ -4,7 +4,6 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import Datepicker, { type DateValueType } from "react-tailwindcss-datepicker";
-import { classNames } from "uploadthing/client";
 import DropZone from "~/components/DropZone/DropZone";
 import MultiSelect from "~/components/MultiSelect/MultiSelect";
 import NumberInput from "~/components/NumberInput/NumberInput";
@@ -19,6 +18,7 @@ import useLocalStorage from "~/hooks/useLocalStorage";
 import useRedirect from "~/hooks/useRedirect";
 import ImageLoader from "~/utils/ImageLoader";
 import { api } from "~/utils/api";
+import classNames from "~/utils/classNames";
 
 type FormStateType = {
   name: string;
@@ -360,6 +360,7 @@ const NewPost: NextPage = () => {
                         ))}
                       </div>
                       <DropZone
+                        isMultiple
                         images={images}
                         fileError={fileError}
                         checkFiles={checkFiles}

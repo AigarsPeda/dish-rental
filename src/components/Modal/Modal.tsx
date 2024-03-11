@@ -1,8 +1,8 @@
 import { useRef, type FC, type ReactNode } from "react";
 import { IoClose } from "react-icons/io5";
-import { classNames } from "uploadthing/client";
 import useDelayUnmount from "~/hooks/useDelayUnmount";
 import useOnClickOutside from "~/hooks/useOnClickOutside";
+import classNames from "~/utils/classNames";
 
 interface ModalProps {
   title?: string;

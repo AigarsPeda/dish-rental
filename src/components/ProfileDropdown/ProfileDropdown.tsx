@@ -1,9 +1,9 @@
 import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useState, type FC } from "react";
-import { classNames } from "uploadthing/client";
 import Dropdown from "~/components/Dropdown/Dropdown";
 import ProfileAvatar from "~/components/ProfileDropdown/ProfileAvatar";
+import classNames from "~/utils/classNames";
 
 const ProfileDropdown: FC = () => {
   const { data: sessionData } = useSession();

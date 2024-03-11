@@ -160,9 +160,14 @@ export const productRouter = createTRPCRouter({
         availableDatesEnd: z.number().optional(),
         availableDatesStart: z.number().optional(),
         categories: z.array(z.string()).optional(),
+        imagesToDelete: z.array(z.string()).optional(),
       }),
     )
     .mutation(async ({ input, ctx }) => {
+      // if (input.imagesToDelete && input.imagesToDelete.length > 0) {
+      //   await utapi.deleteFiles(input.imagesToDelete);
+      // }
+
       await ctx.db
         .update(product)
         .set({
@@ -199,11 +204,10 @@ export const productRouter = createTRPCRouter({
       const titleImage = post.images.find(
         (image) => image.name === input.imageName,
       );
+
       if (!titleImage) {
         throw new Error("image not found");
       }
-
-      // const titleImage = post.images[0].id;
 
       await ctx.db
         .update(product)
@@ -224,9 +228,9 @@ export const productRouter = createTRPCRouter({
   }),
 
   deleteImage: protectedProcedure
-    .input(z.string())
+    .input(z.object({ imageName: z.array(z.string()) }))
     .mutation(async ({ input }) => {
-      await utapi.deleteFiles(input);
+      await utapi.deleteFiles(input.imageName);
       return `deleted image: ${input}`;
     }),
 });

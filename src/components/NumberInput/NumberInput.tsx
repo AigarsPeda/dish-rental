@@ -1,12 +1,11 @@
 import { type FC } from "react";
-import { classNames } from "uploadthing/client";
+import classNames from "~/utils/classNames";
 
 interface NumberInputProps {
   id: string;
   value: number;
-  // isGray?: boolean;
-  bgColor?: "gray" | "white";
   isDecimal?: boolean;
+  bgColor?: "gray" | "white";
   onChange: (value: number) => void;
 }
 

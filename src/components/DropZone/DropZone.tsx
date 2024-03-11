@@ -1,14 +1,15 @@
 import { type FC } from "react";
 import { IoAdd, IoCheckmarkSharp } from "react-icons/io5";
 import Spinner from "src/components/Spinner/Spinner";
-import { classNames } from "uploadthing/client";
 import {
   type FileErrorType,
   type InputStatus,
 } from "~/hooks/useImageUploadThing";
+import classNames from "~/utils/classNames";
 
 interface DropZoneProps {
   images: File[];
+  isMultiple?: boolean;
   fileError: FileErrorType;
   inputStatus: InputStatus;
   handleStartUpload?: () => void;
@@ -19,6 +20,7 @@ interface DropZoneProps {
 const DropZone: FC<DropZoneProps> = ({
   images,
   fileError,
+  isMultiple,
   inputStatus,
   checkFiles,
   handelFileUpload,
@@ -45,10 +47,10 @@ const DropZone: FC<DropZoneProps> = ({
               )}
 
               <input
-                multiple
                 type="file"
                 id="cover-photo"
                 name="cover-photo"
+                multiple={isMultiple}
                 disabled={inputStatus === "Loading"}
                 onDrop={(e) => {
                   e.preventDefault();

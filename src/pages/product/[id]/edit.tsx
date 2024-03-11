@@ -1,10 +1,15 @@
-import { type Variants, motion } from "framer-motion";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
+import { motion, type Variants } from "framer-motion";
 import { ALL_OPTIONS } from "hardcoded";
 import { type NextPage } from "next";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { IoCheckmarkSharp, IoHammerOutline } from "react-icons/io5";
+import {
+  IoCheckmarkSharp,
+  IoHammerOutline,
+  IoTrashOutline,
+} from "react-icons/io5";
 import Datepicker from "react-tailwindcss-datepicker";
 import DropZone from "~/components/DropZone/DropZone";
 import MultiSelect from "~/components/MultiSelect/MultiSelect";
@@ -14,16 +19,32 @@ import TextInput from "~/components/TextInput/TextInput";
 import Textarea from "~/components/Textarea/Textarea";
 import Toggle from "~/components/Toggle/Toggle";
 import useImageUploadThing from "~/hooks/useImageUploadThing";
+import { type ImageDataType } from "~/types/product.schema";
 import ImageLoader from "~/utils/ImageLoader";
 import { api } from "~/utils/api";
 import classNames from "~/utils/classNames";
+
+type FormDataType = {
+  name: string;
+  price: number;
+  titleImage: string;
+  description: string;
+  isPublished: boolean;
+  categories: string[];
+  availablePieces: number;
+  availableDatesEnd: number;
+  availableDatesStart: number;
+  imagesData: ImageDataType[];
+  imagesToDelete: ImageDataType[];
+  newImages: File[];
+};
 
 type ChangingStatus = "idle" | "changing" | "changed" | "error";
 
 const EditPage: NextPage = () => {
   const router = useRouter();
+  const [parent] = useAutoAnimate();
   const [changingStatus, setChangingStatus] = useState<ChangingStatus>("idle");
-  const [images, setImages] = useState<File[]>([]);
   const [postId, setPostId] = useState<number | null>(null);
   const { response, fileError, checkFiles, inputStatus, handelStartUpload } =
     useImageUploadThing();
@@ -32,26 +53,26 @@ const EditPage: NextPage = () => {
     { enabled: postId !== null },
   );
 
-  const [formData, setFormData] = useState({
-    name: data?.name,
-    price: data?.price,
-    categories: data?.categories,
-    titleImage: data?.titleImage,
-    isPublished: data?.isPublished,
-    description: data?.description,
-    imagesData: data?.images ?? [],
-    availablePieces: data?.availablePieces,
-    availableDatesEnd: data?.availableDatesEnd,
-    availableDatesStart: data?.availableDatesStart,
+  const [formData, setFormData] = useState<FormDataType>({
+    name: "",
+    price: 0,
+    newImages: [],
+    categories: [],
+    titleImage: "",
+    imagesData: [],
+    description: "",
+    isPublished: false,
+    imagesToDelete: [],
+    availablePieces: 0,
+    availableDatesEnd: 0,
+    availableDatesStart: 0,
   });
 
   const { mutate } = api.product.updateProduct.useMutation({
     onSuccess: () => {
-      // setIsChanging(false);
       setChangingStatus("changed");
     },
     onMutate: () => {
-      // setIsChanging(true);
       setChangingStatus("changing");
     },
   });
@@ -65,18 +86,18 @@ const EditPage: NextPage = () => {
 
   useEffect(() => {
     if (data) {
-      setFormData({
+      setFormData((state) => ({
+        ...state,
         price: data.price,
-        name: data.name,
+        name: data.name ?? "",
         imagesData: data.images,
-        titleImage: data.titleImage,
         isPublished: data.isPublished,
-        categories: data.categories,
-        description: data.description,
+        titleImage: data.titleImage ?? "",
+        description: data.description ?? "",
         availablePieces: data.availablePieces,
-        availableDatesStart: data.availableDatesStart,
         availableDatesEnd: data.availableDatesEnd,
-      });
+        availableDatesStart: data.availableDatesStart,
+      }));
     }
   }, [data]);
 
@@ -96,6 +117,18 @@ const EditPage: NextPage = () => {
   const variants: Variants = {
     open: { opacity: 1, y: 0 },
     closed: { opacity: 0, y: "-100%", position: "absolute" },
+  };
+
+  // create image url from the image data and from uploaded files
+  const getTitleImage = (imagesData: ImageDataType[], imageFiles: File[]) => {
+    const newImagesUrls: ImageDataType[] = imageFiles?.map((file) => ({
+      name: file.name,
+      url: URL.createObjectURL(file),
+      key: file.name,
+      size: file.size,
+    }));
+
+    return [...(imagesData ?? []), ...(newImagesUrls ?? [])];
   };
 
   return (
@@ -295,12 +328,17 @@ const EditPage: NextPage = () => {
                           Produkta attēli
                         </label>
                       </div>
-                      <div className="flex justify-center gap-2">
-                        <div className="flex flex-wrap justify-center gap-2">
-                          {formData?.imagesData?.map((file) => (
+                      <div
+                        ref={parent}
+                        className="flex flex-wrap justify-center gap-2"
+                      >
+                        {getTitleImage(
+                          formData.imagesData,
+                          formData.newImages,
+                        ).map((file, i) => (
+                          <div className="relative" key={`${file.name}-${i}`}>
                             <button
                               type="button"
-                              key={file.name}
                               className={classNames(
                                 file.name === formData?.titleImage &&
                                   "ring-2 ring-gray-900",
@@ -314,8 +352,8 @@ const EditPage: NextPage = () => {
                               }}
                             >
                               <Image
-                                width={0}
-                                height={0}
+                                width={80}
+                                height={80}
                                 src={file.url}
                                 alt={file.name}
                                 loader={ImageLoader}
@@ -333,15 +371,38 @@ const EditPage: NextPage = () => {
                                 </div>
                               )}
                             </button>
-                          ))}
-                        </div>
+                            <button
+                              type="button"
+                              className="absolute -right-1.5 -top-1.5 z-10 rounded-full bg-white p-1"
+                              onClick={() => {
+                                setFormData((state) => ({
+                                  ...state,
+                                  imagesData: state.imagesData.filter(
+                                    (image) => image.name !== file.name,
+                                  ),
+                                  newImages: state.newImages.filter(
+                                    (image) => image.name !== file.name,
+                                  ),
+                                }));
+                              }}
+                            >
+                              <IoTrashOutline className="h-4 w-4 text-red-500" />
+                            </button>
+                          </div>
+                        ))}
+
                         <DropZone
-                          images={images}
+                          isMultiple
+                          images={formData?.newImages ?? []}
                           fileError={fileError}
                           checkFiles={checkFiles}
                           inputStatus={inputStatus}
                           handelFileUpload={(fileArray) => {
-                            setImages(fileArray);
+                            // setImages(fileArray);
+                            setFormData((state) => ({
+                              ...state,
+                              newImages: fileArray,
+                            }));
                           }}
                         />
                       </div>
