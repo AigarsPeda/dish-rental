@@ -227,10 +227,10 @@ export const productRouter = createTRPCRouter({
     });
   }),
 
-  deleteImage: protectedProcedure
-    .input(z.object({ imageName: z.array(z.string()) }))
-    .mutation(async ({ input }) => {
-      await utapi.deleteFiles(input.imageName);
-      return `deleted image: ${input}`;
-    }),
+  // deleteImage: protectedProcedure
+  //   .input(z.object({ imageName: z.string() }))
+  //   .mutation(async ({ input }) => {
+  //     await utapi.deleteFiles([input.imageName]);
+  //     return `deleted image: ${input}`;
+  //   }),
 });
