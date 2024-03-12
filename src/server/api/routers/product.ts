@@ -1,4 +1,4 @@
-import { arrayContains, eq, gte, lt } from "drizzle-orm";
+import { and, arrayContains, eq, lt } from "drizzle-orm";
 import { z } from "zod";
 import {
   createTRPCRouter,
@@ -7,7 +7,7 @@ import {
 } from "~/server/api/trpc";
 import { images, product } from "~/server/db/schema";
 import { utapi } from "~/server/uploadthing";
-import { NewProductSchema } from "~/types/product.schema";
+import { DBImageSchema, NewProductSchema } from "~/types/product.schema";
 
 export const productRouter = createTRPCRouter({
   hello: publicProcedure
@@ -21,6 +21,8 @@ export const productRouter = createTRPCRouter({
   create: protectedProcedure
     .input(NewProductSchema)
     .mutation(async ({ ctx, input }) => {
+      // await utapi.uploadFiles(input.imagesData.map((image) => image.serverData));
+
       const ids = await ctx.db
         .insert(product)
         .values({
@@ -160,13 +162,19 @@ export const productRouter = createTRPCRouter({
         availableDatesEnd: z.number().optional(),
         availableDatesStart: z.number().optional(),
         categories: z.array(z.string()).optional(),
-        imagesToDelete: z.array(z.string()).optional(),
+        imagesToDelete: z.array(DBImageSchema).optional(),
       }),
     )
     .mutation(async ({ input, ctx }) => {
-      // if (input.imagesToDelete && input.imagesToDelete.length > 0) {
-      //   await utapi.deleteFiles(input.imagesToDelete);
-      // }
+      if (input.imagesToDelete && input.imagesToDelete.length > 0) {
+        for (const image of input.imagesToDelete) {
+          await ctx.db
+            .delete(images)
+            .where(and(eq(images.key, image.key), eq(images.postId, input.id)));
+        }
+
+        await utapi.deleteFiles(input.imagesToDelete.map((image) => image.key));
+      }
 
       await ctx.db
         .update(product)

@@ -19,7 +19,7 @@ import TextInput from "~/components/TextInput/TextInput";
 import Textarea from "~/components/Textarea/Textarea";
 import Toggle from "~/components/Toggle/Toggle";
 import useImageUploadThing from "~/hooks/useImageUploadThing";
-import { type ImageDataType } from "~/types/product.schema";
+import { DBImageType, type ImageDataType } from "~/types/product.schema";
 import ImageLoader from "~/utils/ImageLoader";
 import { api } from "~/utils/api";
 import classNames from "~/utils/classNames";
@@ -34,8 +34,8 @@ type FormDataType = {
   availablePieces: number;
   availableDatesEnd: number;
   availableDatesStart: number;
-  imagesData: ImageDataType[];
-  imagesToDelete: ImageDataType[];
+  imagesData: DBImageType[];
+  imagesToDelete: DBImageType[];
   newImages: File[];
 };
 
@@ -86,6 +86,7 @@ const EditPage: NextPage = () => {
 
   useEffect(() => {
     if (data) {
+      console.log("data.images", data.images);
       setFormData((state) => ({
         ...state,
         price: data.price,
@@ -97,6 +98,7 @@ const EditPage: NextPage = () => {
         availablePieces: data.availablePieces,
         availableDatesEnd: data.availableDatesEnd,
         availableDatesStart: data.availableDatesStart,
+        categories: data.categories ?? [],
       }));
     }
   }, [data]);
@@ -120,12 +122,17 @@ const EditPage: NextPage = () => {
   };
 
   // create image url from the image data and from uploaded files
-  const getTitleImage = (imagesData: ImageDataType[], imageFiles: File[]) => {
-    const newImagesUrls: ImageDataType[] = imageFiles?.map((file) => ({
+  const getTitleImage = (imagesData: DBImageType[], imageFiles: File[]) => {
+    const newImagesUrls: DBImageType[] = imageFiles?.map((file, i) => ({
       name: file.name,
       url: URL.createObjectURL(file),
       key: file.name,
       size: file.size,
+      type: file.type,
+      createdAt: new Date(),
+      id: i * Math.random(),
+      postId: postId ?? 1,
+      // id: i * Math.random(),
     }));
 
     return [...(imagesData ?? []), ...(newImagesUrls ?? [])];
@@ -156,6 +163,7 @@ const EditPage: NextPage = () => {
                   availablePieces: formData.availablePieces,
                   availableDatesEnd: formData.availableDatesEnd,
                   availableDatesStart: formData.availableDatesStart,
+                  imagesToDelete: formData.imagesToDelete,
                 });
               }}
             >
@@ -383,6 +391,10 @@ const EditPage: NextPage = () => {
                                   newImages: state.newImages.filter(
                                     (image) => image.name !== file.name,
                                   ),
+                                  imagesToDelete: [
+                                    ...state.imagesToDelete,
+                                    file,
+                                  ],
                                 }));
                               }}
                             >

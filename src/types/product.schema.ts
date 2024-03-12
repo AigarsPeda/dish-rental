@@ -5,19 +5,21 @@ export const ImageDataSchema = z.object({
   key: z.string(),
   name: z.string(),
   size: z.number(),
+  type: z.string(),
   serverData: z.unknown(),
+  customId: z.string().nullish(),
 });
 
 export const NewProductSchema = z.object({
   titleImage: z.string(),
-  name: z.string().min(1),
-  price: z.number().min(0),
+  name: z.string(),
+  price: z.number(),
   isPublished: z.boolean(),
   availableDatesEnd: z.date(),
   availableDatesStart: z.date(),
-  description: z.string().min(1),
+  description: z.string(),
   categories: z.array(z.string()),
-  availablePieces: z.number().min(0),
+  availablePieces: z.number(),
   imagesData: z.array(ImageDataSchema),
 });
 
@@ -31,6 +33,7 @@ export const DBImageSchema = z.object({
   name: z.string(),
   size: z.number(),
   postId: z.number(),
+  createdAt: z.date(),
 });
 
 export type DBImageType = z.infer<typeof DBImageSchema>;
