@@ -124,15 +124,14 @@ const EditPage: NextPage = () => {
   // create image url from the image data and from uploaded files
   const getTitleImage = (imagesData: DBImageType[], imageFiles: File[]) => {
     const newImagesUrls: DBImageType[] = imageFiles?.map((file, i) => ({
-      name: file.name,
-      url: URL.createObjectURL(file),
       key: file.name,
+      name: file.name,
       size: file.size,
       type: file.type,
+      postId: postId ?? 1,
       createdAt: new Date(),
       id: i * Math.random(),
-      postId: postId ?? 1,
-      // id: i * Math.random(),
+      url: URL.createObjectURL(file),
     }));
 
     return [...(imagesData ?? []), ...(newImagesUrls ?? [])];
@@ -152,6 +151,8 @@ const EditPage: NextPage = () => {
               className="mx-auto mt-4 w-full max-w-xl px-2 pb-10"
               onSubmit={(e) => {
                 e.preventDefault();
+                // const f = createFormData(formData);
+                // https://github.com/trpc/trpc/discussions/658
                 mutate({
                   id: postId ?? 1,
                   name: formData.name ?? "",
