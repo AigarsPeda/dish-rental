@@ -38,8 +38,8 @@ const NewPost: NextPage = () => {
   const [isFormLoading, setIsFormLoading] = useState(false);
   const [isNeedToSignIn, setIsNeedToSignIn] = useState(false);
   const [isShowErrorMessage, setIsShowErrorMessage] = useState(false);
-  const { response, fileError, checkFiles, inputStatus, handelStartUpload } =
-    useImageUploadThing();
+  // const { response, fileError, checkFiles, inputStatus, handelStartUpload } =
+  //   useImageUploadThing();
   const { mutate } = api.product.create.useMutation({
     onSuccess: (result) => {
       setFormsState({
@@ -102,28 +102,67 @@ const NewPost: NextPage = () => {
     localStorage.removeItem("new-product-form");
   }, []);
 
-  useEffect(() => {
-    if (response.length === 0) return;
+  // formData.append(key, payload[k], `${k}.${watermarkType}`);
 
-    setImages([]);
+  const uploadProfileImage = async (file: File[], form: FormStateType) => {
+    const formData = new FormData();
 
-    void mutate({
-      name: formsSate.name,
-      imagesData: response,
-      price: formsSate.price,
-      titleImage: formsSate.titleImage,
-      isPublished: formsSate.isPublished,
-      description: formsSate.description,
-      categories: formsSate.selectedCategories,
-      availablePieces: formsSate.availablePieces,
-      availableDatesStart: new Date(
-        formsSate.availableDates?.startDate ?? new Date(),
-      ),
-      availableDatesEnd: new Date(
-        formsSate.availableDates?.endDate ?? new Date(),
-      ),
+    file.forEach((f) => {
+      formData.append("image", f, f.name);
     });
-  }, [response]);
+
+    formData.append("name", form.name);
+    formData.append("price", form.price.toString());
+    formData.append("titleImage", form.titleImage);
+    formData.append("isPublished", form.isPublished.toString());
+    formData.append("description", form.description);
+    formData.append("categories", form.selectedCategories.join(","));
+    formData.append("availablePieces", form.availablePieces.toString());
+    formData.append(
+      "availableDatesStart",
+      new Date(form.availableDates?.startDate ?? new Date())
+        .getTime()
+        .toString(),
+    );
+    formData.append(
+      "availableDatesEnd",
+      new Date(form.availableDates?.endDate ?? new Date()).getTime().toString(),
+    );
+
+    const response = await fetch("/api/upload/new-product", {
+      method: "POST",
+      body: formData,
+      headers: {
+        // "Content-Type": "multipart/form-data",
+        // "Content-Type": "application/json
+      },
+    });
+  };
+
+  // useEffect(() => {
+  //   if (response.length === 0) return;
+
+  //   console.log("response", response);
+
+  //   setImages([]);
+
+  //   void mutate({
+  //     name: formsSate.name,
+  //     imagesData: response,
+  //     price: formsSate.price,
+  //     titleImage: formsSate.titleImage,
+  //     isPublished: formsSate.isPublished,
+  //     description: formsSate.description,
+  //     categories: formsSate.selectedCategories,
+  //     availablePieces: formsSate.availablePieces,
+  //     availableDatesStart: new Date(
+  //       formsSate.availableDates?.startDate ?? new Date(),
+  //     ),
+  //     availableDatesEnd: new Date(
+  //       formsSate.availableDates?.endDate ?? new Date(),
+  //     ),
+  //   });
+  // }, [response]);
 
   return (
     <>
@@ -138,20 +177,21 @@ const NewPost: NextPage = () => {
             className="mx-auto mt-4 max-w-xl px-4 pb-10"
             onSubmit={(e) => {
               e.preventDefault();
-              if (isFormEmpty || isImagesEmpty) {
-                setIsShowErrorMessage(true);
-                return;
-              }
+              uploadProfileImage(images, formsSate);
+              // if (isFormEmpty || isImagesEmpty) {
+              //   setIsShowErrorMessage(true);
+              //   return;
+              // }
 
-              if (inputStatus === "Loading" ?? isFormLoading) return;
+              // if (inputStatus === "Loading" ?? isFormLoading) return;
 
-              if (!sessionData) {
-                void setIsNeedToSignIn(true);
-                return;
-              }
+              // if (!sessionData) {
+              //   void setIsNeedToSignIn(true);
+              //   return;
+              // }
 
-              setIsFormLoading(true);
-              void handelStartUpload(images);
+              // setIsFormLoading(true);
+              // void handelStartUpload(images);
             }}
           >
             <div className="space-y-12">
@@ -362,9 +402,11 @@ const NewPost: NextPage = () => {
                       <DropZone
                         isMultiple
                         images={images}
-                        fileError={fileError}
-                        checkFiles={checkFiles}
-                        inputStatus={inputStatus}
+                        fileError={null}
+                        checkFiles={() => {
+                          console.log("checkFiles");
+                        }}
+                        inputStatus={"Idle"}
                         handelFileUpload={(fileArray) => {
                           console.log(fileArray);
                           setImages(fileArray);

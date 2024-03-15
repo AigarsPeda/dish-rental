@@ -137,31 +137,6 @@ const EditPage: NextPage = () => {
     return [...(imagesData ?? []), ...(newImagesUrls ?? [])];
   };
 
-  const uploadProfileImage = async (file: File[]) => {
-    const body = new FormData();
-
-    // body.set("image", file);
-
-    file.forEach((f) => {
-      body.append("image", f);
-    });
-
-    console.log("body", body);
-
-    const response = await fetch("/api/upload/profile-image", {
-      method: "POST",
-      body,
-    });
-
-    // if (!response.ok) {
-    //   throw new Error("Error uploading profile image");
-    // }
-
-    // const result: UploadProfileImageResponse = await response.json()
-    // if (!result) throw new Error('Error uploading profile image')
-    // return result
-  };
-
   return (
     <>
       <PageHead
@@ -178,24 +153,24 @@ const EditPage: NextPage = () => {
                 e.preventDefault();
                 // const f = createFormData(formData);
                 // https://github.com/trpc/trpc/discussions/658
-                // mutate({
-                //   id: postId ?? 1,
-                //   name: formData.name ?? "",
-                //   price: formData.price ?? 0,
-                //   isPublished: formData.isPublished,
-                //   titleImage: formData.titleImage ?? "",
-                //   categories: formData.categories ?? [],
-                //   description: formData.description ?? "",
-                //   availablePieces: formData.availablePieces,
-                //   availableDatesEnd: formData.availableDatesEnd,
-                //   availableDatesStart: formData.availableDatesStart,
-                //   imagesToDelete: formData.imagesToDelete,
-                // });
+                mutate({
+                  id: postId ?? 1,
+                  name: formData.name ?? "",
+                  price: formData.price ?? 0,
+                  isPublished: formData.isPublished,
+                  titleImage: formData.titleImage ?? "",
+                  categories: formData.categories ?? [],
+                  description: formData.description ?? "",
+                  availablePieces: formData.availablePieces,
+                  availableDatesEnd: formData.availableDatesEnd,
+                  availableDatesStart: formData.availableDatesStart,
+                  imagesToDelete: formData.imagesToDelete,
+                });
 
-                if (formData.newImages.length > 0) {
-                  console.log("uploading images", formData.newImages);
-                  uploadProfileImage(formData.newImages);
-                }
+                // if (formData.newImages.length > 0) {
+                //   console.log("uploading images", formData.newImages);
+                //   uploadProfileImage(formData.newImages);
+                // }
               }}
             >
               <div className="w-full space-y-12">

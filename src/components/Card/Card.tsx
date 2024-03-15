@@ -38,6 +38,7 @@ const Card: FC<CardProps> = ({ product }) => {
               getTitleImage(product.images, product.titleImage)?.url ??
               "/images/placeholder.jpeg"
             }
+            // src="https://dish-rent.s3.eu-north-1.amazonaws.com/1710444268201-BluePlates.jpg"
           />
         </div>
         <div className="px-2 py-1.5 md:py-2.5">

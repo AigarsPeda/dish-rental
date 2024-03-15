@@ -34,6 +34,10 @@ export const env = createEnv({
     GOOGLE_CLIENT_SECRET: z.string(),
     UPLOADTHING_SECRET: z.string(),
     UPLOADTHING_APP_ID: z.string(),
+    ACCESS_KEY_AWS: z.string(),
+    SECRET_AWS: z.string(),
+    REGION_AWS: z.string(),
+    BUCKET_NAME_AWS: z.string(),
   },
 
   /**
@@ -60,6 +64,10 @@ export const env = createEnv({
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
     UPLOADTHING_SECRET: process.env.UPLOADTHING_SECRET,
     UPLOADTHING_APP_ID: process.env.UPLOADTHING_APP_ID,
+    ACCESS_KEY_AWS: process.env.ACCESS_KEY_AWS,
+    SECRET_AWS: process.env.SECRET_AWS,
+    REGION_AWS: process.env.REGION_AWS,
+    BUCKET_NAME_AWS: process.env.BUCKET_NAME_AWS,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially
