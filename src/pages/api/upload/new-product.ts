@@ -73,7 +73,7 @@ export default async function POST(request: NextRequest) {
     return NextResponse.json(null, { status: 500 });
   }
 
-  const data = await createdPost.json();
+  const data = (await createdPost.json()) as { postId: number };
 
   return new NextResponse(JSON.stringify(data), {
     headers: { "Content-Type": "application/json" },

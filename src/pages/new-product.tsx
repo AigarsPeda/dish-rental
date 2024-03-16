@@ -2,7 +2,6 @@ import { ALL_OPTIONS, LOCAL_STORAGE_KEYS } from "hardcoded";
 import { type NextPage } from "next";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import Datepicker, { type DateValueType } from "react-tailwindcss-datepicker";
 import DropZone from "~/components/DropZone/DropZone";
@@ -17,9 +16,8 @@ import Toggle from "~/components/Toggle/Toggle";
 import useLocalStorage from "~/hooks/useLocalStorage";
 import useRedirect from "~/hooks/useRedirect";
 import ImageLoader from "~/utils/ImageLoader";
-import { api } from "~/utils/api";
 import classNames from "~/utils/classNames";
-import compressImage from "../utils/compressImage";
+import compressImage from "~/utils/compressImage";
 
 type FormStateType = {
   name: string;
@@ -39,28 +37,6 @@ const NewPost: NextPage = () => {
   const [isFormLoading, setIsFormLoading] = useState(false);
   const [isNeedToSignIn, setIsNeedToSignIn] = useState(false);
   const [isShowErrorMessage, setIsShowErrorMessage] = useState(false);
-  // const [isLoading , setIsFormLoading] = useState(false);
-  // const { response, fileError, checkFiles, inputStatus, handelStartUpload } =
-  //   useImageUploadThing();
-  // const { mutate } = api.product.create.useMutation({
-  //   onSuccess: (result) => {
-  //     setFormsState({
-  //       name: "",
-  //       price: 0,
-  //       titleImage: "",
-  //       description: "",
-  //       isPublished: true,
-  //       availablePieces: 0,
-  //       selectedCategories: ["trauki"],
-  //       availableDates: {
-  //         startDate: new Date(),
-  //         endDate: new Date(new Date().setMonth(new Date().getMonth() + 1)),
-  //       },
-  //     });
-  //     setIsFormLoading(false);
-  //     redirectToPath(`/product/${result.postId}`);
-  //   },
-  // });
 
   const [formsSate, setFormsState] = useLocalStorage<FormStateType>(
     LOCAL_STORAGE_KEYS.productForm,
@@ -111,7 +87,9 @@ const NewPost: NextPage = () => {
     }
 
     const formData = new FormData();
-    const compressedImages = await Promise.all(images.map(compressImage));
+    const compressedImages = await Promise.all(
+      file.map((f) => compressImage(f)),
+    );
 
     compressedImages.forEach((f) => {
       formData.append("image", f, f.name);
@@ -392,7 +370,6 @@ const NewPost: NextPage = () => {
                         }}
                         inputStatus={"Idle"}
                         handelFileUpload={(fileArray) => {
-                          console.log(fileArray);
                           setImages(fileArray);
                           setFormsState({
                             ...formsSate,
