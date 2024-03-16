@@ -1,6 +1,8 @@
 import { ALL_OPTIONS, LOCAL_STORAGE_KEYS } from "hardcoded";
 import { type NextPage } from "next";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import Datepicker, { type DateValueType } from "react-tailwindcss-datepicker";
 import DropZone from "~/components/DropZone/DropZone";
@@ -17,6 +19,7 @@ import useRedirect from "~/hooks/useRedirect";
 import ImageLoader from "~/utils/ImageLoader";
 import { api } from "~/utils/api";
 import classNames from "~/utils/classNames";
+import compressImage from "../utils/compressImage";
 
 type FormStateType = {
   name: string;
@@ -31,32 +34,33 @@ type FormStateType = {
 
 const NewPost: NextPage = () => {
   const { redirectToPath } = useRedirect();
-  // const { data: sessionData } = useSession();
+  const { data: sessionData } = useSession();
   const [images, setImages] = useState<File[]>([]);
   const [isFormLoading, setIsFormLoading] = useState(false);
   const [isNeedToSignIn, setIsNeedToSignIn] = useState(false);
   const [isShowErrorMessage, setIsShowErrorMessage] = useState(false);
+  // const [isLoading , setIsFormLoading] = useState(false);
   // const { response, fileError, checkFiles, inputStatus, handelStartUpload } =
   //   useImageUploadThing();
-  const { mutate } = api.product.create.useMutation({
-    onSuccess: (result) => {
-      setFormsState({
-        name: "",
-        price: 0,
-        titleImage: "",
-        description: "",
-        isPublished: true,
-        availablePieces: 0,
-        selectedCategories: ["trauki"],
-        availableDates: {
-          startDate: new Date(),
-          endDate: new Date(new Date().setMonth(new Date().getMonth() + 1)),
-        },
-      });
-      setIsFormLoading(false);
-      redirectToPath(`/product/${result.postId}`);
-    },
-  });
+  // const { mutate } = api.product.create.useMutation({
+  //   onSuccess: (result) => {
+  //     setFormsState({
+  //       name: "",
+  //       price: 0,
+  //       titleImage: "",
+  //       description: "",
+  //       isPublished: true,
+  //       availablePieces: 0,
+  //       selectedCategories: ["trauki"],
+  //       availableDates: {
+  //         startDate: new Date(),
+  //         endDate: new Date(new Date().setMonth(new Date().getMonth() + 1)),
+  //       },
+  //     });
+  //     setIsFormLoading(false);
+  //     redirectToPath(`/product/${result.postId}`);
+  //   },
+  // });
 
   const [formsSate, setFormsState] = useLocalStorage<FormStateType>(
     LOCAL_STORAGE_KEYS.productForm,
@@ -100,20 +104,25 @@ const NewPost: NextPage = () => {
     localStorage.removeItem("new-product-form");
   }, []);
 
-  // formData.append(key, payload[k], `${k}.${watermarkType}`);
-
   const uploadProfileImage = async (file: File[], form: FormStateType) => {
-    const formData = new FormData();
+    if (!sessionData) {
+      void setIsNeedToSignIn(true);
+      return;
+    }
 
-    file.forEach((f) => {
+    const formData = new FormData();
+    const compressedImages = await Promise.all(images.map(compressImage));
+
+    compressedImages.forEach((f) => {
       formData.append("image", f, f.name);
     });
 
     formData.append("name", form.name);
-    formData.append("price", form.price.toString());
+    formData.append("userId", sessionData.user.id);
     formData.append("titleImage", form.titleImage);
-    formData.append("isPublished", form.isPublished.toString());
+    formData.append("price", form.price.toString());
     formData.append("description", form.description);
+    formData.append("isPublished", form.isPublished.toString());
     formData.append("categories", form.selectedCategories.join(","));
     formData.append("availablePieces", form.availablePieces.toString());
     formData.append(
@@ -131,45 +140,20 @@ const NewPost: NextPage = () => {
       method: "POST",
       body: formData,
       headers: {
-        // "Content-Type": "multipart/form-data",
-        // "Content-Type": "application/json
+        credentials: "include",
+        origin: window.location.origin,
       },
     });
 
     if (response.ok) {
       const json = (await response.json()) as { postId: string };
-      console.log(json);
 
       if (json?.postId) {
+        resetState();
         redirectToPath(`/product/${json?.postId}`);
       }
     }
   };
-
-  // useEffect(() => {
-  //   if (response.length === 0) return;
-
-  //   console.log("response", response);
-
-  //   setImages([]);
-
-  //   void mutate({
-  //     name: formsSate.name,
-  //     imagesData: response,
-  //     price: formsSate.price,
-  //     titleImage: formsSate.titleImage,
-  //     isPublished: formsSate.isPublished,
-  //     description: formsSate.description,
-  //     categories: formsSate.selectedCategories,
-  //     availablePieces: formsSate.availablePieces,
-  //     availableDatesStart: new Date(
-  //       formsSate.availableDates?.startDate ?? new Date(),
-  //     ),
-  //     availableDatesEnd: new Date(
-  //       formsSate.availableDates?.endDate ?? new Date(),
-  //     ),
-  //   });
-  // }, [response]);
 
   return (
     <>
@@ -184,21 +168,14 @@ const NewPost: NextPage = () => {
             className="mx-auto mt-4 max-w-xl px-4 pb-10"
             onSubmit={(e) => {
               e.preventDefault();
+
+              if (isFormEmpty || isImagesEmpty) {
+                setIsShowErrorMessage(true);
+                return;
+              }
+
+              setIsFormLoading(true);
               void uploadProfileImage(images, formsSate);
-              // if (isFormEmpty || isImagesEmpty) {
-              //   setIsShowErrorMessage(true);
-              //   return;
-              // }
-
-              // if (inputStatus === "Loading" ?? isFormLoading) return;
-
-              // if (!sessionData) {
-              //   void setIsNeedToSignIn(true);
-              //   return;
-              // }
-
-              // setIsFormLoading(true);
-              // void handelStartUpload(images);
             }}
           >
             <div className="space-y-12">

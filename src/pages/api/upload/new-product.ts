@@ -1,10 +1,5 @@
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
-import { type NextApiRequest, type NextApiResponse } from "next";
-import { getServerSession } from "next-auth";
-import { NextRequest, NextResponse } from "next/server";
-import { authOptions } from "src/server/auth";
-import { db } from "src/server/db";
-import { images, product } from "src/server/db/schema";
+import { type NextRequest, NextResponse } from "next/server";
 import { env } from "~/env";
 
 export const runtime = "edge";
@@ -17,49 +12,36 @@ const s3 = new S3Client({
   region: env.REGION_AWS,
 });
 
-export default async function POST(
-  request: NextRequest,
-  response: NextResponse,
-) {
-  // const req = request as unknown as NextApiRequest;
-  // const res = response as unknown as NextApiResponse;
-  // const session = await getServerSession(request, response, authOptions);
-  // if (!session) {
-  //   return NextResponse.json(null, { status: 401 });
-  // }
-
-  // console.log(">>> session", session);
-
+export default async function POST(request: NextRequest) {
   const formData = await request.formData();
   const files = formData.getAll("image") as File[];
 
   const imgResponse = await Promise.all(
     files.map(async (file) => {
-      // not sure why I have to override the types here
       const Body = (await file.arrayBuffer()) as Buffer;
 
-      const encodeFileName = encodeURIComponent(`${Date.now()}-${file.name}`);
+      // ${file.name.replace(" ", "_")}
+      const encodeFileName = encodeURIComponent(`${Date.now()}`);
       await s3.send(
         new PutObjectCommand({
-          Bucket: env.BUCKET_NAME_AWS,
-          Key: encodeFileName,
           Body,
+          Key: encodeFileName,
+          Bucket: env.BUCKET_NAME_AWS,
         }),
       );
 
       return {
-        url: `https://${env.BUCKET_NAME_AWS}.s3.${env.REGION_AWS}.amazonaws.com/${encodeFileName}`,
-        key: encodeFileName,
         name: file.name,
         size: file.size,
+        key: encodeFileName,
+        url: `https://${env.BUCKET_NAME_AWS}.s3.${env.REGION_AWS}.amazonaws.com/${encodeFileName}`,
       };
     }),
   );
 
-  console.log(">>> imgResponse", imgResponse);
-
   const formattedFields = {
     name: formData.get("name")?.toString(),
+    userId: formData.get("userId")?.toString(),
     price: Number(formData.get("price")?.toString()),
     titleImage: formData.get("titleImage")?.toString(),
     description: formData.get("description")?.toString(),
@@ -73,236 +55,27 @@ export default async function POST(
     ),
   };
 
-  const ids = await db
-    .insert(product)
-    .values({
-      name: formattedFields.name,
-      price: formattedFields.price,
-      createdById: "1",
-      categories: formattedFields.categories,
-      titleImage: formattedFields.titleImage,
-      isPublished: formattedFields.isPublished,
-      description: formattedFields.description,
-      availablePieces: formattedFields.availablePieces,
-      availableDatesStart: formattedFields.availableDatesStart,
-      availableDatesEnd: formattedFields.availableDatesEnd,
-    })
-    .returning({ id: product.id });
+  const origin = request.headers.get("origin");
 
-  const postId = ids[0]?.id;
+  const createdPost = await fetch(`${origin}/api/upload/create-product`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      credentials: "include",
+    },
+    body: JSON.stringify({
+      ...formattedFields,
+      images: imgResponse,
+    }),
+  });
 
-  if (!postId) {
-    return;
+  if (!createdPost.ok) {
+    return NextResponse.json(null, { status: 500 });
   }
-  console.log(">>> postId", postId);
 
-  // if (!postId || imgResponse.length === 0) {
-  //   throw new Error("failed to create post");
-  // }
+  const data = await createdPost.json();
 
-  // await db.insert(images).values(
-  //   imgResponse.map((image) => {
-  //     return {
-  //       postId: postId,
-  //       url: image.url,
-  //       key: image.key,
-  //       name: image.name,
-  //       size: image.size,
-  //     };
-  //   }),
-  // );
-
-  // return response.status(200).json({ postId });
-
-  return new NextResponse(JSON.stringify({ postId: "1" }), {
+  return new NextResponse(JSON.stringify(data), {
     headers: { "Content-Type": "application/json" },
   });
 }
-
-// export default async function POST(
-//   request: NextApiRequest,
-//   response: NextApiResponse,
-// ) {
-//   // const session = await getServerSession(authOptions);
-//   const session = await getServerSession(request, response, authOptions);
-//   if (!session) {
-//     return NextResponse.json(null, { status: 401 });
-//   }
-
-//   const form = formidable({});
-
-//   const s3 = new S3Client({
-//     credentials: {
-//       accessKeyId: env.ACCESS_KEY_AWS,
-//       secretAccessKey: env.SECRET_AWS,
-//     },
-//     region: env.REGION_AWS,
-//   });
-
-//   try {
-//     const [fields, files] = await form.parse(request);
-//     console.log(">>> fields", fields);
-//     console.log(">>> files", files);
-
-//     files.image.map(async (file) => {
-//       console.log(">>> file 1111", file);
-//     });
-
-//     // const response = await Promise.all(
-//     //   files.image.map(async (file) => {
-//     //     // not sure why I have to override the types here
-//     //     const Body = (await file.arrayBuffer()) as Buffer;
-//     //     s3.send(
-//     //       new PutObjectCommand({ Bucket: "dish-rent", Key: file.name, Body }),
-//     //     );
-//     //   }),
-//     // );
-
-//     // console.log(">>> response", response);
-
-//     // new File([files.image as unknown as Blob], "foo.jpg");
-
-//     // const response = await utapi.uploadFiles(
-//     //   new File([files.image[0]], "foo.jpg"),
-//     // );
-
-//     // // URL.createObjectURL(f)
-
-//     // // create files from files.image and upload them to s3 using utapi.uploadFiles
-//     // const imageRes = await utapi.uploadFiles(
-//     //   files.image?.map((file) => {
-//     //     console.log(">>> ???? file", file);
-//     //     file.newFilename;
-//     //     const f = file as unknown as File;
-//     //     return new File([f], `${f.newFilename}.jpg`);
-//     //   }),
-//     // );
-
-//     // const mappedFiles = files.image?.map((file) => {
-//     //   console.log(">>> ???? file", file);
-//     //   return new File([file as unknown as Blob], `${file.newFilename}.jpg`);
-//     // });
-//     // console.log(">>> mappedFiles", mappedFiles);
-
-//     // console.log(">>> response", response);
-
-//     // name: [ 'Hey' ],
-//     // price: [ '0.3' ],
-//     // titleImage: [ 'Assorted Bow.jpg' ],
-//     // isPublished: [ 'true' ],
-//     // description: [ 'Nice post' ],
-//     // categories: [ 'trauki,mebeles_un_tekstils,dekoracijas_galda_klasanai' ],
-//     // availablePieces: [ '3' ],
-//     // availableDatesStart: [ '1710188456512' ],
-//     // availableDatesEnd: [ '1712863256512' ]
-
-//     // parse fields and insert them into the database
-//     const formattedFields = {
-//       name: fields.name?.toString(),
-//       price: Number(fields.price?.toString()),
-//       titleImage: fields.titleImage?.toString(),
-//       description: fields.description?.toString(),
-//       categories: fields.categories?.toString().split(","),
-//       availablePieces: Number(fields.availablePieces?.toString()),
-//       availableDatesEnd: Number(fields.availableDatesEnd?.toString()),
-//       availableDatesStart: Number(fields.availableDatesStart?.toString()),
-//       isPublished: fields.isPublished?.toString() === "true" ? true : false,
-//     };
-
-// const ids = await db
-//   .insert(product)
-//   .values({
-//     name: formattedFields.name,
-//     price: formattedFields.price,
-//     createdById: session.user.id,
-//     categories: formattedFields.categories,
-//     titleImage: formattedFields.titleImage,
-//     isPublished: formattedFields.isPublished,
-//     description: formattedFields.description,
-//     availablePieces: formattedFields.availablePieces,
-//     availableDatesStart: formattedFields.availableDatesStart,
-//     availableDatesEnd: formattedFields.availableDatesEnd,
-//   })
-//   .returning({ id: product.id });
-
-//     // console.log(">>> ids", ids);
-
-// const postId = ids[0]?.id;
-
-// if (!postId || !imageRes) {
-//   throw new Error("failed to create post");
-// }
-
-// imageRes.data?.map((image) => {
-//   return {
-//     postId: postId,
-//     url: image.url,
-//     key: image.key,
-//     name: image.name,
-//     size: image.size,
-//   };
-// }
-
-//     // key: 'c2fc6cc2-f693-4a50-9027-4e9ff4b6c1d6-r99sa9',
-//     // url: 'https://utfs.io/f/c2fc6cc2-f693-4a50-9027-4e9ff4b6c1d6-r99sa9',
-//     // name: 'de81cde56b40b44944119e72b',
-//     // size: 146,
-//     // type: '',
-//     // customId: null
-
-// await db.insert(images).values(
-//   imageRes?.map((image) => {
-//     console.log(">>> image.data", image.data);
-//     return {
-//       postId: postId,
-//       url: image.data.url,
-//       key: image.data.key,
-//       name: image.data.name,
-//       size: image.data.size,
-//     };
-//   }),
-// );
-
-//     // console.log(">>> formattedFields", formattedFields);
-
-//     // await db
-//     // .insert(product)
-//     // .values({
-//     //   name: fields.name,
-//     //   price: fields.price,
-//     //   titleImage: fields.titleImage,
-//     //   isPublished: fields.isPublished,
-//     //   description: fields.description,
-//     //   createdById: ctx.session.user.id,
-//     //   categories: fields.categories,
-//     //   availablePieces: fields.availablePieces,
-//     //   availableDatesStart: fields.availableDatesStart.getTime(),
-//     //   availableDatesEnd: fields.availableDatesEnd.getTime(),
-//     // })
-//     // .returning({ id: product.id });
-
-//     // console.log(">>> imageRes", imageRes);
-//   } catch (error) {
-//     response.status(500).json({
-//       error,
-//       message: "Error parsing form data",
-//     });
-//   }
-
-//   // console.log(">>> session", session);
-//   // console.log(">>> request", request);
-
-//   // console.log(">>>>>> ????", await request.body.formData());
-
-//   // const requestBody = await request.body.formatDate();
-//   // console.log(">>> requestBody", requestBody);
-//   // console.log(">>> requestBody", requestBody);
-//   // response.status(200).json({ message: "Hello from Next.js!" });
-// }
-
-// // Export types for API Routes
-// export type UploadProfileImageResponse = ExtractGenericFromNextResponse<
-//   Awaited<ReturnType<typeof POST>>
-// >;
-// type ExtractGenericFromNextResponse<Type> =
-//   Type extends NextResponse<infer X> ? X : never;

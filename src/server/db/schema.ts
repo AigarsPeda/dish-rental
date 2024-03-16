@@ -31,23 +31,12 @@ export const product = createTable(
     titleImage: varchar("titleImage", { length: 255 }),
     isPublished: boolean("isPublished").notNull().default(false),
     availablePieces: integer("availablePieces").notNull(),
-    // availableDatesStart: timestamp("availableDatesStart", { mode: "date" }),
-    // availableDatesStart: bigint("availableDatesStart", {
-    //   mode: "number",
-    // }).notNull(),
-    // availableDatesEnd: bigint("availableDatesEnd", {
-    //   mode: "number",
-    // }).notNull(),
-    // availableDatesStart: timestamp("availableDatesStart", { mode: "date" }),
     availableDatesStart: bigint("availableDatesStart", {
       mode: "number",
     }).notNull(),
-    // availableDatesEnd: timestamp("availableDatesEnd", { mode: "date" }),
     availableDatesEnd: bigint("availableDatesEnd", {
       mode: "number",
     }).notNull(),
-    // availableDatesEnd: timestamp("availableDatesEnd", { mode: "date" }),
-
     createdById: varchar("createdById", { length: 255 })
       .notNull()
       .references(() => users.id),
@@ -56,7 +45,6 @@ export const product = createTable(
       .notNull(),
     updatedAt: timestamp("updatedAt"),
     description: text("description"),
-    // categories: text("categories"),
     categories: text("categories")
       .array()
       .default(sql`ARRAY[]::text[]`),
