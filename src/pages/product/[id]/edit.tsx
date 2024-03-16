@@ -84,24 +84,24 @@ const EditPage: NextPage = () => {
     }
   }, [router.query.id]);
 
-  useEffect(() => {
-    if (data) {
-      console.log("data.images", data.images);
-      setFormData((state) => ({
-        ...state,
-        price: data.price,
-        name: data.name ?? "",
-        imagesData: data.images,
-        isPublished: data.isPublished,
-        titleImage: data.titleImage ?? "",
-        description: data.description ?? "",
-        availablePieces: data.availablePieces,
-        availableDatesEnd: data.availableDatesEnd,
-        availableDatesStart: data.availableDatesStart,
-        categories: data.categories ?? [],
-      }));
-    }
-  }, [data]);
+  // useEffect(() => {
+  //   if (data) {
+  //     console.log("data.images", data.images);
+  //     setFormData((state) => ({
+  //       ...state,
+  //       price: data.price,
+  //       name: data.name ?? "",
+  //       imagesData: data.images,
+  //       isPublished: data.isPublished,
+  //       titleImage: data.titleImage ?? "",
+  //       description: data.description ?? "",
+  //       availablePieces: data.availablePieces,
+  //       availableDatesEnd: data.availableDatesEnd,
+  //       availableDatesStart: data.availableDatesStart,
+  //       categories: data.categories ?? [],
+  //     }));
+  //   }
+  // }, [data]);
 
   useEffect(() => {
     if (changingStatus === "changed") {

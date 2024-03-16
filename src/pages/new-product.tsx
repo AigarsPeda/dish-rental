@@ -38,25 +38,25 @@ const NewPost: NextPage = () => {
   const [isShowErrorMessage, setIsShowErrorMessage] = useState(false);
   // const { response, fileError, checkFiles, inputStatus, handelStartUpload } =
   //   useImageUploadThing();
-  const { mutate } = api.product.create.useMutation({
-    onSuccess: (result) => {
-      setFormsState({
-        name: "",
-        price: 0,
-        titleImage: "",
-        description: "",
-        isPublished: true,
-        availablePieces: 0,
-        selectedCategories: ["trauki"],
-        availableDates: {
-          startDate: new Date(),
-          endDate: new Date(new Date().setMonth(new Date().getMonth() + 1)),
-        },
-      });
-      setIsFormLoading(false);
-      redirectToPath(`/product/${result.postId}`);
-    },
-  });
+  // const { mutate } = api.product.create.useMutation({
+  //   onSuccess: (result) => {
+  //     setFormsState({
+  //       name: "",
+  //       price: 0,
+  //       titleImage: "",
+  //       description: "",
+  //       isPublished: true,
+  //       availablePieces: 0,
+  //       selectedCategories: ["trauki"],
+  //       availableDates: {
+  //         startDate: new Date(),
+  //         endDate: new Date(new Date().setMonth(new Date().getMonth() + 1)),
+  //       },
+  //     });
+  //     setIsFormLoading(false);
+  //     redirectToPath(`/product/${result.postId}`);
+  //   },
+  // });
 
   const [formsSate, setFormsState] = useLocalStorage<FormStateType>(
     LOCAL_STORAGE_KEYS.productForm,
@@ -135,6 +135,12 @@ const NewPost: NextPage = () => {
         // "Content-Type": "application/json
       },
     });
+
+    if (response.ok) {
+      const json = await response.json();
+      console.log(json);
+      redirectToPath(`/product/${json.postId}`);
+    }
   };
 
   // useEffect(() => {

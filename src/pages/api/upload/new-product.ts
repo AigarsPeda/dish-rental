@@ -1,9 +1,10 @@
-import {
-  GetObjectCommand,
-  PutObjectCommand,
-  S3Client,
-} from "@aws-sdk/client-s3";
+import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { type NextApiRequest, type NextApiResponse } from "next";
+import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
+import { authOptions } from "src/server/auth";
+import { db } from "src/server/db";
+import { images, product } from "src/server/db/schema";
 import { env } from "~/env";
 
 // export async function POST(request: NextRequest) {
@@ -75,15 +76,27 @@ const s3 = new S3Client({
   region: env.REGION_AWS,
 });
 
-export default async function GET(request: NextRequest) {
+// type RequestWithFormData = NextApiRequest & {
+//   formData: () => Promise<FormData>;
+// };
+
+export default async function POST(
+  request: NextRequest,
+  response: NextResponse,
+) {
+  // const req = request as unknown as NextApiRequest;
+  // const res = response as unknown as NextApiResponse;
+  // const session = await getServerSession(request, response, authOptions);
+  // if (!session) {
+  //   return NextResponse.json(null, { status: 401 });
+  // }
+
+  // console.log(">>> session", session);
+
   const formData = await request.formData();
   const files = formData.getAll("image") as File[];
 
-  console.log(">>> files", files);
-
-  // const BUCKET_NAME = "dish-rent";
-
-  const response = await Promise.all(
+  const imgResponse = await Promise.all(
     files.map(async (file) => {
       // not sure why I have to override the types here
       const Body = (await file.arrayBuffer()) as Buffer;
@@ -97,31 +110,69 @@ export default async function GET(request: NextRequest) {
         }),
       );
 
-      return `https://${env.BUCKET_NAME_AWS}.s3.eu-north-1.amazonaws.com/${encodeFileName}`;
-
-      // return r;
+      return {
+        url: `https://${env.BUCKET_NAME_AWS}.s3.${env.REGION_AWS}.amazonaws.com/${encodeFileName}`,
+        key: encodeFileName,
+        name: file.name,
+        size: file.size,
+      };
     }),
   );
 
-  // https://dish-rent.s3.eu-north-1.amazonaws.com/1710444268201-BluePlates.jpg
-  // console.log(">>> response", response);
+  const formattedFields = {
+    name: formData.get("name")?.toString(),
+    price: Number(formData.get("price")?.toString()),
+    titleImage: formData.get("titleImage")?.toString(),
+    description: formData.get("description")?.toString(),
+    categories: formData.get("categories")?.toString().split(","),
+    availablePieces: Number(formData.get("availablePieces")?.toString()),
+    isPublished:
+      formData.get("isPublished")?.toString() === "true" ? true : false,
+    availableDatesEnd: Number(formData.get("availableDatesEnd")?.toString()),
+    availableDatesStart: Number(
+      formData.get("availableDatesStart")?.toString(),
+    ),
+  };
 
-  // console.log(">>> ????", request);
-  // const params = request.query as { key: string };
+  // const ids = await db
+  //   .insert(product)
+  //   .values({
+  //     name: formattedFields.name,
+  //     price: formattedFields.price,
+  //     createdById: "1",
+  //     categories: formattedFields.categories,
+  //     titleImage: formattedFields.titleImage,
+  //     isPublished: formattedFields.isPublished,
+  //     description: formattedFields.description,
+  //     availablePieces: formattedFields.availablePieces,
+  //     availableDatesStart: formattedFields.availableDatesStart,
+  //     availableDatesEnd: formattedFields.availableDatesEnd,
+  //   })
+  //   .returning({ id: product.id });
 
-  // const client = new S3Client(clientParams);
-  // const command = new GetObjectCommand(getObjectParams);
-  // const url = await getSignedUrl(client, command, { expiresIn: 3600 });
+  // const postId = ids[0]?.id;
 
-  // const command = new GetObjectCommand({
-  //   Bucket: "dish-rent",
-  //   Key: "Assorted Bow.jpg",
-  // });
-  // const src = await getSignedUrl(s3, command, { expiresIn: 3600 });
+  // if (!postId || imgResponse.length === 0) {
+  //   throw new Error("failed to create post");
+  // }
 
-  // return NextResponse.json({ src });
+  // await db.insert(images).values(
+  //   imgResponse.map((image) => {
+  //     return {
+  //       postId: postId,
+  //       url: image.url,
+  //       key: image.key,
+  //       name: image.name,
+  //       size: image.size,
+  //     };
+  //   }),
+  // );
 
-  // return NextResponse.json(response);
+  // return response.status(200).json({ postId });
+
+  // return response.json();
+  return new NextResponse("Thank you");
+  // return NextResponse.json({ postId }, { status: 200 });
 }
 
 // export default async function POST(
@@ -214,39 +265,39 @@ export default async function GET(request: NextRequest) {
 //       isPublished: fields.isPublished?.toString() === "true" ? true : false,
 //     };
 
-//     // const ids = await db
-//     //   .insert(product)
-//     //   .values({
-//     //     name: formattedFields.name,
-//     //     price: formattedFields.price,
-//     //     createdById: session.user.id,
-//     //     categories: formattedFields.categories,
-//     //     titleImage: formattedFields.titleImage,
-//     //     isPublished: formattedFields.isPublished,
-//     //     description: formattedFields.description,
-//     //     availablePieces: formattedFields.availablePieces,
-//     //     availableDatesStart: formattedFields.availableDatesStart,
-//     //     availableDatesEnd: formattedFields.availableDatesEnd,
-//     //   })
-//     //   .returning({ id: product.id });
+// const ids = await db
+//   .insert(product)
+//   .values({
+//     name: formattedFields.name,
+//     price: formattedFields.price,
+//     createdById: session.user.id,
+//     categories: formattedFields.categories,
+//     titleImage: formattedFields.titleImage,
+//     isPublished: formattedFields.isPublished,
+//     description: formattedFields.description,
+//     availablePieces: formattedFields.availablePieces,
+//     availableDatesStart: formattedFields.availableDatesStart,
+//     availableDatesEnd: formattedFields.availableDatesEnd,
+//   })
+//   .returning({ id: product.id });
 
 //     // console.log(">>> ids", ids);
 
-//     // const postId = ids[0]?.id;
+// const postId = ids[0]?.id;
 
-//     // if (!postId || !imageRes) {
-//     //   throw new Error("failed to create post");
-//     // }
+// if (!postId || !imageRes) {
+//   throw new Error("failed to create post");
+// }
 
-//     // imageRes.data?.map((image) => {
-//     //   return {
-//     //     postId: postId,
-//     //     url: image.url,
-//     //     key: image.key,
-//     //     name: image.name,
-//     //     size: image.size,
-//     //   };
-//     // }
+// imageRes.data?.map((image) => {
+//   return {
+//     postId: postId,
+//     url: image.url,
+//     key: image.key,
+//     name: image.name,
+//     size: image.size,
+//   };
+// }
 
 //     // key: 'c2fc6cc2-f693-4a50-9027-4e9ff4b6c1d6-r99sa9',
 //     // url: 'https://utfs.io/f/c2fc6cc2-f693-4a50-9027-4e9ff4b6c1d6-r99sa9',
@@ -255,18 +306,18 @@ export default async function GET(request: NextRequest) {
 //     // type: '',
 //     // customId: null
 
-//     // await db.insert(images).values(
-//     //   imageRes?.map((image) => {
-//     //     console.log(">>> image.data", image.data);
-//     //     return {
-//     //       postId: postId,
-//     //       url: image.data.url,
-//     //       key: image.data.key,
-//     //       name: image.data.name,
-//     //       size: image.data.size,
-//     //     };
-//     //   }),
-//     // );
+// await db.insert(images).values(
+//   imageRes?.map((image) => {
+//     console.log(">>> image.data", image.data);
+//     return {
+//       postId: postId,
+//       url: image.data.url,
+//       key: image.data.key,
+//       name: image.data.name,
+//       size: image.data.size,
+//     };
+//   }),
+// );
 
 //     // console.log(">>> formattedFields", formattedFields);
 

@@ -166,15 +166,15 @@ export const productRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ input, ctx }) => {
-      if (input.imagesToDelete && input.imagesToDelete.length > 0) {
-        for (const image of input.imagesToDelete) {
-          await ctx.db
-            .delete(images)
-            .where(and(eq(images.key, image.key), eq(images.postId, input.id)));
-        }
+      // if (input.imagesToDelete && input.imagesToDelete.length > 0) {
+      //   for (const image of input.imagesToDelete) {
+      //     await ctx.db
+      //       .delete(images)
+      //       .where(and(eq(images.key, image.key), eq(images.postId, input.id)));
+      //   }
 
-        await utapi.deleteFiles(input.imagesToDelete.map((image) => image.key));
-      }
+      //   await utapi.deleteFiles(input.imagesToDelete.map((image) => image.key));
+      // }
 
       await ctx.db
         .update(product)
@@ -209,13 +209,13 @@ export const productRouter = createTRPCRouter({
       }
 
       // try to find the image in the post by name if not found throw error
-      const titleImage = post.images.find(
-        (image) => image.name === input.imageName,
-      );
+      // const titleImage = post.images.find(
+      //   (image) => image.name === input.imageName,
+      // );
 
-      if (!titleImage) {
-        throw new Error("image not found");
-      }
+      // if (!titleImage) {
+      //   throw new Error("image not found");
+      // }
 
       await ctx.db
         .update(product)
