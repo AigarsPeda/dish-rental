@@ -19,7 +19,7 @@ import TextInput from "~/components/TextInput/TextInput";
 import Textarea from "~/components/Textarea/Textarea";
 import Toggle from "~/components/Toggle/Toggle";
 import useImageUploadThing from "~/hooks/useImageUploadThing";
-import { DBImageType, type ImageDataType } from "~/types/product.schema";
+import { DBImageType } from "~/types/product.schema";
 import ImageLoader from "~/utils/ImageLoader";
 import { api } from "~/utils/api";
 import classNames from "~/utils/classNames";

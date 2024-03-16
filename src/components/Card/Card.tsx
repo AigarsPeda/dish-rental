@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { type FC } from "react";
 import { IoArrowForwardOutline } from "react-icons/io5";
-import { DBProductType } from "~/types/product.schema";
+import { type DBProductType } from "~/types/product.schema";
 import ImageLoader from "~/utils/ImageLoader";
 import classNames from "~/utils/classNames";
 import getTitleImage from "~/utils/getTitleImage";

@@ -5,7 +5,7 @@ import { useContext, useState } from "react";
 import Dropdown from "~/components/Dropdown/Dropdown";
 import ShoppingCartIcon from "~/components/icons/ShoppingCartIcon/ShoppingCartIcon";
 import { GlobalAppContext } from "~/context/GlobalAppContext/GlobalAppContext";
-import { OrderType } from "~/types/order.schema";
+import { type OrderType } from "~/types/order.schema";
 import ImageLoader from "~/utils/ImageLoader";
 import { formatDate } from "~/utils/dateUtils";
 

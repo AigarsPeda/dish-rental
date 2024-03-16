@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
-import { ImageDataType } from "~/types/product.schema";
-import { useUploadThing } from "~/utils/uploadthing";
 import Compressor from "compressorjs";
+import { useEffect, useState } from "react";
+import { type ImageDataType } from "~/types/product.schema";
+import { useUploadThing } from "~/utils/uploadthing";
 
 const FOUR_AND_HALF_MB = 4.5 * 1024 * 1024;
 

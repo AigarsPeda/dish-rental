@@ -1,7 +1,7 @@
 import { type NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { DateValueType } from "react-tailwindcss-datepicker";
+import { type DateValueType } from "react-tailwindcss-datepicker";
 import Card from "~/components/Card/Card";
 import PageHead from "~/components/PageHead/PageHead";
 import Search from "~/components/Search/Search";

@@ -25,7 +25,7 @@ const OrderModal: FC<OrderModalProps> = ({
 }) => {
   const router = useRouter();
   const [postId, setPostId] = useState<number | null>(null);
-  const { data, isLoading } = api.product.getById.useQuery(
+  const { data } = api.product.getById.useQuery(
     { id: postId ?? 1 },
     { enabled: postId !== null },
   );

@@ -104,7 +104,7 @@ export default async function GET(request: NextRequest) {
   );
 
   // https://dish-rent.s3.eu-north-1.amazonaws.com/1710444268201-BluePlates.jpg
-  console.log(">>> response", response);
+  // console.log(">>> response", response);
 
   // console.log(">>> ????", request);
   // const params = request.query as { key: string };

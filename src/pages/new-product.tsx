@@ -1,6 +1,5 @@
 import { ALL_OPTIONS, LOCAL_STORAGE_KEYS } from "hardcoded";
 import { type NextPage } from "next";
-import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import Datepicker, { type DateValueType } from "react-tailwindcss-datepicker";
@@ -13,7 +12,6 @@ import Spinner from "~/components/Spinner/Spinner";
 import TextInput from "~/components/TextInput/TextInput";
 import Textarea from "~/components/Textarea/Textarea";
 import Toggle from "~/components/Toggle/Toggle";
-import useImageUploadThing from "~/hooks/useImageUploadThing";
 import useLocalStorage from "~/hooks/useLocalStorage";
 import useRedirect from "~/hooks/useRedirect";
 import ImageLoader from "~/utils/ImageLoader";
@@ -33,7 +31,7 @@ type FormStateType = {
 
 const NewPost: NextPage = () => {
   const { redirectToPath } = useRedirect();
-  const { data: sessionData } = useSession();
+  // const { data: sessionData } = useSession();
   const [images, setImages] = useState<File[]>([]);
   const [isFormLoading, setIsFormLoading] = useState(false);
   const [isNeedToSignIn, setIsNeedToSignIn] = useState(false);
@@ -177,7 +175,7 @@ const NewPost: NextPage = () => {
             className="mx-auto mt-4 max-w-xl px-4 pb-10"
             onSubmit={(e) => {
               e.preventDefault();
-              uploadProfileImage(images, formsSate);
+              void uploadProfileImage(images, formsSate);
               // if (isFormEmpty || isImagesEmpty) {
               //   setIsShowErrorMessage(true);
               //   return;
