@@ -7,65 +7,6 @@ import { db } from "src/server/db";
 import { images, product } from "src/server/db/schema";
 import { env } from "~/env";
 
-// export async function POST(request: NextRequest) {
-//   console.log(">>>", request);
-
-// Step 1: Check if user is authenticated (With NextAuth)
-// const session = await getServerSession(authOptions);
-// if (!session) {
-//   return NextResponse.json(null, { status: 401 });
-// }
-
-// Step 2: Get image from request (With Next.js API Routes)
-// const formData = await request.formData();
-
-// console.log(">>>", ...formData);
-
-// const imageFile = formData.get("image") as unknown as File | null;
-
-// if (!imageFile) {
-//   return NextResponse.json(null, { status: 400 });
-// }
-// const imageBuffer = Buffer.from(await imageFile.arrayBuffer())
-
-// Step 3: Resize image (With Sharp)
-// const editedImageBuffer = await sharp(imageBuffer)
-//   .resize({ height: 256, width: 256, fit: 'cover' })
-//   .toBuffer()
-
-// Step 4: Upload image (With AWS SDK)
-// const imageUrl = await uploadToS3({
-//   buffer: editedImageBuffer,
-//   key: `profile-images/${session.user.id}`,
-//   contentType: imageFile.type,
-// })
-
-// Step 5: Update user in database (With Drizzle ORM)
-// await db
-//   .update(users)
-//   .set({
-//     image: imageUrl,
-//   })
-//   .where(eq(users.id, session.user.id))
-
-// Step 6: Return new image URL
-// return NextResponse.json({ imageUrl })
-// }
-
-// export const config = {
-//   api: {
-//     bodyParser: {
-//       sizeLimit: "5mb", // Set desired value here
-//     },
-//   },
-// };
-
-// export const config = {
-//   api: {
-//     bodyParser: false,
-//   },
-// };
-
 export const runtime = "edge";
 
 const s3 = new S3Client({
@@ -75,10 +16,6 @@ const s3 = new S3Client({
   },
   region: env.REGION_AWS,
 });
-
-// type RequestWithFormData = NextApiRequest & {
-//   formData: () => Promise<FormData>;
-// };
 
 export default async function POST(
   request: NextRequest,
@@ -119,6 +56,8 @@ export default async function POST(
     }),
   );
 
+  console.log(">>> imgResponse", imgResponse);
+
   const formattedFields = {
     name: formData.get("name")?.toString(),
     price: Number(formData.get("price")?.toString()),
@@ -134,23 +73,24 @@ export default async function POST(
     ),
   };
 
-  // const ids = await db
-  //   .insert(product)
-  //   .values({
-  //     name: formattedFields.name,
-  //     price: formattedFields.price,
-  //     createdById: "1",
-  //     categories: formattedFields.categories,
-  //     titleImage: formattedFields.titleImage,
-  //     isPublished: formattedFields.isPublished,
-  //     description: formattedFields.description,
-  //     availablePieces: formattedFields.availablePieces,
-  //     availableDatesStart: formattedFields.availableDatesStart,
-  //     availableDatesEnd: formattedFields.availableDatesEnd,
-  //   })
-  //   .returning({ id: product.id });
+  const ids = await db
+    .insert(product)
+    .values({
+      name: formattedFields.name,
+      price: formattedFields.price,
+      createdById: "1",
+      categories: formattedFields.categories,
+      titleImage: formattedFields.titleImage,
+      isPublished: formattedFields.isPublished,
+      description: formattedFields.description,
+      availablePieces: formattedFields.availablePieces,
+      availableDatesStart: formattedFields.availableDatesStart,
+      availableDatesEnd: formattedFields.availableDatesEnd,
+    })
+    .returning({ id: product.id });
 
-  // const postId = ids[0]?.id;
+  const postId = ids[0]?.id;
+  console.log(">>> postId", postId);
 
   // if (!postId || imgResponse.length === 0) {
   //   throw new Error("failed to create post");
@@ -170,9 +110,9 @@ export default async function POST(
 
   // return response.status(200).json({ postId });
 
-  // return response.json();
-  return new NextResponse("Thank you");
-  // return NextResponse.json({ postId }, { status: 200 });
+  return new NextResponse(JSON.stringify({ postId: "1" }), {
+    headers: { "Content-Type": "application/json" },
+  });
 }
 
 // export default async function POST(
