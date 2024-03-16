@@ -137,9 +137,12 @@ const NewPost: NextPage = () => {
     });
 
     if (response.ok) {
-      const json = await response.json();
+      const json = (await response.json()) as { postId: string };
       console.log(json);
-      redirectToPath(`/product/${json.postId}`);
+
+      if (json?.postId) {
+        redirectToPath(`/product/${json?.postId}`);
+      }
     }
   };
 

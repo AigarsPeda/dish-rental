@@ -90,6 +90,10 @@ export default async function POST(
     .returning({ id: product.id });
 
   const postId = ids[0]?.id;
+
+  if (!postId) {
+    return;
+  }
   console.log(">>> postId", postId);
 
   // if (!postId || imgResponse.length === 0) {
