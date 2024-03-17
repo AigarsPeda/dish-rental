@@ -161,7 +161,7 @@ export const productRouter = createTRPCRouter({
         availableDatesEnd: z.number().optional(),
         availableDatesStart: z.number().optional(),
         categories: z.array(z.string()).optional(),
-        imagesToDelete: z.array(DBImageSchema).optional(),
+        // imagesToDelete: z.array(DBImageSchema).optional(),
       }),
     )
     .mutation(async ({ input, ctx }) => {

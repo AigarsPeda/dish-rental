@@ -11,17 +11,18 @@ import {
   IoTrashOutline,
 } from "react-icons/io5";
 import Datepicker from "react-tailwindcss-datepicker";
+import DeleteImageModal from "~/components/DeleteImageModal/DeleteImageModal";
 import DropZone from "~/components/DropZone/DropZone";
 import MultiSelect from "~/components/MultiSelect/MultiSelect";
 import NumberInput from "~/components/NumberInput/NumberInput";
 import PageHead from "~/components/PageHead/PageHead";
-import TextInput from "~/components/TextInput/TextInput";
 import Textarea from "~/components/Textarea/Textarea";
+import TextInput from "~/components/TextInput/TextInput";
 import Toggle from "~/components/Toggle/Toggle";
 import { DBImageType } from "~/types/product.schema";
-import ImageLoader from "~/utils/ImageLoader";
 import { api } from "~/utils/api";
 import classNames from "~/utils/classNames";
+import ImageLoader from "~/utils/ImageLoader";
 
 const FOUR_AND_HALF_MB = 4.5 * 1024 * 1024;
 
@@ -50,7 +51,7 @@ type FormDataType = {
   imagesData: DBImageType[];
   availableDatesEnd: number;
   availableDatesStart: number;
-  imagesToDelete: DBImageType[];
+  // imagesToDelete: DBImageType[];
 };
 
 type ChangingStatus = "idle" | "changing" | "changed" | "error";
@@ -60,6 +61,9 @@ const EditPage: NextPage = () => {
   const [parent] = useAutoAnimate();
   const [fileError, setFileError] = useState<FileErrorType>(null);
   const [changingStatus, setChangingStatus] = useState<ChangingStatus>("idle");
+  const [imageToDelete, setImageToDelete] = useState<string | undefined>(
+    undefined,
+  );
 
   const { data, isLoading } = api.product.getById.useQuery(
     { id: router.query.id as string },
@@ -76,7 +80,7 @@ const EditPage: NextPage = () => {
     imagesData: [],
     description: "",
     isPublished: false,
-    imagesToDelete: [],
+    // imagesToDelete: [],
     availablePieces: 0,
     availableDatesEnd: 0,
     availableDatesStart: 0,
@@ -172,7 +176,7 @@ const EditPage: NextPage = () => {
                   titleImage: formData.titleImage ?? "",
                   categories: formData.categories ?? [],
                   description: formData.description ?? "",
-                  imagesToDelete: formData.imagesToDelete,
+                  // imagesToDelete: formData.imagesToDelete,
                   availablePieces: formData.availablePieces,
                   availableDatesEnd: formData.availableDatesEnd,
                   availableDatesStart: formData.availableDatesStart,
@@ -393,25 +397,22 @@ const EditPage: NextPage = () => {
                               type="button"
                               className="absolute -right-1.5 -top-1.5 z-10 rounded-full bg-white p-1"
                               onClick={() => {
-                                setFormData((state) => ({
-                                  ...state,
-                                  imagesData: state.imagesData.filter(
-                                    (image) => image.name !== file.name,
-                                  ),
-                                  newImages: state.newImages.filter(
-                                    (image) => image.name !== file.name,
-                                  ),
-                                  imagesToDelete: [
-                                    ...state.imagesToDelete,
-                                    file,
-                                  ],
-                                }));
+                                setImageToDelete(file.url);
                               }}
                             >
                               <IoTrashOutline className="h-4 w-4 text-red-500" />
                             </button>
                           </div>
                         ))}
+                        <DeleteImageModal
+                          imgSrc={imageToDelete}
+                          handleModalClose={() => {
+                            setImageToDelete(undefined);
+                          }}
+                          handleImageDelete={() => {
+                            console.log("delete");
+                          }}
+                        />
                       </div>
                       <DropZone
                         isMultiple
