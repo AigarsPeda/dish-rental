@@ -84,24 +84,24 @@ const EditPage: NextPage = () => {
     }
   }, [router.query.id]);
 
-  // useEffect(() => {
-  //   if (data) {
-  //     console.log("data.images", data.images);
-  //     setFormData((state) => ({
-  //       ...state,
-  //       price: data.price,
-  //       name: data.name ?? "",
-  //       imagesData: data.images,
-  //       isPublished: data.isPublished,
-  //       titleImage: data.titleImage ?? "",
-  //       description: data.description ?? "",
-  //       availablePieces: data.availablePieces,
-  //       availableDatesEnd: data.availableDatesEnd,
-  //       availableDatesStart: data.availableDatesStart,
-  //       categories: data.categories ?? [],
-  //     }));
-  //   }
-  // }, [data]);
+  useEffect(() => {
+    if (data) {
+      console.log("data.images", data.images);
+      setFormData((state) => ({
+        ...state,
+        price: data.price,
+        name: data.name ?? "",
+        imagesData: data.images,
+        isPublished: data.isPublished,
+        titleImage: data.titleImage ?? "",
+        description: data.description ?? "",
+        availablePieces: data.availablePieces,
+        availableDatesEnd: data.availableDatesEnd,
+        availableDatesStart: data.availableDatesStart,
+        categories: data.categories ?? [],
+      }));
+    }
+  }, [data]);
 
   useEffect(() => {
     if (changingStatus === "changed") {
@@ -122,20 +122,20 @@ const EditPage: NextPage = () => {
   };
 
   // create image url from the image data and from uploaded files
-  const getTitleImage = (imagesData: DBImageType[], imageFiles: File[]) => {
-    const newImagesUrls: DBImageType[] = imageFiles?.map((file, i) => ({
-      key: file.name,
-      name: file.name,
-      size: file.size,
-      type: file.type,
-      postId: postId ?? 1,
-      createdAt: new Date(),
-      id: i * Math.random(),
-      url: URL.createObjectURL(file),
-    }));
+  // const getTitleImage = (imagesData: DBImageType[], imageFiles: File[]) => {
+  //   const newImagesUrls: DBImageType[] = imageFiles?.map((file, i) => ({
+  //     key: file.name,
+  //     name: file.name,
+  //     size: file.size,
+  //     type: file.type,
+  //     postId: postId ?? 1,
+  //     createdAt: new Date(),
+  //     id: i * Math.random(),
+  //     url: URL.createObjectURL(file),
+  //   }));
 
-    return [...(imagesData ?? []), ...(newImagesUrls ?? [])];
-  };
+  //   return [...(imagesData ?? []), ...(newImagesUrls ?? [])];
+  // };
 
   return (
     <>
@@ -346,7 +346,67 @@ const EditPage: NextPage = () => {
                         ref={parent}
                         className="flex flex-wrap justify-center gap-2"
                       >
-                        {getTitleImage(
+                        {formData.imagesData.map((file, i) => (
+                          <div className="relative" key={`${file.name}-${i}`}>
+                            <button
+                              type="button"
+                              className={classNames(
+                                file.name === formData?.titleImage &&
+                                  "ring-2 ring-gray-900",
+                                "relative h-20 w-20 overflow-hidden rounded-md transition-all hover:ring-2 hover:ring-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900",
+                              )}
+                              onClick={() => {
+                                setFormData((state) => ({
+                                  ...state,
+                                  titleImage: file.name,
+                                }));
+                              }}
+                            >
+                              <Image
+                                priority
+                                width={0}
+                                height={0}
+                                src={file.url}
+                                alt={file.name}
+                                loader={ImageLoader}
+                                style={{
+                                  width: "120px",
+                                  height: "auto",
+                                  objectFit: "cover",
+                                }}
+                              />
+                              {file.name === formData?.titleImage && (
+                                <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-25">
+                                  <p className="text-xs font-semibold text-white">
+                                    Titulbilde
+                                  </p>
+                                </div>
+                              )}
+                            </button>
+                            <button
+                              type="button"
+                              className="absolute -right-1.5 -top-1.5 z-10 rounded-full bg-white p-1"
+                              onClick={() => {
+                                setFormData((state) => ({
+                                  ...state,
+                                  imagesData: state.imagesData.filter(
+                                    (image) => image.name !== file.name,
+                                  ),
+                                  newImages: state.newImages.filter(
+                                    (image) => image.name !== file.name,
+                                  ),
+                                  imagesToDelete: [
+                                    ...state.imagesToDelete,
+                                    file,
+                                  ],
+                                }));
+                              }}
+                            >
+                              <IoTrashOutline className="h-4 w-4 text-red-500" />
+                            </button>
+                          </div>
+                        ))}
+                        {/* {getTitleImage(
                           formData.imagesData,
                           formData.newImages,
                         ).map((file, i) => (
@@ -407,7 +467,7 @@ const EditPage: NextPage = () => {
                               <IoTrashOutline className="h-4 w-4 text-red-500" />
                             </button>
                           </div>
-                        ))}
+                        ))} */}
 
                         <DropZone
                           isMultiple
