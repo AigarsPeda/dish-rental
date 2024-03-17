@@ -2,15 +2,17 @@ import Compressor from "compressorjs";
 import { useEffect, useState } from "react";
 import { type ImageDataType } from "~/types/product.schema";
 import { useUploadThing } from "~/utils/uploadthing";
+import { FileErrorType } from "../pages/product/[id]/edit";
 
 const FOUR_AND_HALF_MB = 4.5 * 1024 * 1024;
 
 export type InputStatus = "Idle" | "Loading" | "Error" | "Success";
-export type FileErrorType =
-  | null
-  | "fileSize"
-  | "fileType"
-  | "Something went wrong";
+// export type FileErrorType =
+//   | null
+//   | "fileSize"
+//   | "fileType"
+//   | "Something went wrong"
+//   | "Too many files";
 
 const useImageUploadThing = () => {
   const [response, setResponse] = useState<ImageDataType[]>([]);

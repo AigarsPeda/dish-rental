@@ -1,11 +1,9 @@
 import { type FC } from "react";
 import { IoAdd, IoCheckmarkSharp } from "react-icons/io5";
 import Spinner from "src/components/Spinner/Spinner";
-import {
-  type FileErrorType,
-  type InputStatus,
-} from "~/hooks/useImageUploadThing";
+import { type InputStatus } from "~/hooks/useImageUploadThing";
 import classNames from "~/utils/classNames";
+import { FileErrorType } from "../../pages/product/[id]/edit";
 
 interface DropZoneProps {
   images: File[];
@@ -94,46 +92,50 @@ const DropZone: FC<DropZoneProps> = ({
                 )}
               </button>
             )}
-
-            {!fileError && images.length > 0 && !handleStartUpload && (
-              <div
-                className={classNames(
-                  inputStatus === "Idle" && "cursor-pointer text-gray-600",
-                  inputStatus === "Loading" &&
-                    "cursor-not-allowed text-gray-600",
-                  inputStatus === "Success" &&
-                    "cursor-not-allowed text-green-300",
-                  "relative z-50 flex w-32 items-center justify-center rounded-md  px-4 py-2 text-sm ",
-                )}
-              >
-                {inputStatus === "Success" && (
-                  <span className="flex items-center justify-center gap-2">
-                    Success
-                    <IoCheckmarkSharp />
-                  </span>
-                )}
-              </div>
-            )}
-
-            {fileError === "fileSize" && (
-              <p className="text-xs leading-5 text-red-600">
-                File size is too large
-              </p>
-            )}
-
-            {fileError === "fileType" && (
-              <p className="text-xs leading-5 text-red-600">
-                File type is not supported
-              </p>
-            )}
-
-            {fileError === "Something went wrong" && (
-              <p className="text-xs leading-5 text-red-600">
-                Something went wrong
-              </p>
-            )}
           </div>
         </div>
+      </div>
+      <div>
+        {!fileError && images.length > 0 && !handleStartUpload && (
+          <div
+            className={classNames(
+              inputStatus === "Idle" && "cursor-pointer text-gray-600",
+              inputStatus === "Loading" && "cursor-not-allowed text-gray-600",
+              inputStatus === "Success" && "cursor-not-allowed text-green-300",
+              "relative z-50 flex w-32 items-center justify-center rounded-md  px-4 py-2 text-sm ",
+            )}
+          >
+            {inputStatus === "Success" && (
+              <span className="flex items-center justify-center gap-2">
+                Success
+                <IoCheckmarkSharp />
+              </span>
+            )}
+          </div>
+        )}
+
+        {fileError === "fileSize" && (
+          <p className="text-xs leading-5 text-red-600">
+            File size is too large
+          </p>
+        )}
+
+        {fileError === "fileType" && (
+          <p className="text-xs leading-5 text-red-600">
+            File type is not supported
+          </p>
+        )}
+
+        {fileError === "Something went wrong" && (
+          <p className="text-xs leading-5 text-red-600">Something went wrong</p>
+        )}
+
+        {fileError === "Too many files" && (
+          <p className="text-xs leading-5 text-red-600">
+            Pārāk daudz failu. Atļauti tikai 4 attēli. Izdēsiet kādu no vecajiem
+            attēliem, vai izvēlieties mazāk attēlus.
+          </p>
+        )}
       </div>
     </>
   );

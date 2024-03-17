@@ -18,25 +18,39 @@ import PageHead from "~/components/PageHead/PageHead";
 import TextInput from "~/components/TextInput/TextInput";
 import Textarea from "~/components/Textarea/Textarea";
 import Toggle from "~/components/Toggle/Toggle";
-import useImageUploadThing from "~/hooks/useImageUploadThing";
 import { DBImageType } from "~/types/product.schema";
 import ImageLoader from "~/utils/ImageLoader";
 import { api } from "~/utils/api";
 import classNames from "~/utils/classNames";
 
+const FOUR_AND_HALF_MB = 4.5 * 1024 * 1024;
+
+export type FileErrorType =
+  | null
+  | "fileSize"
+  | "fileType"
+  | "Too many files"
+  | "Something went wrong";
+
+const variants: Variants = {
+  open: { opacity: 1, y: 0 },
+  closed: { opacity: 0, y: "-100%", position: "absolute" },
+};
+
 type FormDataType = {
+  id: number;
   name: string;
   price: number;
+  newImages: File[];
   titleImage: string;
   description: string;
   isPublished: boolean;
   categories: string[];
   availablePieces: number;
+  imagesData: DBImageType[];
   availableDatesEnd: number;
   availableDatesStart: number;
-  imagesData: DBImageType[];
   imagesToDelete: DBImageType[];
-  newImages: File[];
 };
 
 type ChangingStatus = "idle" | "changing" | "changed" | "error";
@@ -44,16 +58,16 @@ type ChangingStatus = "idle" | "changing" | "changed" | "error";
 const EditPage: NextPage = () => {
   const router = useRouter();
   const [parent] = useAutoAnimate();
+  const [fileError, setFileError] = useState<FileErrorType>(null);
   const [changingStatus, setChangingStatus] = useState<ChangingStatus>("idle");
-  const [postId, setPostId] = useState<number | null>(null);
-  const { response, fileError, checkFiles, inputStatus, handelStartUpload } =
-    useImageUploadThing();
+
   const { data, isLoading } = api.product.getById.useQuery(
-    { id: postId ?? 1 },
-    { enabled: postId !== null },
+    { id: router.query.id as string },
+    { enabled: Boolean(router.query.id) },
   );
 
   const [formData, setFormData] = useState<FormDataType>({
+    id: 0,
     name: "",
     price: 0,
     newImages: [],
@@ -77,27 +91,48 @@ const EditPage: NextPage = () => {
     },
   });
 
-  useEffect(() => {
-    if (router.query.id && typeof router.query.id === "string") {
-      const id = parseInt(router.query.id, 10);
-      setPostId(id);
+  const checkFiles = (files: File[]) => {
+    const length = files.length + formData.imagesData.length;
+    if (length > 4) {
+      setFileError("Too many files");
+      return;
     }
-  }, [router.query.id]);
+
+    for (const file of files) {
+      // check if the file is larger than 2MB
+      if (file.size > FOUR_AND_HALF_MB) {
+        setFileError("fileSize");
+        return;
+      }
+
+      if (
+        file.type !== "image/jpeg" &&
+        file.type !== "image/png" &&
+        file.type !== "image/webp"
+      ) {
+        setFileError("fileType");
+        return;
+      }
+
+      setFileError(null);
+    }
+  };
 
   useEffect(() => {
     if (data) {
       setFormData((state) => ({
         ...state,
+        id: data.id,
         price: data.price,
         name: data.name ?? "",
         imagesData: data.images,
         isPublished: data.isPublished,
+        categories: data.categories ?? [],
         titleImage: data.titleImage ?? "",
         description: data.description ?? "",
         availablePieces: data.availablePieces,
         availableDatesEnd: data.availableDatesEnd,
         availableDatesStart: data.availableDatesStart,
-        categories: data.categories ?? [],
       }));
     }
   }, [data]);
@@ -115,27 +150,6 @@ const EditPage: NextPage = () => {
     return <div>Loading...</div>;
   }
 
-  const variants: Variants = {
-    open: { opacity: 1, y: 0 },
-    closed: { opacity: 0, y: "-100%", position: "absolute" },
-  };
-
-  // create image url from the image data and from uploaded files
-  // const getTitleImage = (imagesData: DBImageType[], imageFiles: File[]) => {
-  //   const newImagesUrls: DBImageType[] = imageFiles?.map((file, i) => ({
-  //     key: file.name,
-  //     name: file.name,
-  //     size: file.size,
-  //     type: file.type,
-  //     postId: postId ?? 1,
-  //     createdAt: new Date(),
-  //     id: i * Math.random(),
-  //     url: URL.createObjectURL(file),
-  //   }));
-
-  //   return [...(imagesData ?? []), ...(newImagesUrls ?? [])];
-  // };
-
   return (
     <>
       <PageHead
@@ -150,26 +164,19 @@ const EditPage: NextPage = () => {
               className="mx-auto mt-4 w-full max-w-xl px-2 pb-10"
               onSubmit={(e) => {
                 e.preventDefault();
-                // const f = createFormData(formData);
-                // https://github.com/trpc/trpc/discussions/658
                 mutate({
-                  id: postId ?? 1,
+                  id: formData.id,
                   name: formData.name ?? "",
                   price: formData.price ?? 0,
                   isPublished: formData.isPublished,
                   titleImage: formData.titleImage ?? "",
                   categories: formData.categories ?? [],
                   description: formData.description ?? "",
+                  imagesToDelete: formData.imagesToDelete,
                   availablePieces: formData.availablePieces,
                   availableDatesEnd: formData.availableDatesEnd,
                   availableDatesStart: formData.availableDatesStart,
-                  imagesToDelete: formData.imagesToDelete,
                 });
-
-                // if (formData.newImages.length > 0) {
-                //   console.log("uploading images", formData.newImages);
-                //   uploadProfileImage(formData.newImages);
-                // }
               }}
             >
               <div className="w-full space-y-12">
@@ -343,7 +350,7 @@ const EditPage: NextPage = () => {
                       </div>
                       <div
                         ref={parent}
-                        className="flex flex-wrap justify-center gap-2"
+                        className="mb-2 flex flex-wrap justify-center gap-2"
                       >
                         {formData.imagesData.map((file, i) => (
                           <div className="relative" key={`${file.name}-${i}`}>
@@ -405,87 +412,23 @@ const EditPage: NextPage = () => {
                             </button>
                           </div>
                         ))}
-                        {/* {getTitleImage(
-                          formData.imagesData,
-                          formData.newImages,
-                        ).map((file, i) => (
-                          <div className="relative" key={`${file.name}-${i}`}>
-                            <button
-                              type="button"
-                              className={classNames(
-                                file.name === formData?.titleImage &&
-                                  "ring-2 ring-gray-900",
-                                "relative h-20 w-20 overflow-hidden rounded-md transition-all hover:ring-2 hover:ring-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900",
-                              )}
-                              onClick={() => {
-                                setFormData((state) => ({
-                                  ...state,
-                                  titleImage: file.name,
-                                }));
-                              }}
-                            >
-                              <Image
-                                width={80}
-                                height={80}
-                                src={file.url}
-                                alt={file.name}
-                                loader={ImageLoader}
-                                style={{
-                                  width: "120px",
-                                  height: "auto",
-                                  objectFit: "cover",
-                                }}
-                              />
-                              {file.name === formData?.titleImage && (
-                                <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-25">
-                                  <p className="text-xs font-semibold text-white">
-                                    Titulbilde
-                                  </p>
-                                </div>
-                              )}
-                            </button>
-                            <button
-                              type="button"
-                              className="absolute -right-1.5 -top-1.5 z-10 rounded-full bg-white p-1"
-                              onClick={() => {
-                                setFormData((state) => ({
-                                  ...state,
-                                  imagesData: state.imagesData.filter(
-                                    (image) => image.name !== file.name,
-                                  ),
-                                  newImages: state.newImages.filter(
-                                    (image) => image.name !== file.name,
-                                  ),
-                                  imagesToDelete: [
-                                    ...state.imagesToDelete,
-                                    file,
-                                  ],
-                                }));
-                              }}
-                            >
-                              <IoTrashOutline className="h-4 w-4 text-red-500" />
-                            </button>
-                          </div>
-                        ))} */}
-
-                        <DropZone
-                          isMultiple
-                          images={formData?.newImages ?? []}
-                          fileError={fileError}
-                          checkFiles={checkFiles}
-                          inputStatus={inputStatus}
-                          handelFileUpload={(fileArray) => {
-                            // setImages(fileArray);
-                            setFormData((state) => ({
-                              ...state,
-                              newImages: fileArray,
-                            }));
-                          }}
-                        />
                       </div>
+                      <DropZone
+                        isMultiple
+                        inputStatus={"Idle"}
+                        fileError={fileError}
+                        checkFiles={checkFiles}
+                        images={formData?.newImages ?? []}
+                        handelFileUpload={(fileArray) => {
+                          setFormData((state) => ({
+                            ...state,
+                            newImages: fileArray,
+                          }));
+                        }}
+                      />
                       <div>
                         <p className="mt-1 text-sm leading-6 text-gray-400">
-                          JPG līdz 2MB. Maksimums 4 attēli.
+                          JPG līdz 4.5MB. Maksimums 4 attēli.
                         </p>
                       </div>
                     </div>

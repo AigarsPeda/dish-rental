@@ -59,11 +59,13 @@ export const productRouter = createTRPCRouter({
   //     };
   //   }),
 
+  // zod number or string
+
   getById: publicProcedure
-    .input(z.object({ id: z.number() }))
+    .input(z.object({ id: z.string() }))
     .query(({ input, ctx }) => {
       const post = ctx.db.query.product.findFirst({
-        where: (product, { eq }) => eq(product.id, input.id),
+        where: (product, { eq }) => eq(product.id, parseInt(input.id)),
         with: {
           images: true,
         },

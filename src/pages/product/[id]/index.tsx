@@ -29,11 +29,11 @@ const PostPage: NextPage = () => {
   const router = useRouter();
   const [parent] = useAutoAnimate();
   const { dispatch } = useContext(GlobalAppContext);
-  const [postId, setPostId] = useState<number | null>(null);
+  // const [postId, setPostId] = useState<number | null>(null);
   const [isAddedToOrder, setIsAddedToOrder] = useState(false);
   const { data, isLoading } = api.product.getById.useQuery(
-    { id: postId ?? 1 },
-    { enabled: postId !== null },
+    { id: router.query.id as string },
+    { enabled: Boolean(router.query.id) },
   );
 
   const [formsSate, setFormsState] = useState<FormStateType>({
@@ -45,12 +45,12 @@ const PostPage: NextPage = () => {
     },
   });
 
-  useEffect(() => {
-    if (router.query.id && typeof router.query.id === "string") {
-      const id = parseInt(router.query.id, 10);
-      setPostId(id);
-    }
-  }, [router.query.id]);
+  // useEffect(() => {
+  //   if (router.query.id && typeof router.query.id === "string") {
+  //     const id = parseInt(router.query.id, 10);
+  //     setPostId(id);
+  //   }
+  // }, [router.query.id]);
 
   const calculateDaysBetween = (startDate: Date, endDate: Date) => {
     const diffTime = Math.abs(endDate?.getTime() - startDate?.getTime());
