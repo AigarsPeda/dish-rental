@@ -26,8 +26,8 @@ const OrderModal: FC<OrderModalProps> = ({
   const router = useRouter();
   const [postId, setPostId] = useState<number | null>(null);
   const { data } = api.product.getById.useQuery(
-    { id: postId ?? 1 },
-    { enabled: postId !== null },
+    { id: router.query.id as string },
+    { enabled: Boolean(router.query.id) },
   );
   const [formsSate, setFormsState] = useState<FormStateType>({
     availableDates: {
