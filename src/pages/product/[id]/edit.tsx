@@ -19,7 +19,7 @@ import PageHead from "~/components/PageHead/PageHead";
 import Textarea from "~/components/Textarea/Textarea";
 import TextInput from "~/components/TextInput/TextInput";
 import Toggle from "~/components/Toggle/Toggle";
-import { DBImageType } from "~/types/product.schema";
+import { type DBImageType } from "~/types/product.schema";
 import { api } from "~/utils/api";
 import classNames from "~/utils/classNames";
 import getFilesError, { type FileErrorType } from "~/utils/getFilesError";
@@ -47,14 +47,18 @@ type FormDataType = {
 
 type ChangingStatus = "idle" | "changing" | "changed" | "error";
 
+export type ImageToDeleteType = {
+  key: string;
+  imgSrc: string;
+} | null;
+
 const EditPage: NextPage = () => {
   const router = useRouter();
   const [parent] = useAutoAnimate();
+  const [isDeleting, setIsDeleting] = useState(false);
   const [fileError, setFileError] = useState<FileErrorType>(null);
+  const [imageToDelete, setImageToDelete] = useState<ImageToDeleteType>(null);
   const [changingStatus, setChangingStatus] = useState<ChangingStatus>("idle");
-  const [imageToDelete, setImageToDelete] = useState<string | undefined>(
-    undefined,
-  );
 
   const { data, isLoading } = api.product.getById.useQuery(
     { id: router.query.id as string },
@@ -75,12 +79,25 @@ const EditPage: NextPage = () => {
     availableDatesEnd: 0,
     availableDatesStart: 0,
   });
-
-  const { mutate } = api.product.updateProduct.useMutation({
+  const utils = api.useUtils();
+  const { mutate: updateProduct } = api.product.updateProduct.useMutation({
     onSuccess: () => {
       setChangingStatus("changed");
     },
     onMutate: () => {
+      setChangingStatus("changing");
+    },
+  });
+
+  const { mutate: deleteImage } = api.product.deleteImage.useMutation({
+    onSuccess: () => {
+      setIsDeleting(false);
+      setImageToDelete(null);
+      setChangingStatus("changed");
+      utils.product.getById.invalidate({ id: router.query.id as string });
+    },
+    onMutate: () => {
+      setIsDeleting(true);
       setChangingStatus("changing");
     },
   });
@@ -131,7 +148,7 @@ const EditPage: NextPage = () => {
               className="mx-auto mt-4 w-full max-w-xl px-2 pb-10"
               onSubmit={(e) => {
                 e.preventDefault();
-                mutate({
+                updateProduct({
                   id: formData.id,
                   name: formData.name ?? "",
                   price: formData.price ?? 0,
@@ -359,7 +376,10 @@ const EditPage: NextPage = () => {
                               type="button"
                               className="absolute -right-1.5 -top-1.5 z-10 rounded-full bg-white p-1"
                               onClick={() => {
-                                setImageToDelete(file.url);
+                                setImageToDelete({
+                                  key: file.key,
+                                  imgSrc: file.url,
+                                });
                               }}
                             >
                               <IoTrashOutline className="h-4 w-4 text-red-500" />
@@ -367,12 +387,18 @@ const EditPage: NextPage = () => {
                           </div>
                         ))}
                         <DeleteImageModal
-                          imgSrc={imageToDelete}
+                          isDeleting={isDeleting}
+                          imageToDelete={imageToDelete}
                           handleModalClose={() => {
-                            setImageToDelete(undefined);
+                            setImageToDelete(null);
                           }}
                           handleImageDelete={() => {
-                            console.log("delete");
+                            if (!imageToDelete?.key) return;
+
+                            deleteImage({
+                              key: imageToDelete?.key,
+                              postId: data?.id ?? 0,
+                            });
                           }}
                         />
                       </div>

@@ -1,16 +1,9 @@
-import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
-import { type NextRequest, NextResponse } from "next/server";
+import { PutObjectCommand } from "@aws-sdk/client-s3";
+import { NextResponse, type NextRequest } from "next/server";
 import { env } from "~/env";
+import { s3 } from "~/pages/aws/awsClient";
 
 export const runtime = "edge";
-
-const s3 = new S3Client({
-  credentials: {
-    accessKeyId: env.ACCESS_KEY_AWS,
-    secretAccessKey: env.SECRET_AWS,
-  },
-  region: env.REGION_AWS,
-});
 
 export default async function POST(request: NextRequest) {
   const formData = await request.formData();

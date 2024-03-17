@@ -1,51 +1,52 @@
+import Image from "next/image";
 import { type FC } from "react";
 import Modal from "~/components/Modal/Modal";
-import Image from "next/image";
+import { ImageToDeleteType } from "~/pages/product/[id]/edit";
 import ImageLoader from "~/utils/ImageLoader";
 
 interface DeleteImageModalProps {
-  imgSrc: string | undefined;
+  isDeleting: boolean;
+  imageToDelete: ImageToDeleteType;
   handleModalClose: () => void;
   handleImageDelete: () => void;
 }
 
 const DeleteImageModal: FC<DeleteImageModalProps> = ({
-  imgSrc,
+  isDeleting,
+  imageToDelete,
   handleImageDelete,
   handleModalClose,
 }) => {
   return (
-    <Modal isModalOpen={Boolean(imgSrc)} handleModalClose={handleModalClose}>
+    <Modal
+      handleModalClose={handleModalClose}
+      isModalOpen={Boolean(imageToDelete?.imgSrc)}
+    >
       <div className="w-full border-b border-gray-900/10 p-6 pb-6 pt-4">
         <h2 className="text-xl font-semibold leading-7 text-gray-900">
           Vai tiešām vēlaties dzēst šo attēlu?
         </h2>
         <div className="mt-4 flex w-full items-center justify-center bg-fuchsia-400">
-          {imgSrc && (
-            <Image
-              priority
-              width={0}
-              height={0}
-              src={imgSrc ?? ""}
-              loader={ImageLoader}
-              alt="Attēls ko vēlaties dzēst"
-              style={{
-                width: "100%",
-                height: "300px",
-                objectFit: "cover",
-              }}
-            />
-          )}
+          <Image
+            priority
+            width={0}
+            height={0}
+            loader={ImageLoader}
+            alt="Attēls ko vēlaties dzēst"
+            src={imageToDelete?.imgSrc ?? "/images/placeholder.jpeg"}
+            style={{
+              width: "100%",
+              height: "300px",
+              objectFit: "cover",
+            }}
+          />
         </div>
         <div className="mt-5 flex items-center justify-end gap-x-2">
           <button
-            onClick={() => {
-              handleImageDelete();
-              handleModalClose();
-            }}
+            onClick={handleImageDelete}
             className="rounded-md bg-red-500 px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600"
           >
-            Dzēst
+            {isDeleting ? "Dzēšu..." : "Dzēst"}
           </button>
           <button
             onClick={handleModalClose}

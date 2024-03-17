@@ -7,6 +7,9 @@ import {
 } from "~/server/api/trpc";
 import { images, product } from "~/server/db/schema";
 import { DBImageSchema, NewProductSchema } from "~/types/product.schema";
+import { s3 } from "../../../pages/aws/awsClient";
+import { DeleteObjectCommand } from "@aws-sdk/client-s3";
+import { env } from "../../../env";
 
 export const productRouter = createTRPCRouter({
   hello: publicProcedure
@@ -59,7 +62,33 @@ export const productRouter = createTRPCRouter({
   //     };
   //   }),
 
-  // zod number or string
+  deleteImage: protectedProcedure
+    .input(z.object({ key: z.string(), postId: z.number() }))
+    .mutation(async ({ input, ctx }) => {
+      const command = new DeleteObjectCommand({
+        Key: input.key,
+        Bucket: env.BUCKET_NAME_AWS,
+      });
+      const response = await s3.send(command);
+
+      if (
+        !response.$metadata.httpStatusCode ||
+        response.$metadata.httpStatusCode !== 204
+      ) {
+        throw new Error("failed to delete image");
+      }
+
+      const ids = await ctx.db
+        .delete(images)
+        .where(eq(images.key, input.key))
+        .returning({
+          id: images.id,
+        });
+
+      return {
+        ids,
+      };
+    }),
 
   getById: publicProcedure
     .input(z.object({ id: z.string() }))
@@ -85,7 +114,7 @@ export const productRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const now = new Date().getTime();
       // Set all products that are not published and are past their available date to unpublished
-      const t = await ctx.db
+      await ctx.db
         .update(product)
         .set({ isPublished: false })
         .where(lt(product.availableDatesEnd, now));
