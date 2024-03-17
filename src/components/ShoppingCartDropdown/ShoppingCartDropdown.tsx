@@ -16,11 +16,7 @@ const ShoppingCartDropdown = () => {
 
   const getSumOfOrders = (orders: OrderType[]) => {
     return orders?.reduce((acc, order) => {
-      // return acc + order.price * order.quantity;
-
       return Math.round((acc + order.price) * 100) / 100;
-
-      //  return acc + order.price;
     }, 0);
   };
 

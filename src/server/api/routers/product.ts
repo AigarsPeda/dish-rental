@@ -17,49 +17,47 @@ export const productRouter = createTRPCRouter({
       };
     }),
 
-  create: protectedProcedure
-    .input(NewProductSchema)
-    .mutation(async ({ ctx, input }) => {
-      // await utapi.uploadFiles(input.imagesData.map((image) => image.serverData));
+  // create: protectedProcedure
+  //   .input(NewProductSchema)
+  //   .mutation(async ({ ctx, input }) => {
+  //     const ids = await ctx.db
+  //       .insert(product)
+  //       .values({
+  //         name: input.name,
+  //         price: input.price,
+  //         categories: input.categories,
+  //         titleImage: input.titleImage,
+  //         isPublished: input.isPublished,
+  //         description: input.description,
+  //         createdById: ctx.session.user.id,
+  //         availablePieces: input.availablePieces,
+  //         availableDatesStart: input.availableDatesStart.getTime(),
+  //         availableDatesEnd: input.availableDatesEnd.getTime(),
+  //       })
+  //       .returning({ id: product.id });
 
-      const ids = await ctx.db
-        .insert(product)
-        .values({
-          name: input.name,
-          price: input.price,
-          titleImage: input.titleImage,
-          isPublished: input.isPublished,
-          description: input.description,
-          createdById: ctx.session.user.id,
-          categories: input.categories,
-          availablePieces: input.availablePieces,
-          availableDatesStart: input.availableDatesStart.getTime(),
-          availableDatesEnd: input.availableDatesEnd.getTime(),
-        })
-        .returning({ id: product.id });
+  //     const postId = ids[0]?.id;
 
-      const postId = ids[0]?.id;
+  //     if (!postId) {
+  //       throw new Error("failed to create post");
+  //     }
 
-      if (!postId) {
-        throw new Error("failed to create post");
-      }
+  //     await ctx.db.insert(images).values(
+  //       input.imagesData.map((image) => {
+  //         return {
+  //           postId: postId,
+  //           url: image.url,
+  //           key: image.key,
+  //           name: image.name,
+  //           size: image.size,
+  //         };
+  //       }),
+  //     );
 
-      await ctx.db.insert(images).values(
-        input.imagesData.map((image) => {
-          return {
-            postId: postId,
-            url: image.url,
-            key: image.key,
-            name: image.name,
-            size: image.size,
-          };
-        }),
-      );
-
-      return {
-        postId,
-      };
-    }),
+  //     return {
+  //       postId,
+  //     };
+  //   }),
 
   getById: publicProcedure
     .input(z.object({ id: z.number() }))
