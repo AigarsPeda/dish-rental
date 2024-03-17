@@ -15,11 +15,10 @@ const Card: FC<CardProps> = ({ product }) => {
   return (
     <>
       <Link
+        className="w-full rounded-lg border bg-white shadow-sm"
         href={{
           pathname: `/product/${product.id}`,
-          // query: { group: data?.groups[0], isplayoffmode: tournament.isPlayoffs },
         }}
-        className="w-full rounded-lg border bg-white shadow-sm"
       >
         <div className="p-1.5">
           <Image
@@ -30,15 +29,14 @@ const Card: FC<CardProps> = ({ product }) => {
             loader={ImageLoader}
             className={classNames("overflow-hidden rounded")}
             style={{
+              width: "100%",
               height: "300px",
               objectFit: "cover",
-              width: "100%",
             }}
             src={
               getTitleImage(product.images, product.titleImage)?.url ??
               "/images/placeholder.jpeg"
             }
-            // src="https://dish-rent.s3.eu-north-1.amazonaws.com/1710444268201-BluePlates.jpg"
           />
         </div>
         <div className="px-2 py-1.5 md:py-2.5">

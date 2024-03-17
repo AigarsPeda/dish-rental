@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { useEffect, useState, type FC } from "react";
+import { useState, type FC } from "react";
 import Datepicker, { type DateValueType } from "react-tailwindcss-datepicker";
 import Modal from "~/components/Modal/Modal";
 import NumberInput from "~/components/NumberInput/NumberInput";
@@ -24,7 +24,6 @@ const OrderModal: FC<OrderModalProps> = ({
   handleModalClose,
 }) => {
   const router = useRouter();
-  const [postId, setPostId] = useState<number | null>(null);
   const { data } = api.product.getById.useQuery(
     { id: router.query.id as string },
     { enabled: Boolean(router.query.id) },
@@ -35,16 +34,6 @@ const OrderModal: FC<OrderModalProps> = ({
       startDate: null,
     },
   });
-
-  useEffect(() => {
-    if (
-      router.query.product_id &&
-      typeof router.query.product_id === "string"
-    ) {
-      const id = parseInt(router.query.product_id, 10);
-      setPostId(id);
-    }
-  }, [router.query]);
 
   return (
     <Modal isModalOpen={isOrderModalOpen} handleModalClose={handleModalClose}>

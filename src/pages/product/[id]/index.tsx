@@ -19,6 +19,11 @@ import classNames from "~/utils/classNames";
 import { formatDate } from "~/utils/dateUtils";
 import getTitleImage from "~/utils/getTitleImage";
 
+const variants: Variants = {
+  open: { opacity: 1, y: 0 },
+  closed: { opacity: 0, y: "-100%", position: "absolute" },
+};
+
 export type FormStateType = {
   price: number;
   amount: number;
@@ -29,7 +34,7 @@ const PostPage: NextPage = () => {
   const router = useRouter();
   const [parent] = useAutoAnimate();
   const { dispatch } = useContext(GlobalAppContext);
-  // const [postId, setPostId] = useState<number | null>(null);
+
   const [isAddedToOrder, setIsAddedToOrder] = useState(false);
   const { data, isLoading } = api.product.getById.useQuery(
     { id: router.query.id as string },
@@ -44,13 +49,6 @@ const PostPage: NextPage = () => {
       startDate: new Date(),
     },
   });
-
-  // useEffect(() => {
-  //   if (router.query.id && typeof router.query.id === "string") {
-  //     const id = parseInt(router.query.id, 10);
-  //     setPostId(id);
-  //   }
-  // }, [router.query.id]);
 
   const calculateDaysBetween = (startDate: Date, endDate: Date) => {
     const diffTime = Math.abs(endDate?.getTime() - startDate?.getTime());
@@ -98,11 +96,6 @@ const PostPage: NextPage = () => {
       clearTimeout(timeout);
     };
   }, [isAddedToOrder]);
-
-  const variants: Variants = {
-    open: { opacity: 1, y: 0 },
-    closed: { opacity: 0, y: "-100%", position: "absolute" },
-  };
 
   return (
     <>

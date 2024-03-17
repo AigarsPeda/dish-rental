@@ -3,7 +3,7 @@ import { IoAdd, IoCheckmarkSharp } from "react-icons/io5";
 import Spinner from "src/components/Spinner/Spinner";
 import { type InputStatus } from "~/hooks/useImageUploadThing";
 import classNames from "~/utils/classNames";
-import { FileErrorType } from "../../pages/product/[id]/edit";
+import { type FileErrorType } from "~/utils/getFilesError";
 
 interface DropZoneProps {
   images: File[];

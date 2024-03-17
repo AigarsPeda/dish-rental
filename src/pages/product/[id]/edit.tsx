@@ -22,16 +22,8 @@ import Toggle from "~/components/Toggle/Toggle";
 import { DBImageType } from "~/types/product.schema";
 import { api } from "~/utils/api";
 import classNames from "~/utils/classNames";
+import getFilesError, { type FileErrorType } from "~/utils/getFilesError";
 import ImageLoader from "~/utils/ImageLoader";
-
-const FOUR_AND_HALF_MB = 4.5 * 1024 * 1024;
-
-export type FileErrorType =
-  | null
-  | "fileSize"
-  | "fileType"
-  | "Too many files"
-  | "Something went wrong";
 
 const variants: Variants = {
   open: { opacity: 1, y: 0 },
@@ -51,7 +43,6 @@ type FormDataType = {
   imagesData: DBImageType[];
   availableDatesEnd: number;
   availableDatesStart: number;
-  // imagesToDelete: DBImageType[];
 };
 
 type ChangingStatus = "idle" | "changing" | "changed" | "error";
@@ -80,7 +71,6 @@ const EditPage: NextPage = () => {
     imagesData: [],
     description: "",
     isPublished: false,
-    // imagesToDelete: [],
     availablePieces: 0,
     availableDatesEnd: 0,
     availableDatesStart: 0,
@@ -94,33 +84,6 @@ const EditPage: NextPage = () => {
       setChangingStatus("changing");
     },
   });
-
-  const checkFiles = (files: File[]) => {
-    const length = files.length + formData.imagesData.length;
-    if (length > 4) {
-      setFileError("Too many files");
-      return;
-    }
-
-    for (const file of files) {
-      // check if the file is larger than 2MB
-      if (file.size > FOUR_AND_HALF_MB) {
-        setFileError("fileSize");
-        return;
-      }
-
-      if (
-        file.type !== "image/jpeg" &&
-        file.type !== "image/png" &&
-        file.type !== "image/webp"
-      ) {
-        setFileError("fileType");
-        return;
-      }
-
-      setFileError(null);
-    }
-  };
 
   useEffect(() => {
     if (data) {
@@ -176,7 +139,6 @@ const EditPage: NextPage = () => {
                   titleImage: formData.titleImage ?? "",
                   categories: formData.categories ?? [],
                   description: formData.description ?? "",
-                  // imagesToDelete: formData.imagesToDelete,
                   availablePieces: formData.availablePieces,
                   availableDatesEnd: formData.availableDatesEnd,
                   availableDatesStart: formData.availableDatesStart,
@@ -418,7 +380,11 @@ const EditPage: NextPage = () => {
                         isMultiple
                         inputStatus={"Idle"}
                         fileError={fileError}
-                        checkFiles={checkFiles}
+                        checkFiles={(fileArray) =>
+                          setFileError(
+                            getFilesError(fileArray, data?.images.length ?? 0),
+                          )
+                        }
                         images={formData?.newImages ?? []}
                         handelFileUpload={(fileArray) => {
                           setFormData((state) => ({
