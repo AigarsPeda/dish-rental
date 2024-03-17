@@ -1,7 +1,7 @@
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { NextResponse, type NextRequest } from "next/server";
 import { env } from "~/env";
-import { s3 } from "~/pages/aws/awsClient";
+import { s3 } from "~/utils/aws/awsClient";
 
 export const runtime = "edge";
 

@@ -1,15 +1,14 @@
+import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { arrayContains, eq, lt } from "drizzle-orm";
 import { z } from "zod";
+import { env } from "~/env";
 import {
   createTRPCRouter,
   protectedProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
 import { images, product } from "~/server/db/schema";
-import { DBImageSchema, NewProductSchema } from "~/types/product.schema";
-import { s3 } from "../../../pages/aws/awsClient";
-import { DeleteObjectCommand } from "@aws-sdk/client-s3";
-import { env } from "../../../env";
+import { s3 } from "~/utils/aws/awsClient";
 
 export const productRouter = createTRPCRouter({
   hello: publicProcedure

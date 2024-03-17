@@ -5,9 +5,9 @@ import { type NextPage } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { IoCheckmarkSharp } from "react-icons/io5";
-import Datepicker, { DateValueType } from "react-tailwindcss-datepicker";
+import Datepicker, { type DateValueType } from "react-tailwindcss-datepicker";
 import NumberInput from "~/components/NumberInput/NumberInput";
 import PageHead from "~/components/PageHead/PageHead";
 import ShoppingCartIcon from "~/components/icons/ShoppingCartIcon/ShoppingCartIcon";
@@ -55,19 +55,22 @@ const PostPage: NextPage = () => {
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
   };
 
-  const calculatePrice = (
-    price: number | undefined,
-    amount: number,
-    startDate: Date,
-    endDate: Date,
-  ) => {
-    if (!price) return 0;
+  const calculatePrice = useCallback(
+    (
+      price: number | undefined,
+      amount: number,
+      startDate: Date,
+      endDate: Date,
+    ) => {
+      if (!price) return 0;
 
-    const diffDays = calculateDaysBetween(startDate, endDate);
+      const diffDays = calculateDaysBetween(startDate, endDate);
 
-    // round to 2 decimal places
-    return Math.round(price * amount * diffDays * 100) / 100;
-  };
+      // round to 2 decimal places
+      return Math.round(price * amount * diffDays * 100) / 100;
+    },
+    [],
+  );
 
   // calculate initial price
   useEffect(() => {
@@ -84,7 +87,7 @@ const PostPage: NextPage = () => {
         price: price,
       }));
     }
-  }, [data]);
+  }, [data, formsSate, useCallback]);
 
   useEffect(() => {
     // reset the added to order state after 2 seconds

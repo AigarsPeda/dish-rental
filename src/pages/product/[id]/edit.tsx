@@ -94,7 +94,7 @@ const EditPage: NextPage = () => {
       setIsDeleting(false);
       setImageToDelete(null);
       setChangingStatus("changed");
-      utils.product.getById.invalidate({ id: router.query.id as string });
+      void utils.product.getById.invalidate({ id: router.query.id as string });
     },
     onMutate: () => {
       setIsDeleting(true);
@@ -148,7 +148,7 @@ const EditPage: NextPage = () => {
               className="mx-auto mt-4 w-full max-w-xl px-2 pb-10"
               onSubmit={(e) => {
                 e.preventDefault();
-                updateProduct({
+                void updateProduct({
                   id: formData.id,
                   name: formData.name ?? "",
                   price: formData.price ?? 0,
@@ -372,18 +372,20 @@ const EditPage: NextPage = () => {
                                 </div>
                               )}
                             </button>
-                            <button
-                              type="button"
-                              className="absolute -right-1.5 -top-1.5 z-10 rounded-full bg-white p-1"
-                              onClick={() => {
-                                setImageToDelete({
-                                  key: file.key,
-                                  imgSrc: file.url,
-                                });
-                              }}
-                            >
-                              <IoTrashOutline className="h-4 w-4 text-red-500" />
-                            </button>
+                            {file.name !== formData?.titleImage && (
+                              <button
+                                type="button"
+                                className="absolute -right-1.5 -top-1.5 z-10 rounded-full bg-white p-1"
+                                onClick={() => {
+                                  setImageToDelete({
+                                    key: file.key,
+                                    imgSrc: file.url,
+                                  });
+                                }}
+                              >
+                                <IoTrashOutline className="h-4 w-4 text-red-500" />
+                              </button>
+                            )}
                           </div>
                         ))}
                         <DeleteImageModal
@@ -395,7 +397,7 @@ const EditPage: NextPage = () => {
                           handleImageDelete={() => {
                             if (!imageToDelete?.key) return;
 
-                            deleteImage({
+                            void deleteImage({
                               key: imageToDelete?.key,
                               postId: data?.id ?? 0,
                             });
