@@ -51,7 +51,6 @@ export default async function POST(
   if (!postId) {
     return;
   }
-  console.log(">>> postId", postId);
 
   if (!postId) {
     throw new Error("failed to create post");

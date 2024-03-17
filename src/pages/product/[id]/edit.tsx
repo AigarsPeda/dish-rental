@@ -86,7 +86,6 @@ const EditPage: NextPage = () => {
 
   useEffect(() => {
     if (data) {
-      console.log("data.images", data.images);
       setFormData((state) => ({
         ...state,
         price: data.price,

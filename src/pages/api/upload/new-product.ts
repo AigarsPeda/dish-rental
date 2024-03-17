@@ -17,11 +17,13 @@ export default async function POST(request: NextRequest) {
   const files = formData.getAll("image") as File[];
 
   const imgResponse = await Promise.all(
-    files.map(async (file) => {
+    files.map(async (file, i) => {
       const Body = (await file.arrayBuffer()) as Buffer;
 
-      // ${file.name.replace(" ", "_")}
-      const encodeFileName = encodeURIComponent(`${Date.now()}`);
+      const encodeFileName = encodeURIComponent(
+        `${Date.now()}_${i}_${crypto.randomUUID()}`,
+      );
+
       await s3.send(
         new PutObjectCommand({
           Body,

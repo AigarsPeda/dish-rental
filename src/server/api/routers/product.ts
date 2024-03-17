@@ -1,4 +1,4 @@
-import { and, arrayContains, eq, lt } from "drizzle-orm";
+import { arrayContains, eq, lt } from "drizzle-orm";
 import { z } from "zod";
 import {
   createTRPCRouter,
@@ -6,7 +6,6 @@ import {
   publicProcedure,
 } from "~/server/api/trpc";
 import { images, product } from "~/server/db/schema";
-import { utapi } from "~/server/uploadthing";
 import { DBImageSchema, NewProductSchema } from "~/types/product.schema";
 
 export const productRouter = createTRPCRouter({
