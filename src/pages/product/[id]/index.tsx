@@ -87,7 +87,7 @@ const PostPage: NextPage = () => {
         price: price,
       }));
     }
-  }, [data, formsSate, useCallback]);
+  }, [data, formsSate, calculatePrice]);
 
   useEffect(() => {
     // reset the added to order state after 2 seconds
