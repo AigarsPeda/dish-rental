@@ -2,6 +2,7 @@ import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { motion, type Variants } from "framer-motion";
 import { ALL_OPTIONS } from "hardcoded";
 import { type NextPage } from "next";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -24,6 +25,7 @@ import { api } from "~/utils/api";
 import classNames from "~/utils/classNames";
 import getFilesError, { type FileErrorType } from "~/utils/getFilesError";
 import ImageLoader from "~/utils/ImageLoader";
+import compressImage from "../../../utils/compressImage";
 
 const variants: Variants = {
   open: { opacity: 1, y: 0 },
@@ -55,6 +57,7 @@ export type ImageToDeleteType = {
 const EditPage: NextPage = () => {
   const router = useRouter();
   const [parent] = useAutoAnimate();
+  const { data: sessionData } = useSession();
   const [isDeleting, setIsDeleting] = useState(false);
   const [fileError, setFileError] = useState<FileErrorType>(null);
   const [imageToDelete, setImageToDelete] = useState<ImageToDeleteType>(null);
@@ -101,6 +104,54 @@ const EditPage: NextPage = () => {
       setChangingStatus("changing");
     },
   });
+
+  const uploadProfileImage = async (file: File[], form: FormDataType) => {
+    if (!sessionData) {
+      return;
+    }
+
+    const formData = new FormData();
+    const compressedImages = await Promise.all(
+      file.map((f) => compressImage(f)),
+    );
+
+    compressedImages.forEach((f) => {
+      formData.append("image", f, f.name);
+    });
+
+    formData.append("name", form.name);
+    formData.append("userId", sessionData.user.id);
+    formData.append("titleImage", form.titleImage);
+    formData.append("price", form.price.toString());
+    formData.append("description", form.description);
+    formData.append("categories", form.categories.join(","));
+    formData.append("isPublished", form.isPublished.toString());
+    formData.append("availablePieces", form.availablePieces.toString());
+    formData.append(
+      "availableDatesStart",
+      new Date(form.availableDatesStart ?? new Date()).getTime().toString(),
+    );
+    formData.append(
+      "availableDatesEnd",
+      new Date(form.availableDatesEnd ?? new Date()).getTime().toString(),
+    );
+
+    const response = await fetch("/api/upload/upload-images", {
+      method: "POST",
+      body: formData,
+      headers: {
+        credentials: "include",
+        action: "update-product",
+        origin: window.location.origin,
+      },
+    });
+
+    if (response.ok) {
+      const json = (await response.json()) as { postId: string };
+
+      console.log("json", json);
+    }
+  };
 
   useEffect(() => {
     if (data) {

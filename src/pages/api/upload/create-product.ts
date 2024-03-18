@@ -17,6 +17,7 @@ const BodySchema = z.object({
   titleImage: z.string(),
   description: z.string(),
   isPublished: z.boolean(),
+  sessionToken: z.string(),
   availablePieces: z.number(),
   images: z.array(ImageSchema),
   availableDatesEnd: z.number(),
@@ -29,6 +30,18 @@ export default async function POST(
   response: NextApiResponse,
 ) {
   const body = BodySchema.parse(request.body);
+
+  const isAuth = await db.query.sessions.findFirst({
+    where: (session, { eq, and }) =>
+      and(
+        eq(session.sessionToken, body.sessionToken),
+        eq(session.userId, body.userId),
+      ),
+  });
+
+  if (!isAuth) {
+    return response.status(401).json({ message: "unauthorized" });
+  }
 
   const ids = await db
     .insert(product)

@@ -5,19 +5,20 @@ import { type NextPage } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { IoCheckmarkSharp } from "react-icons/io5";
 import Datepicker, { type DateValueType } from "react-tailwindcss-datepicker";
+import ShoppingCartIcon from "~/components/icons/ShoppingCartIcon/ShoppingCartIcon";
 import NumberInput from "~/components/NumberInput/NumberInput";
 import PageHead from "~/components/PageHead/PageHead";
-import ShoppingCartIcon from "~/components/icons/ShoppingCartIcon/ShoppingCartIcon";
 import { GlobalAppContext } from "~/context/GlobalAppContext/GlobalAppContext";
 import { type OrderType } from "~/types/order.schema";
-import ImageLoader from "~/utils/ImageLoader";
 import { api } from "~/utils/api";
+import { calculateDaysBetween, calculatePrice } from "~/utils/calculatePrice";
 import classNames from "~/utils/classNames";
 import { formatDate } from "~/utils/dateUtils";
 import getTitleImage from "~/utils/getTitleImage";
+import ImageLoader from "~/utils/ImageLoader";
 
 const variants: Variants = {
   open: { opacity: 1, y: 0 },
@@ -50,29 +51,6 @@ const PostPage: NextPage = () => {
     },
   });
 
-  const calculateDaysBetween = (startDate: Date, endDate: Date) => {
-    const diffTime = Math.abs(endDate?.getTime() - startDate?.getTime());
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-  };
-
-  const calculatePrice = useCallback(
-    (
-      price: number | undefined,
-      amount: number,
-      startDate: Date,
-      endDate: Date,
-    ) => {
-      if (!price) return 0;
-
-      const diffDays = calculateDaysBetween(startDate, endDate);
-
-      // round to 2 decimal places
-      return Math.round(price * amount * diffDays * 100) / 100;
-    },
-    [],
-  );
-
-  // calculate initial price
   useEffect(() => {
     if (data) {
       const amount = formsSate.amount;
@@ -87,7 +65,12 @@ const PostPage: NextPage = () => {
         price: price,
       }));
     }
-  }, [data, formsSate, calculatePrice]);
+  }, [
+    data,
+    formsSate.amount,
+    formsSate.orderDates?.endDate,
+    formsSate.orderDates?.startDate,
+  ]);
 
   useEffect(() => {
     // reset the added to order state after 2 seconds

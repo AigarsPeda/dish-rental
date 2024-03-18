@@ -114,11 +114,12 @@ const NewPost: NextPage = () => {
       new Date(form.availableDates?.endDate ?? new Date()).getTime().toString(),
     );
 
-    const response = await fetch("/api/upload/new-product", {
+    const response = await fetch("/api/upload/upload-images", {
       method: "POST",
       body: formData,
       headers: {
         credentials: "include",
+        action: "new-create-product",
         origin: window.location.origin,
       },
     });
