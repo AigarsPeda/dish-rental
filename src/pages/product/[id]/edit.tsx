@@ -23,9 +23,9 @@ import Toggle from "~/components/Toggle/Toggle";
 import { type DBImageType } from "~/types/product.schema";
 import { api } from "~/utils/api";
 import classNames from "~/utils/classNames";
+import compressImage from "~/utils/compressImage";
 import getFilesError, { type FileErrorType } from "~/utils/getFilesError";
 import ImageLoader from "~/utils/ImageLoader";
-import compressImage from "../../../utils/compressImage";
 
 const variants: Variants = {
   open: { opacity: 1, y: 0 },
@@ -56,6 +56,7 @@ export type ImageToDeleteType = {
 
 const EditPage: NextPage = () => {
   const router = useRouter();
+  const utils = api.useUtils();
   const [parent] = useAutoAnimate();
   const { data: sessionData } = useSession();
   const [isDeleting, setIsDeleting] = useState(false);
@@ -82,25 +83,16 @@ const EditPage: NextPage = () => {
     availableDatesEnd: 0,
     availableDatesStart: 0,
   });
-  const utils = api.useUtils();
-  const { mutate: updateProduct } = api.product.updateProduct.useMutation({
-    onSuccess: () => {
-      setChangingStatus("changed");
-    },
-    onMutate: () => {
-      setChangingStatus("changing");
-    },
-  });
 
   const { mutate: deleteImage } = api.product.deleteImage.useMutation({
     onSuccess: () => {
-      setIsDeleting(false);
-      setImageToDelete(null);
+      // setIsDeleting(false);
+
       setChangingStatus("changed");
       void utils.product.getById.invalidate({ id: router.query.id as string });
     },
     onMutate: () => {
-      setIsDeleting(true);
+      // setIsDeleting(true);
       setChangingStatus("changing");
     },
   });
@@ -109,6 +101,7 @@ const EditPage: NextPage = () => {
     if (!sessionData) {
       return;
     }
+    setChangingStatus("changing");
 
     const formData = new FormData();
     const compressedImages = await Promise.all(
@@ -120,6 +113,7 @@ const EditPage: NextPage = () => {
     });
 
     formData.append("name", form.name);
+    formData.append("postId", form.id.toString());
     formData.append("userId", sessionData.user.id);
     formData.append("titleImage", form.titleImage);
     formData.append("price", form.price.toString());
@@ -146,10 +140,16 @@ const EditPage: NextPage = () => {
       },
     });
 
-    if (response.ok) {
-      const json = (await response.json()) as { postId: string };
+    if (!response.ok) {
+      setChangingStatus("error");
+      return;
+    }
 
-      console.log("json", json);
+    const json = (await response.json()) as { postId: number };
+
+    if (json.postId) {
+      void utils.product.getById.invalidate({ id: json.postId.toString() });
+      setChangingStatus("changed");
     }
   };
 
@@ -199,18 +199,7 @@ const EditPage: NextPage = () => {
               className="mx-auto mt-4 w-full max-w-xl px-2 pb-10"
               onSubmit={(e) => {
                 e.preventDefault();
-                void updateProduct({
-                  id: formData.id,
-                  name: formData.name ?? "",
-                  price: formData.price ?? 0,
-                  isPublished: formData.isPublished,
-                  titleImage: formData.titleImage ?? "",
-                  categories: formData.categories ?? [],
-                  description: formData.description ?? "",
-                  availablePieces: formData.availablePieces,
-                  availableDatesEnd: formData.availableDatesEnd,
-                  availableDatesStart: formData.availableDatesStart,
-                });
+                void uploadProfileImage(formData.newImages, formData);
               }}
             >
               <div className="w-full space-y-12">
@@ -447,6 +436,7 @@ const EditPage: NextPage = () => {
                           }}
                           handleImageDelete={() => {
                             if (!imageToDelete?.key) return;
+                            setImageToDelete(null);
 
                             void deleteImage({
                               key: imageToDelete?.key,

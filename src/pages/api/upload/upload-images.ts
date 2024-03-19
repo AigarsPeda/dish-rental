@@ -1,6 +1,7 @@
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { NextResponse, type NextRequest } from "next/server";
 import { env } from "~/env";
+import { type UpdatedPostType } from "~/pages/api/upload/update-product";
 import { s3 } from "~/utils/aws/awsClient";
 
 export const runtime = "edge";
@@ -89,29 +90,44 @@ export default async function POST(request: NextRequest) {
   }
 
   if (action === "update-product") {
-    const postId = formData.get("postId")?.toString();
+    const updateForm: UpdatedPostType = {
+      sessionToken,
+      images: imgResponse,
+      name: formData.get("name")?.toString() ?? "",
+      id: Number(formData.get("postId")?.toString()),
+      price: Number(formData.get("price")?.toString()),
+      userId: formData.get("userId")?.toString() ?? "",
+      titleImage: formData.get("titleImage")?.toString() ?? "",
+      description: formData.get("description")?.toString() ?? "",
+      categories: formData.get("categories")?.toString().split(",") ?? [],
+      availableDatesEnd: Number(formData.get("availableDatesEnd")?.toString()),
+      isPublished:
+        formData.get("isPublished")?.toString() === "true" ? true : false,
+      availablePieces: Number(formData.get("availablePieces")?.toString()),
+      availableDatesStart: Number(
+        formData.get("availableDatesStart")?.toString(),
+      ),
+    };
 
-    // const updatedPost = await fetch(`${origin}/api/upload/update-product`, {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //     credentials: "include",
-    //   },
-    //   body: JSON.stringify({
-    //     ...formattedFields,
-    //     postId,
-    //     images: imgResponse,
-    //   }),
-    // });
+    const updatedPost = await fetch(`${origin}/api/upload/update-product`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        credentials: "include",
+      },
+      body: JSON.stringify({
+        ...updateForm,
+      }),
+    });
 
-    // if (!updatedPost.ok) {
-    //   return NextResponse.json(null, { status: 500 });
-    // }
+    if (!updatedPost.ok) {
+      return NextResponse.json(null, { status: 500 });
+    }
 
-    // const data = (await updatedPost.json()) as { postId: number };
+    const data = (await updatedPost.json()) as { postId: number };
 
-    // return new NextResponse(JSON.stringify(data), {
-    //   headers: { "Content-Type": "application/json" },
-    // });
+    return new NextResponse(JSON.stringify(data), {
+      headers: { "Content-Type": "application/json" },
+    });
   }
 }

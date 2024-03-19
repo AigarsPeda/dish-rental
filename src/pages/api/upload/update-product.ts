@@ -1,3 +1,4 @@
+import { eq } from "drizzle-orm";
 import { type NextApiRequest, type NextApiResponse } from "next";
 import { z } from "zod";
 import { db } from "~/server/db";
@@ -10,7 +11,8 @@ const ImageSchema = z.object({
   size: z.number(),
 });
 
-const BodySchema = z.object({
+const UpdatedSchema = z.object({
+  id: z.number(),
   name: z.string(),
   price: z.number(),
   userId: z.string(),
@@ -25,11 +27,13 @@ const BodySchema = z.object({
   availableDatesStart: z.number(),
 });
 
+export type UpdatedPostType = z.infer<typeof UpdatedSchema>;
+
 export default async function POST(
   request: NextApiRequest,
   response: NextApiResponse,
 ) {
-  const body = BodySchema.parse(request.body);
+  const body = UpdatedSchema.parse(request.body);
 
   const isAuth = await db.query.sessions.findFirst({
     where: (session, { eq, and }) =>
@@ -44,11 +48,10 @@ export default async function POST(
   }
 
   const ids = await db
-    .insert(product)
-    .values({
+    .update(product)
+    .set({
       name: body.name,
       price: body.price,
-      createdById: body.userId,
       categories: body.categories,
       titleImage: body.titleImage,
       isPublished: body.isPublished,
@@ -57,6 +60,7 @@ export default async function POST(
       availableDatesEnd: body.availableDatesEnd,
       availableDatesStart: body.availableDatesStart,
     })
+    .where(eq(product.id, body.id))
     .returning({ id: product.id });
 
   const postId = ids[0]?.id;

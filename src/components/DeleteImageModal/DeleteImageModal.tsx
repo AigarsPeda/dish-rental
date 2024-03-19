@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { type FC } from "react";
+import { useState, type FC, use, useEffect } from "react";
 import Modal from "~/components/Modal/Modal";
 import { type ImageToDeleteType } from "~/pages/product/[id]/edit";
 import ImageLoader from "~/utils/ImageLoader";
@@ -17,6 +17,14 @@ const DeleteImageModal: FC<DeleteImageModalProps> = ({
   handleImageDelete,
   handleModalClose,
 }) => {
+  const [imgSrc, setImgSrc] = useState<string>("");
+
+  useEffect(() => {
+    if (!imageToDelete?.imgSrc) return;
+
+    setImgSrc(imageToDelete?.imgSrc);
+  }, [imageToDelete]);
+
   return (
     <Modal
       handleModalClose={handleModalClose}
@@ -31,14 +39,14 @@ const DeleteImageModal: FC<DeleteImageModalProps> = ({
             Attēls tiks neatgriezeniski dzēsts.
           </p>
         </div>
-        <div className="mt-4 flex w-full items-center justify-center bg-fuchsia-400">
+        <div className="mt-4 flex h-[300px] w-full items-center justify-center overflow-hidden rounded-md bg-fuchsia-400">
           <Image
             priority
             width={0}
             height={0}
             loader={ImageLoader}
             alt="Attēls ko vēlaties dzēst"
-            src={imageToDelete?.imgSrc ?? "/images/placeholder.jpeg"}
+            src={imgSrc ?? "/images/placeholder.jpeg"}
             style={{
               width: "100%",
               height: "300px",

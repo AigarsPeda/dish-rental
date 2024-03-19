@@ -31,9 +31,10 @@ const Modal: FC<ModalProps> = ({
       {shouldRender && (
         <>
           <div className="fixed bottom-0 left-0 right-0 top-0 z-[141] flex items-center justify-center overflow-y-auto overflow-x-hidden outline-none focus:outline-none">
+            <div className="pointer-events-none fixed bottom-0 left-0 right-0 top-[-4rem] z-[100] bg-black opacity-25"></div>
             <div
               ref={ref}
-              className="relative mx-auto my-6 w-auto max-w-3xl px-2"
+              className="absolute z-[1000] mx-auto my-6 w-auto max-w-3xl px-2"
             >
               <div
                 className={classNames(
@@ -48,7 +49,6 @@ const Modal: FC<ModalProps> = ({
                   <button
                     type="button"
                     className="float-right ml-auto border-0 bg-transparent p-1 text-3xl font-semibold leading-none outline-none focus:outline-none"
-                    // onClick={handleModalClose}
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
@@ -62,7 +62,6 @@ const Modal: FC<ModalProps> = ({
               </div>
             </div>
           </div>
-          <div className=" pointer-events-none fixed bottom-0 left-0 right-0 top-[-4rem] z-[140] bg-black opacity-25"></div>
         </>
       )}
     </>
