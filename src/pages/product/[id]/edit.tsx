@@ -13,6 +13,9 @@ import {
 } from "react-icons/io5";
 import Datepicker from "react-tailwindcss-datepicker";
 import DeleteImageModal from "~/components/DeleteImageModal/DeleteImageModal";
+import DeleteProductModal, {
+  type ProductToDeleteType,
+} from "~/components/DeleteProductModal/DeleteProductModal";
 import DropZone from "~/components/DropZone/DropZone";
 import MultiSelect from "~/components/MultiSelect/MultiSelect";
 import NumberInput from "~/components/NumberInput/NumberInput";
@@ -25,11 +28,8 @@ import { api } from "~/utils/api";
 import classNames from "~/utils/classNames";
 import compressImage from "~/utils/compressImage";
 import getFilesError, { type FileErrorType } from "~/utils/getFilesError";
+import getTitleImage from "~/utils/getTitleImage";
 import ImageLoader from "~/utils/ImageLoader";
-import DeleteProductModal, {
-  ProductToDeleteType,
-} from "../../../components/DeleteProductModal/DeleteProductModal";
-import getTitleImage from "../../../utils/getTitleImage";
 
 const variants: Variants = {
   open: { opacity: 1, y: 0 },
