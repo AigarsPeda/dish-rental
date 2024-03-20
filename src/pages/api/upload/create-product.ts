@@ -10,7 +10,7 @@ const ImageSchema = z.object({
   size: z.number(),
 });
 
-const BodySchema = z.object({
+const CreateProductBodySchema = z.object({
   name: z.string(),
   price: z.number(),
   userId: z.string(),
@@ -25,11 +25,13 @@ const BodySchema = z.object({
   availableDatesStart: z.number(),
 });
 
+export type CreateProductBodyType = z.infer<typeof CreateProductBodySchema>;
+
 export default async function POST(
   request: NextApiRequest,
   response: NextApiResponse,
 ) {
-  const body = BodySchema.parse(request.body);
+  const body = CreateProductBodySchema.parse(request.body);
 
   const isAuth = await db.query.sessions.findFirst({
     where: (session, { eq, and }) =>

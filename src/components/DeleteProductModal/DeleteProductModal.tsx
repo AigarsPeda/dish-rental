@@ -1,40 +1,39 @@
-import Image from "next/image";
-import { useEffect, useState, type FC } from "react";
+import { type FC } from "react";
 import Modal from "~/components/Modal/Modal";
-import { type ImageToDeleteType } from "~/pages/product/[id]/edit";
+import Image from "next/image";
 import ImageLoader from "~/utils/ImageLoader";
 
-interface DeleteImageModalProps {
+export type ProductToDeleteType = {
+  id: number;
+  title: string;
+  imgSrc: string;
+};
+
+interface DeleteProductModalProps {
   handleModalClose: () => void;
-  handleImageDelete: () => void;
-  imageToDelete: ImageToDeleteType;
+  handleProductDelete: () => void;
+  productToDelete?: ProductToDeleteType;
 }
 
-const DeleteImageModal: FC<DeleteImageModalProps> = ({
-  imageToDelete,
+const DeleteProductModal: FC<DeleteProductModalProps> = ({
+  productToDelete,
   handleModalClose,
-  handleImageDelete,
+  handleProductDelete,
 }) => {
-  const [imgSrc, setImgSrc] = useState<string>("");
-
-  useEffect(() => {
-    if (!imageToDelete?.imgSrc) return;
-
-    setImgSrc(imageToDelete?.imgSrc);
-  }, [imageToDelete]);
-
   return (
     <Modal
       handleModalClose={handleModalClose}
-      isModalOpen={Boolean(imageToDelete?.imgSrc)}
+      isModalOpen={Boolean(productToDelete?.title)}
     >
       <div className="w-full border-b border-gray-900/10 p-6 pb-6 pt-4">
         <div className="text-left">
           <h2 className="text-xl font-semibold leading-7 text-gray-900">
-            Vai tiešām vēlaties dzēst šo attēlu?
+            Vai tiešām vēlaties dzēst šo produktu?
           </h2>
+          <p className="mt-2 text-sm text-gray-900">{productToDelete?.title}</p>
+
           <p className="mt-2 text-sm text-gray-500">
-            Attēls tiks neatgriezeniski dzēsts.
+            Produkts tiks neatgriezeniski dzēsts.
           </p>
         </div>
         <div className="mt-4 flex h-[300px] w-full items-center justify-center overflow-hidden rounded-md bg-fuchsia-400">
@@ -44,7 +43,7 @@ const DeleteImageModal: FC<DeleteImageModalProps> = ({
             height={0}
             loader={ImageLoader}
             alt="Attēls ko vēlaties dzēst"
-            src={imgSrc ?? "/images/placeholder.jpeg"}
+            src={productToDelete?.imgSrc ?? "/images/placeholder.jpeg"}
             style={{
               width: "100%",
               height: "300px",
@@ -54,7 +53,7 @@ const DeleteImageModal: FC<DeleteImageModalProps> = ({
         </div>
         <div className="mt-3 flex items-center justify-end gap-x-2">
           <button
-            onClick={handleImageDelete}
+            onClick={handleProductDelete}
             className="rounded-md bg-red-500 px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600"
           >
             Dzēst
@@ -71,4 +70,4 @@ const DeleteImageModal: FC<DeleteImageModalProps> = ({
   );
 };
 
-export default DeleteImageModal;
+export default DeleteProductModal;

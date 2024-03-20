@@ -1,4 +1,4 @@
-import { DeleteObjectCommand } from "@aws-sdk/client-s3";
+import { DeleteObjectCommand, DeleteObjectsCommand } from "@aws-sdk/client-s3";
 import { arrayContains, eq, lt } from "drizzle-orm";
 import { z } from "zod";
 import { env } from "~/env";
@@ -82,6 +82,39 @@ export const productRouter = createTRPCRouter({
         .where(eq(images.key, input.key))
         .returning({
           id: images.id,
+        });
+
+      return {
+        ids,
+      };
+    }),
+
+  deleteById: protectedProcedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ input, ctx }) => {
+      const dbImages = await ctx.db.query.images.findMany({
+        where: (image, { eq }) => eq(image.postId, input.id),
+      });
+
+      const keys = dbImages.map((image) => image.key);
+
+      if (keys.length > 0) {
+        const command = new DeleteObjectsCommand({
+          Bucket: env.BUCKET_NAME_AWS,
+          Delete: {
+            Objects: keys.map((key) => ({ Key: key })),
+          },
+        });
+
+        await s3.send(command);
+      }
+
+      // Images are deleted with cascade
+      const ids = await ctx.db
+        .delete(product)
+        .where(eq(product.id, input.id))
+        .returning({
+          id: product.id,
         });
 
       return {
@@ -176,50 +209,50 @@ export const productRouter = createTRPCRouter({
       return `updated post: ${input.id}`;
     }),
 
-  updateProduct: protectedProcedure
-    .input(
-      z.object({
-        id: z.number(),
-        name: z.string().optional(),
-        price: z.number().optional(),
-        titleImage: z.string().optional(),
-        description: z.string().optional(),
-        isPublished: z.boolean().optional(),
-        availablePieces: z.number().optional(),
-        availableDatesEnd: z.number().optional(),
-        availableDatesStart: z.number().optional(),
-        categories: z.array(z.string()).optional(),
-        // imagesToDelete: z.array(DBImageSchema).optional(),
-      }),
-    )
-    .mutation(async ({ input, ctx }) => {
-      // if (input.imagesToDelete && input.imagesToDelete.length > 0) {
-      //   for (const image of input.imagesToDelete) {
-      //     await ctx.db
-      //       .delete(images)
-      //       .where(and(eq(images.key, image.key), eq(images.postId, input.id)));
-      //   }
+  // updateProduct: protectedProcedure
+  //   .input(
+  //     z.object({
+  //       id: z.number(),
+  //       name: z.string().optional(),
+  //       price: z.number().optional(),
+  //       titleImage: z.string().optional(),
+  //       description: z.string().optional(),
+  //       isPublished: z.boolean().optional(),
+  //       availablePieces: z.number().optional(),
+  //       availableDatesEnd: z.number().optional(),
+  //       availableDatesStart: z.number().optional(),
+  //       categories: z.array(z.string()).optional(),
+  //       // imagesToDelete: z.array(DBImageSchema).optional(),
+  //     }),
+  //   )
+  //   .mutation(async ({ input, ctx }) => {
+  //     // if (input.imagesToDelete && input.imagesToDelete.length > 0) {
+  //     //   for (const image of input.imagesToDelete) {
+  //     //     await ctx.db
+  //     //       .delete(images)
+  //     //       .where(and(eq(images.key, image.key), eq(images.postId, input.id)));
+  //     //   }
 
-      //   await utapi.deleteFiles(input.imagesToDelete.map((image) => image.key));
-      // }
+  //     //   await utapi.deleteFiles(input.imagesToDelete.map((image) => image.key));
+  //     // }
 
-      await ctx.db
-        .update(product)
-        .set({
-          name: input.name,
-          price: input.price,
-          categories: input.categories,
-          titleImage: input.titleImage,
-          isPublished: input.isPublished,
-          description: input.description,
-          availablePieces: input.availablePieces,
-          availableDatesEnd: input.availableDatesEnd,
-          availableDatesStart: input.availableDatesStart,
-        })
-        .where(eq(product.id, input.id));
+  //     await ctx.db
+  //       .update(product)
+  //       .set({
+  //         name: input.name,
+  //         price: input.price,
+  //         categories: input.categories,
+  //         titleImage: input.titleImage,
+  //         isPublished: input.isPublished,
+  //         description: input.description,
+  //         availablePieces: input.availablePieces,
+  //         availableDatesEnd: input.availableDatesEnd,
+  //         availableDatesStart: input.availableDatesStart,
+  //       })
+  //       .where(eq(product.id, input.id));
 
-      return `updated post: ${input.id}`;
-    }),
+  //     return `updated post: ${input.id}`;
+  //   }),
 
   changeTitleImage: protectedProcedure
     .input(z.object({ id: z.number(), imageName: z.string() }))

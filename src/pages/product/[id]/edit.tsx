@@ -26,6 +26,10 @@ import classNames from "~/utils/classNames";
 import compressImage from "~/utils/compressImage";
 import getFilesError, { type FileErrorType } from "~/utils/getFilesError";
 import ImageLoader from "~/utils/ImageLoader";
+import DeleteProductModal, {
+  ProductToDeleteType,
+} from "../../../components/DeleteProductModal/DeleteProductModal";
+import getTitleImage from "../../../utils/getTitleImage";
 
 const variants: Variants = {
   open: { opacity: 1, y: 0 },
@@ -59,15 +63,27 @@ const EditPage: NextPage = () => {
   const utils = api.useUtils();
   const [parent] = useAutoAnimate();
   const { data: sessionData } = useSession();
-  const [isDeleting, setIsDeleting] = useState(false);
   const [fileError, setFileError] = useState<FileErrorType>(null);
   const [imageToDelete, setImageToDelete] = useState<ImageToDeleteType>(null);
   const [changingStatus, setChangingStatus] = useState<ChangingStatus>("idle");
+  const [productToDelete, setProductToDelete] = useState<
+    ProductToDeleteType | undefined
+  >(undefined);
 
   const { data, isLoading } = api.product.getById.useQuery(
     { id: router.query.id as string },
     { enabled: Boolean(router.query.id) },
   );
+
+  const { mutate: deleteProduct } = api.product.deleteById.useMutation({
+    onMutate: () => {
+      setChangingStatus("changing");
+    },
+    onSuccess: () => {
+      void utils.product.getUsersPosts.invalidate();
+      void router.push("/my-products");
+    },
+  });
 
   const [formData, setFormData] = useState<FormDataType>({
     id: 0,
@@ -86,13 +102,10 @@ const EditPage: NextPage = () => {
 
   const { mutate: deleteImage } = api.product.deleteImage.useMutation({
     onSuccess: () => {
-      // setIsDeleting(false);
-
       setChangingStatus("changed");
       void utils.product.getById.invalidate({ id: router.query.id as string });
     },
     onMutate: () => {
-      // setIsDeleting(true);
       setChangingStatus("changing");
     },
   });
@@ -151,6 +164,54 @@ const EditPage: NextPage = () => {
       void utils.product.getById.invalidate({ id: json.postId.toString() });
       setChangingStatus("changed");
     }
+  };
+
+  const isButtonDisabled = () => {
+    if (fileError) {
+      return true;
+    }
+
+    if (formData.name === "") {
+      return true;
+    }
+
+    if (formData.price === 0) {
+      return true;
+    }
+
+    if (formData.description === "") {
+      return true;
+    }
+
+    if (formData.availablePieces === 0) {
+      return true;
+    }
+
+    if (formData.availableDatesEnd === 0) {
+      return true;
+    }
+
+    if (formData.categories.length === 0) {
+      return true;
+    }
+
+    if (formData.availableDatesStart === 0) {
+      return true;
+    }
+
+    if (formData.newImages.length + formData.imagesData.length === 0) {
+      return true;
+    }
+
+    if (formData.newImages.length + formData.imagesData.length > 4) {
+      return true;
+    }
+
+    if (changingStatus === "changing") {
+      return true;
+    }
+
+    return false;
   };
 
   useEffect(() => {
@@ -429,7 +490,6 @@ const EditPage: NextPage = () => {
                           </div>
                         ))}
                         <DeleteImageModal
-                          isDeleting={isDeleting}
                           imageToDelete={imageToDelete}
                           handleModalClose={() => {
                             setImageToDelete(null);
@@ -445,23 +505,60 @@ const EditPage: NextPage = () => {
                           }}
                         />
                       </div>
-                      <DropZone
-                        isMultiple
-                        inputStatus={"Idle"}
-                        fileError={fileError}
-                        checkFiles={(fileArray) =>
-                          setFileError(
-                            getFilesError(fileArray, data?.images.length ?? 0),
-                          )
-                        }
-                        images={formData?.newImages ?? []}
-                        handelFileUpload={(fileArray) => {
-                          setFormData((state) => ({
-                            ...state,
-                            newImages: fileArray,
-                          }));
-                        }}
-                      />
+                      <div className="flex flex-wrap justify-center gap-2">
+                        {formData.newImages.map((file, i) => (
+                          <div className="relative" key={`${file.name}-${i}`}>
+                            <button
+                              type="button"
+                              className={classNames(
+                                file.name === formData?.titleImage &&
+                                  "ring-2 ring-gray-900",
+                                "relative h-20 w-20 overflow-hidden rounded-md transition-all hover:ring-2 hover:ring-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900",
+                              )}
+                              onClick={() => {
+                                setFormData((state) => ({
+                                  ...state,
+                                  titleImage: file.name,
+                                }));
+                              }}
+                            >
+                              <Image
+                                priority
+                                width={0}
+                                height={0}
+                                alt={file.name}
+                                loader={ImageLoader}
+                                src={URL.createObjectURL(file)}
+                                style={{
+                                  width: "120px",
+                                  height: "auto",
+                                  objectFit: "cover",
+                                }}
+                              />
+                            </button>
+                          </div>
+                        ))}
+                        <DropZone
+                          isMultiple
+                          inputStatus={"Idle"}
+                          fileError={fileError}
+                          checkFiles={(fileArray) =>
+                            setFileError(
+                              getFilesError(
+                                fileArray,
+                                data?.images.length ?? 0,
+                              ),
+                            )
+                          }
+                          images={formData?.newImages ?? []}
+                          handelFileUpload={(fileArray) => {
+                            setFormData((state) => ({
+                              ...state,
+                              newImages: fileArray,
+                            }));
+                          }}
+                        />
+                      </div>
                       <div>
                         <p className="mt-1 text-sm leading-6 text-gray-400">
                           JPG līdz 4.5MB. Maksimums 4 attēli.
@@ -472,53 +569,97 @@ const EditPage: NextPage = () => {
                 </div>
               </div>
               <div className="h-10 w-full"></div>
-              <div className="flex items-center justify-end gap-x-6">
-                <button
-                  type="button"
-                  className="text-sm font-semibold leading-6 text-gray-900"
-                  onClick={() => {
-                    console.log("cancel");
-                  }}
-                >
-                  Atcelt
-                </button>
-                <button
-                  type="submit"
-                  className={classNames(
-                    "relative flex h-11 w-40 items-center justify-center gap-2 overflow-hidden whitespace-nowrap rounded-md bg-gray-800 px-4 py-2 text-gray-50 transition-all",
-                  )}
-                >
-                  <motion.div
-                    variants={variants}
-                    initial="closed"
-                    animate={changingStatus === "idle" ? "open" : "closed"}
-                    className="absolute flex h-full w-full items-center justify-center gap-2 rounded-md bg-gray-800"
+              <div className="flex items-center justify-between gap-x-6">
+                <div>
+                  <button
+                    type="button"
+                    className="rounded-md bg-red-500 px-4 py-2 text-sm font-semibold leading-6 text-white"
+                    onClick={() => {
+                      const url = getTitleImage(
+                        data?.images,
+                        data?.titleImage,
+                      )?.url;
+                      setProductToDelete({
+                        id: formData.id,
+                        title: formData.name,
+                        imgSrc: url ?? "/images/placeholder.jpeg",
+                      });
+                    }}
                   >
-                    <span>Labot</span>
-                  </motion.div>
-
-                  <motion.div
-                    variants={variants}
-                    initial="closed"
-                    animate={changingStatus === "changing" ? "open" : "closed"}
-                    className="absolute flex h-full w-full items-center justify-center gap-2 rounded-md bg-yellow-500"
+                    Dzēst
+                  </button>
+                  <DeleteProductModal
+                    productToDelete={productToDelete}
+                    handleModalClose={() => {
+                      setProductToDelete(undefined);
+                    }}
+                    handleProductDelete={() => {
+                      if (!productToDelete?.id) return;
+                      setProductToDelete(undefined);
+                      // void utils.product.deleteProduct.mutate({
+                      //   id: productToDelete.id,
+                      // });
+                      deleteProduct({ id: productToDelete.id });
+                      // router.push("/my-products");
+                    }}
+                  />
+                </div>
+                <div className="flex gap-3">
+                  <button
+                    type="button"
+                    className="text-sm font-semibold leading-6 text-gray-900"
+                    onClick={() => {
+                      utils.product.getById.invalidate({
+                        id: router.query.id as string,
+                      });
+                    }}
                   >
-                    <IoHammerOutline className="h-6 w-6" />
-
-                    <span>Labo...</span>
-                  </motion.div>
-
-                  <motion.div
-                    variants={variants}
-                    initial="closed"
-                    animate={changingStatus === "changed" ? "open" : "closed"}
-                    className="absolute flex h-full w-full items-center justify-center gap-2 rounded-md bg-green-500"
+                    Atcelt
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isButtonDisabled()}
+                    className={classNames(
+                      isButtonDisabled()
+                        ? "cursor-not-allowed bg-gray-500"
+                        : "cursor-pointer bg-gray-800 hover:bg-gray-900",
+                      "relative flex h-11 w-40 items-center justify-center gap-2 overflow-hidden whitespace-nowrap rounded-md px-4 py-2 text-gray-50 transition-all",
+                    )}
                   >
-                    <IoCheckmarkSharp className="h-6 w-6" />
+                    <motion.div
+                      initial="closed"
+                      variants={variants}
+                      animate={changingStatus === "idle" ? "open" : "closed"}
+                      className="absolute flex h-full w-full items-center justify-center gap-2 rounded-md bg-gray-900"
+                    >
+                      <span>Labot</span>
+                    </motion.div>
 
-                    <span>Izlabots</span>
-                  </motion.div>
-                </button>
+                    <motion.div
+                      initial="closed"
+                      variants={variants}
+                      animate={
+                        changingStatus === "changing" ? "open" : "closed"
+                      }
+                      className="absolute flex h-full w-full items-center justify-center gap-2 rounded-md bg-yellow-500"
+                    >
+                      <IoHammerOutline className="h-6 w-6" />
+
+                      <span>Labo...</span>
+                    </motion.div>
+
+                    <motion.div
+                      initial="closed"
+                      variants={variants}
+                      animate={changingStatus === "changed" ? "open" : "closed"}
+                      className="absolute flex h-full w-full items-center justify-center gap-2 rounded-md bg-green-500"
+                    >
+                      <IoCheckmarkSharp className="h-6 w-6" />
+
+                      <span>Izlabots</span>
+                    </motion.div>
+                  </button>
+                </div>
               </div>
             </form>
           </div>

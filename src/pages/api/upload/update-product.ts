@@ -11,7 +11,7 @@ const ImageSchema = z.object({
   size: z.number(),
 });
 
-const UpdatedSchema = z.object({
+const UpdatedProductSchema = z.object({
   id: z.number(),
   name: z.string(),
   price: z.number(),
@@ -27,13 +27,13 @@ const UpdatedSchema = z.object({
   availableDatesStart: z.number(),
 });
 
-export type UpdatedPostType = z.infer<typeof UpdatedSchema>;
+export type UpdatedPostType = z.infer<typeof UpdatedProductSchema>;
 
 export default async function POST(
   request: NextApiRequest,
   response: NextApiResponse,
 ) {
-  const body = UpdatedSchema.parse(request.body);
+  const body = UpdatedProductSchema.parse(request.body);
 
   const isAuth = await db.query.sessions.findFirst({
     where: (session, { eq, and }) =>

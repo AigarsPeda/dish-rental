@@ -1,5 +1,6 @@
 import { relations, sql } from "drizzle-orm";
 import {
+  bigint,
   boolean,
   index,
   integer,
@@ -10,7 +11,6 @@ import {
   text,
   timestamp,
   varchar,
-  bigint,
 } from "drizzle-orm/pg-core";
 import { type AdapterAccount } from "next-auth/adapters";
 
@@ -59,13 +59,13 @@ export const images = createTable(
   "image",
   {
     id: serial("id").primaryKey(),
+    size: integer("size").notNull(),
     url: varchar("url", { length: 255 }).notNull(),
     key: varchar("key", { length: 255 }).notNull(),
     name: varchar("name", { length: 255 }).notNull(),
-    size: integer("size").notNull(),
     postId: integer("postId")
-      .notNull()
-      .references(() => product.id),
+      .references(() => product.id, { onDelete: "cascade" })
+      .notNull(),
     createdAt: timestamp("created_at")
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
@@ -88,13 +88,13 @@ export const imageRelations = relations(images, ({ one }) => ({
 // We need to create a new table for the bookings to determine the availability of the product
 
 export const users = createTable("user", {
-  id: varchar("id", { length: 255 }).notNull().primaryKey(),
   name: varchar("name", { length: 255 }),
+  image: varchar("image", { length: 255 }),
   email: varchar("email", { length: 255 }).notNull(),
+  id: varchar("id", { length: 255 }).notNull().primaryKey(),
   emailVerified: timestamp("emailVerified", {
     mode: "date",
   }).default(sql`CURRENT_TIMESTAMP`),
-  image: varchar("image", { length: 255 }),
 });
 
 export const usersRelations = relations(users, ({ many }) => ({
