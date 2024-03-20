@@ -596,11 +596,7 @@ const EditPage: NextPage = () => {
                     handleProductDelete={() => {
                       if (!productToDelete?.id) return;
                       setProductToDelete(undefined);
-                      // void utils.product.deleteProduct.mutate({
-                      //   id: productToDelete.id,
-                      // });
-                      deleteProduct({ id: productToDelete.id });
-                      // router.push("/my-products");
+                      void deleteProduct({ id: productToDelete.id });
                     }}
                   />
                 </div>
