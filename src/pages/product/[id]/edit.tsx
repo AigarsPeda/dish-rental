@@ -605,7 +605,7 @@ const EditPage: NextPage = () => {
                     type="button"
                     className="text-sm font-semibold leading-6 text-gray-900"
                     onClick={() => {
-                      utils.product.getById.invalidate({
+                      void utils.product.getById.invalidate({
                         id: router.query.id as string,
                       });
                     }}
