@@ -84,6 +84,38 @@ export const imageRelations = relations(images, ({ one }) => ({
   post: one(product, { fields: [images.postId], references: [product.id] }),
 }));
 
+// bookings table, booking may have many products
+export const bookings = createTable(
+  "booking",
+  {
+    id: serial("id").primaryKey(),
+    productId: integer("productId")
+      .notNull()
+      .references(() => product.id)
+      .array(),
+    customerName: varchar("customerName", { length: 255 }).notNull(),
+    customerEmail: varchar("customerEmail", { length: 255 }).notNull(),
+    customerPhone: varchar("customerPhone", { length: 255 }).notNull(),
+    customerAddress: varchar("customerAddress", { length: 255 }).notNull(),
+    startDate: bigint("startDate", { mode: "number" }).notNull(),
+    endDate: bigint("endDate", { mode: "number" }).notNull(),
+    createdAt: timestamp("created_at")
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+  },
+  (booking) => ({
+    productIdIdx: index("productId_idx").on(booking.productId),
+    customerEmailIdx: index("userId_idx").on(booking.customerEmail),
+  }),
+);
+
+export const bookingRelations = relations(bookings, ({ many }) => ({
+  // users: one(users, {
+  //   fields: [bookings.customerEmail],
+  //   references: [users.email],
+  // }),
+  products: many(product),
+}));
 // Bookings table for the product
 // We need to create a new table for the bookings to determine the availability of the product
 
