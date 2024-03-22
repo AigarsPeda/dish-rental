@@ -113,10 +113,10 @@ const ShoppingCartDropdown = () => {
           </div>
 
           {appState?.orders?.length !== 0 && (
-            <div className="mt-2 flex justify-center">
+            <div className="mt-2 flex justify-between px-2 pb-1">
               <button
                 type="button"
-                className="h-8 text-sm font-medium text-gray-500 hover:text-gray-700"
+                className="h-8 px-2 text-sm font-medium text-gray-500 hover:text-red-500"
                 onClick={() =>
                   dispatch({
                     type: "CLEAR_ORDERS",
@@ -125,6 +125,15 @@ const ShoppingCartDropdown = () => {
               >
                 Izrīrīt grozu
               </button>
+              <Link
+                className="flex h-full items-center justify-center gap-2 rounded-md bg-gray-800 px-4 py-2 text-sm font-medium text-white"
+                onClick={() => setIsDropdownOpen(false)}
+                href={{
+                  pathname: `/booking/${111}`,
+                }}
+              >
+                Noformēt pasūtījumu
+              </Link>
             </div>
           )}
         </div>
