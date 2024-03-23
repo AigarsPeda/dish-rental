@@ -130,6 +130,7 @@ const ShoppingCartDropdown = () => {
                 onClick={() => setIsDropdownOpen(false)}
                 href={{
                   pathname: `/booking/${111}`,
+                  search: `?orders=${JSON.stringify(appState.orders)}`,
                 }}
               >
                 Noformēt pasūtījumu
