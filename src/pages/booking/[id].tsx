@@ -144,7 +144,7 @@ const Home: NextPage = () => {
                   </h3>
                 </div>
                 <div className="flex h-full w-full flex-col items-stretch justify-start md:flex-row md:space-x-6 lg:space-x-8 xl:flex-col xl:space-x-0">
-                  <div className="flex flex-shrink-0 flex-col items-start justify-start">
+                  <div className="flex min-w-72 flex-shrink-0 flex-col items-start justify-start">
                     <div className="flex w-full items-center justify-center space-x-4 border-b border-gray-200 pb-8 pt-1 md:justify-start">
                       <div className="flex flex-col items-start justify-start space-y-2">
                         <p className="text-left text-base font-semibold leading-4 text-gray-800 dark:text-white">
@@ -201,11 +201,11 @@ const Home: NextPage = () => {
                         </p>
                       </div>
                     </div>
-                    <div className="flex w-full items-center justify-center md:items-start md:justify-start">
+                    {/* <div className="flex w-full items-center justify-center md:items-start md:justify-start">
                       <button className="mt-6 w-96 border border-gray-800 py-5 text-base font-medium leading-4 text-gray-800 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-offset-2 dark:border-white dark:bg-transparent dark:text-white dark:hover:bg-gray-900 md:mt-0 2xl:w-full">
                         Edit Details
                       </button>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               </div>
