@@ -19,7 +19,7 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     if (!router.query.orders || typeof router.query.orders !== "string") {
-      console.error("No orders in query");
+      console.error("No orders in query ????");
       return;
     }
 
