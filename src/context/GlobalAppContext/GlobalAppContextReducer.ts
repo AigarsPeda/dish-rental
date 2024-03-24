@@ -1,6 +1,7 @@
 import { LOCAL_STORAGE_KEYS } from "hardcoded";
 import { type GlobalAppStateType } from "~/types/appState.schema";
 import { type OrderType } from "~/types/order.schema";
+import makeId from "~/utils/makeId";
 
 export type GlobalAppStateActionType =
   | SetNameType
@@ -24,9 +25,12 @@ const globalAppReducer = (
       break;
 
     case "ADD_ORDER_ITEM":
+      const isOrderAlreadyInCart = state.orders.length > 0;
+
       newState = {
         ...state,
         orders: [...state.orders, action.payload],
+        orderId: isOrderAlreadyInCart ? state.orderId : makeId(6),
       };
       break;
 
@@ -43,6 +47,7 @@ const globalAppReducer = (
       newState = {
         ...state,
         orders: [],
+        orderId: "",
       };
       break;
 

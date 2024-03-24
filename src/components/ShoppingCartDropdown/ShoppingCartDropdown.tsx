@@ -129,7 +129,7 @@ const ShoppingCartDropdown = () => {
                 className="flex h-full items-center justify-center gap-2 rounded-md bg-gray-800 px-4 py-2 text-sm font-medium text-white"
                 onClick={() => setIsDropdownOpen(false)}
                 href={{
-                  pathname: `/booking/${111}`,
+                  pathname: `/booking/${appState.orderId}`,
                   search: `?orders=${JSON.stringify(appState.orders)}`,
                 }}
               >
