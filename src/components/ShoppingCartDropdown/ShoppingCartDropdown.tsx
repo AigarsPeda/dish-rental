@@ -5,20 +5,14 @@ import { useContext, useState } from "react";
 import Dropdown from "~/components/Dropdown/Dropdown";
 import ShoppingCartIcon from "~/components/icons/ShoppingCartIcon/ShoppingCartIcon";
 import { GlobalAppContext } from "~/context/GlobalAppContext/GlobalAppContext";
-import { type OrderType } from "~/types/order.schema";
 import ImageLoader from "~/utils/ImageLoader";
 import { formatDate } from "~/utils/dateUtils";
+import getSumOfOrders from "~/utils/getSumOfOrders";
 
 const ShoppingCartDropdown = () => {
   const [parent] = useAutoAnimate();
   const { appState, dispatch } = useContext(GlobalAppContext);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
-  const getSumOfOrders = (orders: OrderType[]) => {
-    return orders?.reduce((acc, order) => {
-      return Math.round((acc + order.price) * 100) / 100;
-    }, 0);
-  };
 
   return (
     <>
