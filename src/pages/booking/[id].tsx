@@ -76,15 +76,15 @@ const Home: NextPage = () => {
                     key={order.orderId}
                     className="mt-4 flex w-full flex-col items-start justify-start md:mt-6 md:flex-row md:items-center md:space-x-6 xl:space-x-8"
                   >
-                    <div className="w-full pb-4 md:w-40">
+                    <div className="flex w-full justify-center pb-4 md:w-40">
                       <Image
                         priority
-                        width={300}
+                        width={400}
                         height={300}
                         loader={ImageLoader}
                         alt={order.name ?? "Image"}
                         src={order.imageURL ?? "/images/placeholder.jpeg"}
-                        className="h-auto max-h-32 w-52 rounded object-cover shadow-lg"
+                        className="h-auto max-h-52 w-full rounded object-cover shadow-lg md:max-h-32"
                       />
                     </div>
                     <div className="flex w-full flex-col items-start justify-between space-y-4 border-b border-gray-200 pb-8 md:flex-row md:space-y-0">
@@ -137,11 +137,6 @@ const Home: NextPage = () => {
                   </div>
                 ))}
               </div>
-              {/* <div>
-                  <h3 className="text-xl font-semibold leading-5 text-gray-800 dark:text-white">
-                    Klients
-                  </h3>
-                </div> */}
               <div className="flex w-full flex-col items-center justify-between bg-gray-50 px-4 py-6 dark:bg-gray-800 md:items-start md:p-6 xl:w-96 xl:p-8">
                 <div className="mb-8">
                   <h3 className="text-xl font-semibold leading-5 text-gray-800 dark:text-white">
@@ -191,7 +186,7 @@ const Home: NextPage = () => {
                     <div className="flex flex-col items-center justify-center space-y-4 md:flex-row md:items-start md:justify-start md:space-x-6 md:space-y-0 lg:space-x-8 xl:flex-col xl:space-x-0 xl:space-y-12">
                       <div className="flex flex-col items-center justify-center space-y-4 md:items-start md:justify-start xl:mt-8">
                         <p className="text-center text-base font-semibold leading-4 text-gray-800 dark:text-white md:text-left">
-                          Shipping Address
+                          Piegādes Adrese
                         </p>
                         <p className="w-48 text-center text-sm leading-5 text-gray-600 dark:text-gray-300 md:text-left lg:w-full xl:w-48">
                           180 North King Street, Northhampton MA 1060
@@ -199,7 +194,7 @@ const Home: NextPage = () => {
                       </div>
                       <div className="flex flex-col items-center justify-center space-y-4 md:items-start md:justify-start">
                         <p className="text-center text-base font-semibold leading-4 text-gray-800 dark:text-white md:text-left">
-                          Billing Address
+                          Rēķina Adrese
                         </p>
                         <p className="w-48 text-center text-sm leading-5 text-gray-600 dark:text-gray-300 md:text-left lg:w-full xl:w-48">
                           180 North King Street, Northhampton MA 1060
@@ -207,7 +202,7 @@ const Home: NextPage = () => {
                       </div>
                     </div>
                     <div className="flex w-full items-center justify-center md:items-start md:justify-start">
-                      <button className="mt-6 w-96 border border-gray-800 py-5 text-base font-medium font-medium leading-4 text-gray-800 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-offset-2 dark:border-white dark:bg-transparent dark:text-white dark:hover:bg-gray-900 md:mt-0 2xl:w-full">
+                      <button className="mt-6 w-96 border border-gray-800 py-5 text-base font-medium leading-4 text-gray-800 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-offset-2 dark:border-white dark:bg-transparent dark:text-white dark:hover:bg-gray-900 md:mt-0 2xl:w-full">
                         Edit Details
                       </button>
                     </div>
@@ -216,7 +211,7 @@ const Home: NextPage = () => {
               </div>
 
               <div className="flex w-full flex-col items-stretch justify-end space-y-4 md:flex-row md:space-x-6 md:space-y-0 xl:space-x-8">
-                <div className="flex w-full max-w-[50%] flex-col space-y-6 bg-gray-50 px-4 py-6 dark:bg-gray-800 md:p-6 xl:p-8">
+                <div className="flex w-full flex-col space-y-6 bg-gray-50 px-4 py-6 dark:bg-gray-800 md:max-w-[50%] md:p-6 xl:p-8">
                   <h3 className="text-xl font-semibold leading-5 text-gray-800 dark:text-white">
                     Kopsavilkums
                   </h3>
