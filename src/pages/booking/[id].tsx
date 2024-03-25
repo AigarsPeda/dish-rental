@@ -9,6 +9,8 @@ import { OrderSchema, type OrderType } from "~/types/order.schema";
 import ImageLoader from "~/utils/ImageLoader";
 import { formatDate } from "~/utils/dateUtils";
 import getSumOfOrders from "~/utils/getSumOfOrders";
+import TextInput from "~/components/TextInput/TextInput";
+import { LuMail } from "react-icons/lu";
 
 export type FormStateType = {
   selectedCategories: string[];
@@ -18,6 +20,13 @@ export type FormStateType = {
 export type OderFormType = {
   orderId: string;
   orders: OrderType[];
+  client: {
+    name: string;
+    email: string;
+    phone: string;
+    billingAddress: string;
+    deliveryAddress: string;
+  };
 };
 
 const UrlSchema = z.array(OrderSchema);
@@ -28,6 +37,13 @@ const Home: NextPage = () => {
   const [orderFormState, setOrderFormState] = useState<OderFormType>({
     orderId: "",
     orders: [],
+    client: {
+      name: "",
+      email: "",
+      phone: "",
+      billingAddress: "",
+      deliveryAddress: "",
+    },
   });
 
   useEffect(() => {
@@ -44,7 +60,13 @@ const Home: NextPage = () => {
 
     const validOrders = UrlSchema.parse(JSON.parse(orders));
 
-    setOrderFormState({ orderId: id, orders: validOrders });
+    setOrderFormState((s) => {
+      return {
+        ...s,
+        orderId: id,
+        orders: validOrders,
+      };
+    });
   }, [router.query.orders]);
 
   return (
@@ -55,7 +77,13 @@ const Home: NextPage = () => {
         descriptionLong="Nomā vai iznomā traukus"
       />
       <main className="min-h-screen bg-gray-100 bg-gradient-to-b">
-        <div className="px-4 py-14 2xl:container md:px-6 2xl:mx-auto 2xl:px-20">
+        <form
+          className="px-4 py-14 2xl:container md:px-6 2xl:mx-auto 2xl:px-20"
+          onSubmit={(e) => {
+            e.preventDefault();
+            console.log(orderFormState);
+          }}
+        >
           <div className="item-start flex flex-col justify-start space-y-2">
             <h1 className="text-3xl font-semibold leading-7 text-gray-800 dark:text-white lg:text-4xl lg:leading-9">
               Pasūtījums #{orderFormState.orderId}
@@ -67,14 +95,14 @@ const Home: NextPage = () => {
           <div className="mt-10 flex w-full flex-col items-stretch justify-center space-y-4 md:space-y-6 xl:flex-row xl:space-x-8 xl:space-y-0">
             <div className="flex w-full flex-col items-start justify-start space-y-4 md:space-y-6 xl:space-y-8">
               <div className="flex w-full flex-col items-start justify-start bg-gray-50 px-4 py-4 dark:bg-gray-800 md:p-6 md:py-6 xl:p-8">
-                <p className="text-lg font-semibold leading-6 text-gray-800 dark:text-white md:text-xl xl:leading-5">
+                <p className="mb-4 text-lg font-semibold leading-6 text-gray-800 dark:text-white md:text-xl xl:leading-5">
                   Jūsu pasūtījums
                 </p>
 
                 {orderFormState.orders.map((order) => (
                   <div
                     key={order.orderId}
-                    className="mt-4 flex w-full flex-col items-start justify-start md:mt-6 md:flex-row md:items-center md:space-x-6 xl:space-x-8"
+                    className="flex w-full flex-col items-start justify-start md:flex-row md:items-center md:space-x-6 xl:space-x-8"
                   >
                     <div className="flex w-full justify-center pb-4 md:w-40">
                       <Image
@@ -145,60 +173,91 @@ const Home: NextPage = () => {
                 </div>
                 <div className="flex h-full w-full flex-col items-stretch justify-start md:flex-row md:space-x-6 lg:space-x-8 xl:flex-col xl:space-x-0">
                   <div className="flex min-w-72 flex-shrink-0 flex-col items-start justify-start">
-                    <div className="flex w-full items-center justify-center space-x-4 border-b border-gray-200 pb-8 pt-1 md:justify-start">
-                      <div className="flex flex-col items-start justify-start space-y-2">
-                        <p className="text-left text-base font-semibold leading-4 text-gray-800 dark:text-white">
-                          Jānis Breicis
-                        </p>
-                        <p className="pt-1 text-sm leading-5 text-gray-600 dark:text-gray-300">
-                          +371 12345678
-                        </p>
+                    <div className="flex w-full items-center justify-center space-x-4 border-b border-gray-200 pb-6 md:justify-start">
+                      <div className="flex w-full flex-col items-start justify-start space-y-0">
+                        <TextInput
+                          isRequired
+                          name="Vārds"
+                          labelSize="small"
+                          value={orderFormState.client?.name}
+                          onChange={(e) =>
+                            setOrderFormState({
+                              ...orderFormState,
+                              client: { ...orderFormState.client, name: e },
+                            })
+                          }
+                        />
+
+                        <div className="w-full pt-3">
+                          <TextInput
+                            isRequired
+                            type="tel"
+                            name="Telefons"
+                            labelSize="small"
+                            value={orderFormState.client?.phone}
+                            onChange={(e) =>
+                              setOrderFormState({
+                                ...orderFormState,
+                                client: { ...orderFormState.client, phone: e },
+                              })
+                            }
+                          />
+                        </div>
                       </div>
                     </div>
 
-                    <div className="flex w-full items-center justify-center space-x-4 border-b border-gray-200 py-4 text-gray-800 dark:text-white md:justify-start">
-                      <svg
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M19 5H5C3.89543 5 3 5.89543 3 7V17C3 18.1046 3.89543 19 5 19H19C20.1046 19 21 18.1046 21 17V7C21 5.89543 20.1046 5 19 5Z"
-                          stroke="currentColor"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                        <path
-                          d="M3 7L12 13L21 7"
-                          stroke="currentColor"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                      <p className="cursor-pointer text-sm leading-5 ">
-                        david89@gmail.com
-                      </p>
+                    <div className="flex w-full items-center justify-center space-x-2 border-b border-gray-200 py-4 text-gray-800 dark:text-white md:justify-start">
+                      <LuMail className="h-7 w-7" />
+                      <TextInput
+                        name=""
+                        isRequired
+                        type="email"
+                        labelSize="small"
+                        value={orderFormState.client?.email}
+                        onChange={(e) =>
+                          setOrderFormState({
+                            ...orderFormState,
+                            client: { ...orderFormState.client, email: e },
+                          })
+                        }
+                      />
                     </div>
                   </div>
                   <div className="mt-6 flex w-full flex-col items-stretch justify-between md:mt-0 xl:h-full">
-                    <div className="flex flex-col items-center justify-center space-y-4 md:flex-row md:items-start md:justify-start md:space-x-6 md:space-y-0 lg:space-x-8 xl:flex-col xl:space-x-0 xl:space-y-12">
-                      <div className="flex flex-col items-center justify-center space-y-4 md:items-start md:justify-start xl:mt-8">
-                        <p className="text-center text-base font-semibold leading-4 text-gray-800 dark:text-white md:text-left">
-                          Piegādes Adrese
-                        </p>
-                        <p className="w-48 text-center text-sm leading-5 text-gray-600 dark:text-gray-300 md:text-left lg:w-full xl:w-48">
-                          180 North King Street, Northhampton MA 1060
-                        </p>
+                    <div className="flex w-full flex-col items-center justify-center space-y-4 md:flex-row md:items-start md:justify-start md:space-x-6 md:space-y-0 lg:space-x-8 xl:flex-col xl:space-x-0 xl:space-y-12">
+                      <div className="flex w-full flex-col items-center justify-center space-y-0 md:items-start md:justify-start xl:mt-8">
+                        <TextInput
+                          isRequired
+                          labelSize="small"
+                          name="Piegādes Adrese"
+                          value={orderFormState.client?.deliveryAddress}
+                          onChange={(e) =>
+                            setOrderFormState({
+                              ...orderFormState,
+                              client: {
+                                ...orderFormState.client,
+                                deliveryAddress: e,
+                              },
+                            })
+                          }
+                        />
                       </div>
-                      <div className="flex flex-col items-center justify-center space-y-4 md:items-start md:justify-start">
-                        <p className="text-center text-base font-semibold leading-4 text-gray-800 dark:text-white md:text-left">
-                          Rēķina Adrese
-                        </p>
-                        <p className="w-48 text-center text-sm leading-5 text-gray-600 dark:text-gray-300 md:text-left lg:w-full xl:w-48">
-                          180 North King Street, Northhampton MA 1060
-                        </p>
+                      <div className="flex w-full flex-col items-center justify-center space-y-0 md:items-start md:justify-start">
+                        <TextInput
+                          isRequired
+                          labelSize="small"
+                          name="Rēķina Adrese"
+                          value={orderFormState.client?.billingAddress}
+                          onChange={(e) =>
+                            setOrderFormState({
+                              ...orderFormState,
+                              client: {
+                                ...orderFormState.client,
+                                billingAddress: e,
+                              },
+                            })
+                          }
+                        />
                       </div>
                     </div>
                     {/* <div className="flex w-full items-center justify-center md:items-start md:justify-start">
@@ -242,7 +301,10 @@ const Home: NextPage = () => {
                     </p>
                   </div>
                   <div className="flex w-full items-center justify-center">
-                    <button className="w-96 bg-gray-800 py-5 text-base font-medium leading-4 text-white hover:bg-black focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-offset-2 dark:bg-white dark:text-gray-800 dark:hover:bg-gray-100 md:w-full">
+                    <button
+                      type="submit"
+                      className="w-96 bg-gray-800 py-5 text-base font-medium leading-4 text-white hover:bg-black focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-offset-2 dark:bg-white dark:text-gray-800 dark:hover:bg-gray-100 md:w-full"
+                    >
                       Pasūtīt
                     </button>
                   </div>
@@ -250,7 +312,7 @@ const Home: NextPage = () => {
               </div>
             </div>
           </div>
-        </div>
+        </form>
       </main>
     </>
   );
