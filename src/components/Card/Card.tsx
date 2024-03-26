@@ -28,15 +28,15 @@ const Card: FC<CardProps> = ({ product }) => {
             alt="dish-rental"
             loader={ImageLoader}
             className={classNames("overflow-hidden rounded")}
+            src={
+              getTitleImage(product.images, product.titleImage)?.url ??
+              "/images/placeholder.jpeg"
+            }
             style={{
               width: "100%",
               height: "300px",
               objectFit: "cover",
             }}
-            src={
-              getTitleImage(product.images, product.titleImage)?.url ??
-              "/images/placeholder.jpeg"
-            }
           />
         </div>
         <div className="px-2 py-1.5 md:py-2.5">

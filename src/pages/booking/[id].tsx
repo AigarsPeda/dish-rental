@@ -2,39 +2,29 @@ import { type NextPage } from "next";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { LuMail } from "react-icons/lu";
 import { type DateValueType } from "react-tailwindcss-datepicker";
 import { z } from "zod";
 import PageHead from "~/components/PageHead/PageHead";
-import { OrderSchema, type OrderType } from "~/types/order.schema";
+import TextInput from "~/components/TextInput/TextInput";
+import { OrderSchema, type OrderFormType } from "~/types/order.schema";
 import ImageLoader from "~/utils/ImageLoader";
+import { api } from "~/utils/api";
 import { formatDate } from "~/utils/dateUtils";
 import getSumOfOrders from "~/utils/getSumOfOrders";
-import TextInput from "~/components/TextInput/TextInput";
-import { LuMail } from "react-icons/lu";
 
 export type FormStateType = {
   selectedCategories: string[];
   availableDates: DateValueType;
 };
 
-export type OderFormType = {
-  orderId: string;
-  orders: OrderType[];
-  client: {
-    name: string;
-    email: string;
-    phone: string;
-    billingAddress: string;
-    deliveryAddress: string;
-  };
-};
-
 const UrlSchema = z.array(OrderSchema);
 
 const Home: NextPage = () => {
   const router = useRouter();
+  const { mutate, isLoading } = api.product.createOrder.useMutation();
 
-  const [orderFormState, setOrderFormState] = useState<OderFormType>({
+  const [orderFormState, setOrderFormState] = useState<OrderFormType>({
     orderId: "",
     orders: [],
     client: {
@@ -82,6 +72,7 @@ const Home: NextPage = () => {
           onSubmit={(e) => {
             e.preventDefault();
             console.log(orderFormState);
+            mutate(orderFormState);
           }}
         >
           <div className="item-start flex flex-col justify-start space-y-2">

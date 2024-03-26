@@ -9,6 +9,7 @@ import {
 } from "~/server/api/trpc";
 import { images, product } from "~/server/db/schema";
 import { s3 } from "~/utils/aws/awsClient";
+import { OrderFormSchema } from "../../../types/order.schema";
 
 export const productRouter = createTRPCRouter({
   hello: publicProcedure
@@ -18,48 +19,6 @@ export const productRouter = createTRPCRouter({
         greeting: `Hello ${input.text}`,
       };
     }),
-
-  // create: protectedProcedure
-  //   .input(NewProductSchema)
-  //   .mutation(async ({ ctx, input }) => {
-  //     const ids = await ctx.db
-  //       .insert(product)
-  //       .values({
-  //         name: input.name,
-  //         price: input.price,
-  //         categories: input.categories,
-  //         titleImage: input.titleImage,
-  //         isPublished: input.isPublished,
-  //         description: input.description,
-  //         createdById: ctx.session.user.id,
-  //         availablePieces: input.availablePieces,
-  //         availableDatesStart: input.availableDatesStart.getTime(),
-  //         availableDatesEnd: input.availableDatesEnd.getTime(),
-  //       })
-  //       .returning({ id: product.id });
-
-  //     const postId = ids[0]?.id;
-
-  //     if (!postId) {
-  //       throw new Error("failed to create post");
-  //     }
-
-  //     await ctx.db.insert(images).values(
-  //       input.imagesData.map((image) => {
-  //         return {
-  //           postId: postId,
-  //           url: image.url,
-  //           key: image.key,
-  //           name: image.name,
-  //           size: image.size,
-  //         };
-  //       }),
-  //     );
-
-  //     return {
-  //       postId,
-  //     };
-  //   }),
 
   deleteImage: protectedProcedure
     .input(z.object({ key: z.string(), postId: z.number() }))
@@ -209,50 +168,11 @@ export const productRouter = createTRPCRouter({
       return `updated post: ${input.id}`;
     }),
 
-  // updateProduct: protectedProcedure
-  //   .input(
-  //     z.object({
-  //       id: z.number(),
-  //       name: z.string().optional(),
-  //       price: z.number().optional(),
-  //       titleImage: z.string().optional(),
-  //       description: z.string().optional(),
-  //       isPublished: z.boolean().optional(),
-  //       availablePieces: z.number().optional(),
-  //       availableDatesEnd: z.number().optional(),
-  //       availableDatesStart: z.number().optional(),
-  //       categories: z.array(z.string()).optional(),
-  //       // imagesToDelete: z.array(DBImageSchema).optional(),
-  //     }),
-  //   )
-  //   .mutation(async ({ input, ctx }) => {
-  //     // if (input.imagesToDelete && input.imagesToDelete.length > 0) {
-  //     //   for (const image of input.imagesToDelete) {
-  //     //     await ctx.db
-  //     //       .delete(images)
-  //     //       .where(and(eq(images.key, image.key), eq(images.postId, input.id)));
-  //     //   }
-
-  //     //   await utapi.deleteFiles(input.imagesToDelete.map((image) => image.key));
-  //     // }
-
-  //     await ctx.db
-  //       .update(product)
-  //       .set({
-  //         name: input.name,
-  //         price: input.price,
-  //         categories: input.categories,
-  //         titleImage: input.titleImage,
-  //         isPublished: input.isPublished,
-  //         description: input.description,
-  //         availablePieces: input.availablePieces,
-  //         availableDatesEnd: input.availableDatesEnd,
-  //         availableDatesStart: input.availableDatesStart,
-  //       })
-  //       .where(eq(product.id, input.id));
-
-  //     return `updated post: ${input.id}`;
-  //   }),
+  createOrder: publicProcedure
+    .input(OrderFormSchema)
+    .mutation(async ({ input, ctx }) => {
+      console.log(">>>>", input);
+    }),
 
   changeTitleImage: protectedProcedure
     .input(z.object({ id: z.number(), imageName: z.string() }))
@@ -267,15 +187,6 @@ export const productRouter = createTRPCRouter({
       if (!post) {
         throw new Error("post not found");
       }
-
-      // try to find the image in the post by name if not found throw error
-      // const titleImage = post.images.find(
-      //   (image) => image.name === input.imageName,
-      // );
-
-      // if (!titleImage) {
-      //   throw new Error("image not found");
-      // }
 
       await ctx.db
         .update(product)
@@ -294,11 +205,4 @@ export const productRouter = createTRPCRouter({
       },
     });
   }),
-
-  // deleteImage: protectedProcedure
-  //   .input(z.object({ imageName: z.string() }))
-  //   .mutation(async ({ input }) => {
-  //     await utapi.deleteFiles([input.imageName]);
-  //     return `deleted image: ${input}`;
-  //   }),
 });

@@ -12,3 +12,29 @@ export const OrderSchema = z.object({
 });
 
 export type OrderType = z.infer<typeof OrderSchema>;
+
+// export type OderFormType = {
+//   orderId: string;
+//   orders: OrderType[];
+//   client: {
+//     name: string;
+//     email: string;
+//     phone: string;
+//     billingAddress: string;
+//     deliveryAddress: string;
+//   };
+// };
+
+export const OrderFormSchema = z.object({
+  orderId: z.string(),
+  orders: z.array(OrderSchema),
+  client: z.object({
+    name: z.string(),
+    email: z.string(),
+    phone: z.string(),
+    billingAddress: z.string(),
+    deliveryAddress: z.string(),
+  }),
+});
+
+export type OrderFormType = z.infer<typeof OrderFormSchema>;
