@@ -79,9 +79,6 @@ const Home: NextPage = () => {
             <h1 className="text-3xl font-semibold leading-7 text-gray-800 dark:text-white lg:text-4xl lg:leading-9">
               Pasūtījums #{orderFormState.orderId}
             </h1>
-            {/* <p className="text-base font-medium leading-6 text-gray-600 dark:text-gray-300">
-              21st Mart 2021 at 10:34 PM
-            </p> */}
           </div>
           <div className="mt-10 flex w-full flex-col items-stretch justify-center space-y-4 md:space-y-6 xl:flex-row xl:space-x-8 xl:space-y-0">
             <div className="flex w-full flex-col items-start justify-start space-y-4 md:space-y-6 xl:space-y-8">
