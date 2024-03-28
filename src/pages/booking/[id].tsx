@@ -44,7 +44,7 @@ const Home: NextPage = () => {
       !id ||
       typeof id !== "string"
     ) {
-      console.error("No orders in query ????");
+      console.error("No orders in query!");
       return;
     }
 
@@ -68,7 +68,7 @@ const Home: NextPage = () => {
       />
       <main className="min-h-screen bg-gray-100 bg-gradient-to-b">
         <form
-          className="px-4 py-14 2xl:container md:px-6 2xl:mx-auto 2xl:px-20"
+          className="px-4 py-14 md:px-6"
           onSubmit={(e) => {
             e.preventDefault();
             console.log(orderFormState);
@@ -153,13 +153,13 @@ const Home: NextPage = () => {
                   </div>
                 ))}
               </div>
-              <div className="flex w-full flex-col items-center justify-between bg-gray-50 px-4 py-6 dark:bg-gray-800 md:items-start md:p-6 xl:w-96 xl:p-8">
+              <div className="flex w-full flex-col items-center justify-between bg-gray-50 px-4 py-6 dark:bg-gray-800 md:items-start md:p-6 xl:p-8">
                 <div className="mb-8">
                   <h3 className="text-xl font-semibold leading-5 text-gray-800 dark:text-white">
                     Klients
                   </h3>
                 </div>
-                <div className="flex h-full w-full flex-col items-stretch justify-start md:flex-row md:space-x-6 lg:space-x-8 xl:flex-col xl:space-x-0">
+                <div className="flex h-full w-full flex-col items-stretch justify-start md:flex-row md:space-x-6">
                   <div className="flex min-w-72 flex-shrink-0 flex-col items-start justify-start">
                     <div className="flex w-full items-center justify-center space-x-4 border-b border-gray-200 pb-6 md:justify-start">
                       <div className="flex w-full flex-col items-start justify-start space-y-0">
@@ -211,9 +211,9 @@ const Home: NextPage = () => {
                       />
                     </div>
                   </div>
-                  <div className="mt-6 flex w-full flex-col items-stretch justify-between md:mt-0 xl:h-full">
-                    <div className="flex w-full flex-col items-center justify-center space-y-4 md:flex-row md:items-start md:justify-start md:space-x-6 md:space-y-0 lg:space-x-8 xl:flex-col xl:space-x-0 xl:space-y-12">
-                      <div className="flex w-full flex-col items-center justify-center space-y-0 md:items-start md:justify-start xl:mt-8">
+                  <div className="mt-6 flex w-full flex-col items-stretch justify-between md:mt-0">
+                    <div className="flex w-full flex-col items-center justify-center space-y-4 md:flex-row md:items-start md:justify-start md:space-x-6 md:space-y-0 lg:space-x-8">
+                      <div className="flex w-full flex-col items-center justify-center space-y-0 md:items-start md:justify-start">
                         <TextInput
                           isRequired
                           labelSize="small"
